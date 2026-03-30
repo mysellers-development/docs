@@ -1,86 +1,97 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "MySellers API",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#7C3AED",
+    "light": "#A78BFA",
+    "dark": "#5B21B6"
   },
   "favicon": "/favicon.svg",
+  "css": "/custom.css",
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "API Reference",
         "groups": [
           {
-            "group": "Getting started",
-            "pages": [
-              "index",
-              "quickstart",
-              "development"
-            ]
-          },
-          {
-            "group": "Customization",
-            "pages": [
-              "essentials/settings",
-              "essentials/navigation"
-            ]
-          },
-          {
-            "group": "Writing content",
-            "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "API reference",
-        "groups": [
-          {
-            "group": "API documentation",
+            "group": "Visao Geral",
             "pages": [
               "api-reference/introduction"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Leads",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "api-reference/leads/create",
+              "api-reference/leads/list",
+              "api-reference/leads/get",
+              "api-reference/leads/update",
+              "api-reference/leads/delete",
+              "api-reference/leads/search",
+              "api-reference/leads/bulk-create",
+              "api-reference/leads/create-with-deal"
+            ]
+          },
+          {
+            "group": "Funnels",
+            "pages": [
+              "api-reference/funnels/create",
+              "api-reference/funnels/list",
+              "api-reference/funnels/list-by-workspace",
+              "api-reference/funnels/get",
+              "api-reference/funnels/update",
+              "api-reference/funnels/delete",
+              "api-reference/funnels/set-default",
+              "api-reference/funnels/associate-stages",
+              "api-reference/funnels/remove-stage",
+              "api-reference/funnels/reorder-stages"
+            ]
+          },
+          {
+            "group": "Deals",
+            "pages": [
+              "api-reference/deals/create",
+              "api-reference/deals/list",
+              "api-reference/deals/get",
+              "api-reference/deals/update",
+              "api-reference/deals/delete",
+              "api-reference/deals/update-stage",
+              "api-reference/deals/update-status",
+              "api-reference/deals/history",
+              "api-reference/deals/messages",
+              "api-reference/deals/list-by-funnel",
+              "api-reference/deals/list-by-lead",
+              "api-reference/deals/stats"
+            ]
+          },
+          {
+            "group": "Custom Fields",
+            "pages": [
+              "api-reference/custom-fields/create",
+              "api-reference/custom-fields/list",
+              "api-reference/custom-fields/get",
+              "api-reference/custom-fields/update",
+              "api-reference/custom-fields/delete",
+              "api-reference/custom-fields/reorder"
+            ]
+          },
+          {
+            "group": "Stages",
+            "pages": [
+              "api-reference/stages/create",
+              "api-reference/stages/list",
+              "api-reference/stages/get",
+              "api-reference/stages/update",
+              "api-reference/stages/delete",
+              "api-reference/stages/list-by-workspace"
             ]
           }
         ]
       }
     ],
     "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
+      "anchors": []
     }
   },
   "logo": {
@@ -88,35 +99,21 @@
     "dark": "/logo/dark.svg"
   },
   "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "label": "MySellers",
+      "href": "https://mysellers.com.br"
     }
   },
   "contextual": {
     "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+      "copy",
+      "view",
+      "claude",
+      "cursor"
+    ]
   },
   "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
+    "socials": {}
   }
 }

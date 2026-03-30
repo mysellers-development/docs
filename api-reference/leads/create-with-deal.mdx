@@ -1,0 +1,8 @@
+---
+title: 'Criar lead com deal'
+openapi: 'POST /leads/with-deal'
+---
+
+<Tip>
+  Este endpoint faz **deduplicacao automatica**: se ja existir um lead com o mesmo email, telefone, CPF ou CNPJ, ele reutiliza o lead existente e cria apenas o deal. O campo `isNewLead` na resposta indica se o lead foi criado ou reutilizado.
+</Tip>

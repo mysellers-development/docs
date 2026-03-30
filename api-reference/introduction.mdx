@@ -1,33 +1,79 @@
 ---
-title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+title: 'Introducao'
+description: 'Bem-vindo a API do MySellers — seu CRM de vendas com WhatsApp e IA.'
 ---
 
-<Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
-</Note>
+## Base URL
 
-## Welcome
+```
+https://apiap.mysellers.com.br
+```
 
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
+## Autenticacao
 
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+A API do MySellers suporta dois metodos de autenticacao:
 
-## Authentication
+<CardGroup cols={2}>
+  <Card title="JWT Bearer Token" icon="key">
+    Obtido via `POST /auth/login` com email e senha. Ideal para aplicacoes que gerenciam sessoes de usuario.
+    ```bash
+    Authorization: Bearer eyJhbGciOiJI...
+    ```
+  </Card>
+  <Card title="API Key" icon="lock">
+    Gerada em **Configuracoes > Tokens** no painel do MySellers. Vinculada automaticamente a um workspace — nao precisa enviar `workspaceId` nos requests.
+    ```bash
+    x-api-key: ms_live_abc123...
+    ```
+  </Card>
+</CardGroup>
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+<Tip>
+  Recomendamos usar **API Key** para integracoes server-to-server. O `workspaceId` e preenchido automaticamente pelo token, simplificando os requests.
+</Tip>
+
+## Rate Limiting
+
+A API possui tres niveis de rate limiting:
+
+| Nivel | Limite | Janela |
+|-------|--------|--------|
+| Short | 10 requests | 1 segundo |
+| Medium | 50 requests | 10 segundos |
+| Long | 200 requests | 60 segundos |
+
+Quando o limite e atingido, a API retorna `429 Too Many Requests`.
+
+## Formato de Resposta
+
+Todas as respostas sao em JSON. Endpoints de listagem retornam dados paginados:
 
 ```json
-"security": [
-  {
-    "bearerAuth": []
-  }
-]
+{
+  "data": [...],
+  "total": 150,
+  "page": 1,
+  "limit": 20
+}
 ```
+
+## Erros
+
+Erros seguem o formato padrao:
+
+```json
+{
+  "statusCode": 400,
+  "message": "fullName must be longer than or equal to 2 characters",
+  "error": "Bad Request"
+}
+```
+
+| Codigo | Significado |
+|--------|-------------|
+| 400 | Dados invalidos no request |
+| 401 | Token ausente ou expirado |
+| 403 | Sem permissao para acessar o recurso |
+| 404 | Recurso nao encontrado |
+| 429 | Rate limit atingido |
+| 500 | Erro interno do servidor |

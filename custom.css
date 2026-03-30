@@ -1,0 +1,57 @@
+/* Scrollbar roxa com animacao */
+
+/* Webkit (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #7C3AED, #A78BFA);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #6D28D9, #8B5CF6);
+}
+
+/* Scrollbar aparece suavemente ao fazer hover na pagina */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #7C3AED transparent;
+}
+
+/* Animacao de fade-in no conteudo principal */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+article,
+main > div {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+/* Cards com hover suave */
+[class*="Card"] a,
+a[class*="card"] {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+[class*="Card"] a:hover,
+a[class*="card"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+}
