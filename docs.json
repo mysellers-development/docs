@@ -124,16 +124,6 @@
           }
         ]
       },
-      {
-        "product": "AI Tools",
-        "icon": "wand-magic-sparkles",
-        "tabs": [
-          {
-            "tab": "Ferramentas",
-            "pages": ["ai-tools/claude-code", "ai-tools/cursor", "ai-tools/windsurf"]
-          }
-        ]
-      }
     ],
     "global": {
       "anchors": []
