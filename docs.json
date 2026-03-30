@@ -12,37 +12,6 @@
   "navigation": {
     "products": [
       {
-        "product": "MySellers AI",
-        "icon": "robot",
-        "tabs": [
-          {
-            "tab": "Documentacao",
-            "groups": [
-              {
-                "group": "Inicio",
-                "pages": ["ai/index"]
-              },
-              {
-                "group": "Funcionalidades",
-                "pages": [
-                  "ai/commands",
-                  "ai/scheduling",
-                  "ai/handoff",
-                  "ai/products",
-                  "ai/media",
-                  "ai/campaigns",
-                  "ai/knowledge-base"
-                ]
-              }
-            ]
-          },
-          {
-            "tab": "Changelog",
-            "pages": ["ai/changelog"]
-          }
-        ]
-      },
-      {
         "product": "MySellers API",
         "icon": "code",
         "tabs": [
@@ -121,6 +90,37 @@
                 ]
               }
             ]
+          }
+        ]
+      },
+      {
+        "product": "MySellers AI",
+        "icon": "robot",
+        "tabs": [
+          {
+            "tab": "Documentacao",
+            "groups": [
+              {
+                "group": "Inicio",
+                "pages": ["ai/index"]
+              },
+              {
+                "group": "Funcionalidades",
+                "pages": [
+                  "ai/commands",
+                  "ai/scheduling",
+                  "ai/handoff",
+                  "ai/products",
+                  "ai/media",
+                  "ai/campaigns",
+                  "ai/knowledge-base"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Changelog",
+            "pages": ["ai/changelog"]
           }
         ]
       }
