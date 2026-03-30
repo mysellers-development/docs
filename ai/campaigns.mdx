@@ -1,0 +1,117 @@
+---
+title: "Campanhas"
+description: "Disparo ativo para listas de contatos com acompanhamento de status em tempo real."
+icon: "bullhorn"
+---
+
+O sistema de campanhas permite disparar mensagens para listas de contatos e acompanhar o progresso de cada um — do primeiro contato ate o fechamento ou descarte. O agente conduz cada conversa de acordo com o objetivo da campanha.
+
+---
+
+## Tipos de campanha
+
+<CardGroup cols={1}>
+  <Card title="Localizacao de Decisor" icon="magnifying-glass">
+    **find_decision_maker** — Usada em contextos B2B para identificar quem toma decisoes na empresa. O agente conversa com o contato inicial e, se nao for o decisor, solicita que indique a pessoa certa.
+  </Card>
+  <Card title="Vendas" icon="circle-dollar-to-slot">
+    **sales** — Conduz o lead por um fluxo de vendas, apresenta o produto ou servico e busca converter ou agendar uma demonstracao.
+  </Card>
+  <Card title="Agendamento" icon="calendar-check">
+    **scheduling** — Focada em marcar reunioes ou consultas. O agente atua de forma assertiva para fechar um horario com o lead.
+  </Card>
+</CardGroup>
+
+---
+
+## Ciclo de vida de um contato
+
+Cada contato na campanha passa por estados que refletem onde esta no processo:
+
+<Steps>
+  <Step title="Pendente">
+    Contato adicionado a campanha mas ainda nao abordado.
+  </Step>
+  <Step title="Enviado">
+    Mensagem inicial disparada. Aguardando resposta do lead.
+  </Step>
+  <Step title="Em conversa">
+    Lead respondeu. O agente esta conduzindo a conversa ativamente.
+  </Step>
+  <Step title="Sucesso ou Descartado">
+    O objetivo foi alcancado (**sucesso**) — lead confirmou interesse, agendou ou foi identificado como decisor — ou o contato foi encerrado sem resultado (**descartado**).
+  </Step>
+</Steps>
+
+Existe tambem o estado **pausado**: quando o lead pede para ser contatado em outro momento, o agente registra a data e o contato e reativado automaticamente no horario combinado.
+
+---
+
+## Como o agente conduz a campanha
+
+O agente recebe o objetivo da campanha no contexto e age de acordo. Ele nao precisa ser instruido a cada mensagem — sabe exatamente o que deve buscar com aquele contato.
+
+**O agente classifica cada mensagem do lead antes de agir:**
+
+| Tipo de mensagem | O que o agente faz |
+|------------------|--------------------|
+| Recusa explicita ("nao quero", "para de me contatar") | Descarta o contato |
+| Ambiguidade ("acho que nao", "talvez") | Pede confirmacao antes de qualquer acao |
+| Interesse ou pergunta | Avanca na conversa |
+
+<Warning>
+  O agente **nunca descarta** um contato por ambiguidade. Frases como "acho que nao" ou "quero ver nao" geram uma pergunta de confirmacao, nao um descarte imediato.
+</Warning>
+
+---
+
+## Sistema de indicacao (referral)
+
+Em campanhas de localizacao de decisor, se o contato inicial indicar outra pessoa, o agente:
+
+1. Registra a indicacao na campanha
+2. Envia uma mensagem automatica para o indicado, explicando que foi indicado para falar sobre o objetivo da campanha
+3. O indicado entra na campanha como um novo contato do tipo **referral**
+
+```
+Agente para o indicado:
+"Ola [nome]! [Indicador] da [Empresa] informou que voce e a pessoa
+indicada para falar sobre [objetivo]. Voce e a pessoa certa?"
+```
+
+---
+
+## Protecao contra descarte indevido
+
+O sistema tem tres camadas de protecao para evitar que um contato seja descartado por engano:
+
+<AccordionGroup>
+  <Accordion title="Classificacao de intencao obrigatoria">
+    O agente classifica cada mensagem antes de agir. Apenas recusas explicitas permitem descarte.
+  </Accordion>
+  <Accordion title="Verificacao de novas mensagens">
+    Antes de executar um descarte, o sistema verifica se o lead enviou novas mensagens. Se sim, o descarte e cancelado e o agente reprocessa com o contexto completo.
+  </Accordion>
+  <Accordion title="Verificacao final antes de enviar">
+    Imediatamente antes de enviar qualquer resposta, o sistema verifica se chegaram novas mensagens. Se sim, descarta a resposta antiga e processa tudo novamente.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Criacao de oportunidade no CRM
+
+Em campanhas de vendas, quando o lead demonstra interesse antes de fechar, o agente pode criar uma **oportunidade (deal)** no CRM sem encerrar a campanha. Isso permite rastrear o lead no funil de vendas enquanto a conversa continua.
+
+A oportunidade e criada automaticamente e aparece no painel MySellers vinculada ao lead.
+
+---
+
+## Acompanhamento no painel
+
+O progresso de cada campanha pode ser acompanhado no painel MySellers, onde voce ve:
+
+- Quantos contatos estao em cada status
+- Ultimas mensagens de cada lead
+- Indicacoes geradas
+- Oportunidades criadas

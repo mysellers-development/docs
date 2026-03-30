@@ -1,0 +1,104 @@
+---
+title: "Suporte a Midia"
+description: "O agente processa imagens, audios e documentos recebidos no WhatsApp e responde com contexto."
+icon: "photo-film"
+---
+
+Leads podem enviar midias diretamente no WhatsApp e o agente as processa automaticamente antes de responder. Isso significa que o agente "ve" imagens, "ouve" audios e "le" documentos — e usa esse conteudo para dar respostas mais precisas.
+
+---
+
+## Tipos de midia suportados
+
+<CardGroup cols={2}>
+  <Card title="Imagens" icon="image">
+    O agente analisa a imagem e gera uma descricao do conteudo visual. Formatos aceitos: **JPEG, PNG, GIF, WEBP**.
+
+    Limite: **20 MB**
+  </Card>
+  <Card title="Audios" icon="microphone">
+    O agente transcreve o audio para texto e usa a transcricao para buscar informacoes relevantes e responder. Formatos aceitos: **OGG, MP3, WAV, AAC**.
+
+    Limite: **30 MB**
+  </Card>
+  <Card title="Documentos PDF" icon="file-pdf">
+    O agente extrai o conteudo do PDF e usa as informacoes para responder perguntas relacionadas ao documento.
+
+    Limite: **50 MB**
+  </Card>
+  <Card title="Video" icon="video">
+    Videos **nao sao suportados** no momento. O agente informa o lead se receber um video.
+  </Card>
+</CardGroup>
+
+---
+
+## Como funciona na pratica
+
+### Imagens
+
+```
+Lead: [envia foto de um produto com defeito]
+Agente: "Vi na imagem que o produto apresenta um dano na lateral.
+         Posso abrir um chamado de troca para voce?"
+```
+
+O agente descreve o que ve na imagem e usa essa informacao para contextualizar a resposta.
+
+### Audios
+
+```
+Lead: [envia mensagem de voz dizendo "quero saber mais sobre o plano premium"]
+Agente: "Claro! O Plano Premium inclui [detalhes do plano]..."
+```
+
+O audio e transcrito antes de o agente buscar informacoes na base de conhecimento. Isso garante que a resposta seja relevante ao conteudo do audio, nao apenas uma resposta generica.
+
+### Documentos PDF
+
+```
+Lead: [envia contrato em PDF]
+Agente: "Li o documento. Trata-se de um contrato de prestacao de servicos
+         com vigencia de 12 meses e valor de R$ 5.000,00. Posso ajudar com alguma duvida?"
+```
+
+O agente resume o conteudo do PDF e pode responder perguntas sobre ele ao longo da conversa.
+
+---
+
+## Limites por tipo de midia
+
+| Tipo | Limite de tamanho |
+|------|-------------------|
+| Imagem (JPEG, PNG, GIF, WEBP) | 20 MB |
+| Audio (OGG, MP3, WAV, AAC) | 30 MB |
+| Documento PDF | 50 MB |
+
+<Warning>
+  Arquivos acima do limite sao recusados. O agente informa o lead quando isso acontece.
+</Warning>
+
+---
+
+## Envio de midia pelo agente
+
+Alem de receber midias, o agente tambem pode **enviar** midias para o lead:
+
+- **Fotos de produtos**: enviadas como imagem com legenda (ver [Catalogo de Produtos](/ai/products))
+- **Audios**: quando o agente estiver configurado com TTS (texto para voz), ele pode responder com mensagens de audio no WhatsApp
+
+---
+
+## Observacoes importantes
+
+<AccordionGroup>
+  <Accordion title="PDFs protegidos por senha">
+    PDFs com senha de protecao podem nao ser processados corretamente. Recomende ao lead enviar versoes sem protecao.
+  </Accordion>
+  <Accordion title="Audios longos">
+    Audios com mais de 5 minutos sao processados em partes automaticamente. A transcricao final e completa, mas pode levar um pouco mais de tempo.
+  </Accordion>
+  <Accordion title="Formatos de documento nao suportados">
+    Apenas PDF e suportado para extracao de conteudo. Arquivos DOC, DOCX e XLS sao recebidos mas o agente nao consegue ler o conteudo interno.
+  </Accordion>
+</AccordionGroup>
