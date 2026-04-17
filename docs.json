@@ -88,6 +88,12 @@
                   "api-reference/stages/delete",
                   "api-reference/stages/list-by-workspace"
                 ]
+              },
+              {
+                "group": "Integrations",
+                "pages": [
+                  "api-reference/integrations/dados-fazenda/pre-sale-check"
+                ]
               }
             ]
           }
