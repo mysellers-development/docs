@@ -1,0 +1,8 @@
+---
+title: 'Marcar chat como processado pela IA'
+openapi: 'PATCH /chats/{id}/ai-processed'
+---
+
+<Note>
+  Usado pelo System Agent (ARCH-246) com check otimista. Retorna `affected=0` se uma nova mensagem chegou durante a analise — nesse caso o worker deve reprocessar.
+</Note>

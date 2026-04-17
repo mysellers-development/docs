@@ -1,0 +1,8 @@
+---
+title: 'Listar chats'
+openapi: 'GET /chats'
+---
+
+<Tip>
+  Aceita `workspace_id`, `page` e `limit`. Para integracoes server-to-server, prefira o endpoint **otimizado** (`/chats/workspace/{id}/optimized`) que ja retorna `unreadCount` e `lastMessage` em uma unica query.
+</Tip>

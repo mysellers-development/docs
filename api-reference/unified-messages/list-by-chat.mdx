@@ -1,0 +1,12 @@
+---
+title: 'Listar mensagens de um chat'
+openapi: 'GET /unified-messages/chat/{chatId}'
+---
+
+<Tip>
+  Endpoint central para leitura de mensagens (ARCH-239). Aceita paginacao por `page`/`limit` (default 50) OU cursor `before={messageId}` para scroll infinito reverso.
+</Tip>
+
+<Note>
+  Cada mensagem traz `senderType` (`lead`, `agent`, `ai`, `system`), `direction` (`inbound`/`outbound`), `channel`, `createdAt` e `content`. E a fonte para cruzar timestamps com qualquer outro sistema.
+</Note>
