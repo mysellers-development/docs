@@ -1,0 +1,222 @@
+---
+title: "Changelog"
+description: "Historico de mudancas e atualizacoes do MySellers AI."
+icon: "clock-rotate-left"
+---
+
+Historico de mudancas significativas do MySellers AI.
+
+---
+
+## [2026-03-19 a 2026-03-30] Bot do Corretor, Multi-Operador e Fixes de Agentes
+
+### Adicionado
+- **Bot do Corretor**: novo tipo de agente especializado em corretagem imobiliaria, ativavel via configuracao no painel
+- **Multi-operador com preferencias de notificacao**: cada workspace pode ter multiplos operadores com configuracoes distintas de quando e como receber notificacoes
+- **Auto-resolucao de handoff ao reativar IA**: quando o operador reativa o toggle `isAiEnabled` no painel, o sistema resolve automaticamente o estado de handoff/pausa sem intervencao manual
+- **Versionamento de prompt modules**: rastreamento de evolucao dos prompts por workspace
+- **Handoff adaptativo por horario comercial**: mensagens de handoff se adaptam automaticamente dependendo se e horario comercial (seg-sex 8h-18h) ou fora do horario
+- **Notificacao ao operador via Cloud API**: handoff e notificacao ao operador funcionam tambem para instancias que usam a API Oficial do WhatsApp (Meta)
+- **Comandos de operador via WhatsApp**: `/status`, `/info`, `/limite` para consultar o estado do agente diretamente pelo WhatsApp
+
+### Alterado
+- Mensagens de handoff do Dados Fazenda: antes silenciosas, agora informam que a equipe vai atender e estimam quando (baseado no horario comercial)
+- Cache TTL de verificacao do toggle IA: reduzido de 30s para 5s para que a reativacao pelo operador surta efeito mais rapidamente
+
+### Corrigido
+- Parametros internos do agente corrigidos, alinhando com a versao atual do framework
+- Handoff por keyword: convertido para processamento em segundo plano, evitando bloquear o fluxo principal de mensagens
+- System Agent: modo backend definido como default, removendo dependencia de configuracao que causava falhas em workspaces sem configuracao explicita
+- Cooldown por chat para notificacoes do System Agent: evita multiplos alertas para o mesmo chat em sequencia
+
+### Removido
+- `handoff_para_gestor` do Bot do Corretor: comportamento substituido pelo handoff padrao do sistema
+
+---
+
+## [2026-03-10 a 2026-03-18] Agente Unificado, Playbooks, Prompt Builder e Langfuse
+
+### Adicionado
+- **Agente Unificado**: alternativa ao Team Router que processa em um unico agente, economizando ~500ms por resposta
+- **Playbooks de Funil e Etapas**: descricoes do funil e da etapa atual sao injetadas automaticamente nos prompts, dando contexto sobre o momento da jornada do lead
+- **System Agent**: agente de observabilidade que roda em paralelo, faz analise periodica das conversas e gera summaries automaticos
+- **Comando `/prompt` via WhatsApp**: operadores podem editar os prompt modules do agente diretamente pelo WhatsApp, com versionamento automatico
+- **LLM-as-a-Judge no Langfuse**: avaliadores automaticos que pontuam a qualidade das respostas
+- **Performance Breakdown nos Insights**: grafico detalhando onde o tempo e gasto em cada etapa do processamento
+- **Prompt caching OpenAI**: reducao de latencia e custo por conversa com cache de prefixo
+
+### Alterado
+- Refatoracao do arquivo principal de processamento: 3 modulos extraidos para melhor organizacao e manutenibilidade
+
+### Corrigido
+- Prompt cache com hit rate 0%: corrigida ordenacao das mensagens que impedia o aproveitamento
+- Deal tools: parametro com nome incorreto corrigido; orientacoes de uso movidas para o prompt correto
+- Duplicidade de handoff: agente nao aciona mais handoff e notificacao ao mesmo tempo
+- Filtro de sessoes no Langfuse ao paginar alem de 100 resultados
+- Limites de secoes do prompt modular para nao ultrapassar o contexto do modelo
+
+### Removido
+- Arquivo de registro de entidades nao utilizado (291KB)
+
+---
+
+## [2026-03-02 a 2026-03-09] AI Trigger Steps, Deals, Model Factory e TTS Toggle
+
+### Adicionado
+- **AI Trigger Steps**: steps automatizados do funil podem injetar um objetivo no agente, com routing automatico para o agente correto
+- **Servico de negociacoes (Deals)**: gestao centralizada com cache de etapas e protecao contra condicoes de corrida
+- **4 tools de negociacoes**: consultar, fechar, adicionar produto e listar produtos de uma negociacao
+- **Toggle TTS por agente**: cada agente pode ter o envio de audio habilitado ou desabilitado individualmente
+- **Humanizacao de mensagens**: pos-processamento que remove formatacao tipica de IA (listas markdown, cabecalhos, pontuacao robotica)
+- **Seletor de periodo nos Insights**: filtrar metricas por dia, semana ou mes
+- **Docs e Changelog**: migrados do site estatico para markdown dinamico renderizado pelo site
+
+### Corrigido
+- Pool de conexoes com o banco de dados: conexoes nao eram devolvidas ao pool apos buscas na base de conhecimento, causando esgotamento com volume alto
+- Placeholder "Lead" como nome invalido: quando o nome do lead era literalmente "Lead", o agente usava esse texto como nome real
+- Respostas longas cortadas arbitrariamente: agente agora decide o split apropriado sem limite fixo de baloes
+
+---
+
+## [2026-02-20 a 2026-02-27] Monitor Dashboard e Guards Anti-Alucinacao
+
+### Adicionado
+- **Monitor Dashboard**: interface interna com conversas, insights com graficos, painel de erros, mensagens ao vivo e autenticacao por senha
+- **Guards anti-alucinacao em 2 camadas**: verificacao antes e depois de cada resposta do LLM
+- **Tool `criar_oportunidade`**: cria um deal no CRM sem encerrar a campanha ativa
+- **Fallback inteligente no timeout**: quando o modelo principal excede o tempo limite, um modelo de fallback responde em vez de enviar mensagem de erro
+- **Site redesenhado**: design system unificado, tooltips informativos, pagina de Prompts, drawer mobile responsivo
+- **TTS melhorado**: pronuncia correta para siglas, numeros por extenso, split de audio longo em 2 partes
+
+### Alterado
+- Modelo LLM default atualizado para melhor qualidade de resposta
+- Pipeline otimizado com paralelizacao de chamadas (RAG, metricas, perfil de workspace)
+
+### Corrigido
+- Perda de contexto apos campanha encerrada com sucesso
+- Multiplos bugs de agendamento: pre-verificacao, retry, qualificacao e padroes de adiamento
+- TTS: audio duplicado quando buffer retentava, fallback sem audio
+- Output Guard: nao reconhecia sucesso real da tool de agendamento e bloqueava a resposta
+
+---
+
+## [2026-02-04 a 2026-02-19] Cloud API Meta, Anti-Manipulacao e Limite Diario
+
+### Adicionado
+- **Webhook Meta**: suporte a API Oficial do WhatsApp com deduplicacao por ID de mensagem
+- **Admin Notifier**: notificacoes automaticas para o administrador em erros criticos com rate limiting
+- **Prompt Builder**: assistente IA que ajuda operadores a criar configuracoes de prompt sem escrever texto manualmente
+- **Anti-manipulacao em 3 camadas**: protecao contra tentativas de leads de manipular o comportamento do agente
+- **Limite diario por lead**: contador atomico que bloqueia envio apos N mensagens no dia, evitando spam
+- **Tool `notificar_operador`**: alerta o operador sem pausar o agente
+- **Comandos `/resetar <numero>` e `/resetar todos`** para operadores
+- **Comandos `/pausar` e `/despausar <numero>`** para operadores
+- **Suporte a assinaturas e link de pagamento** em produtos
+
+### Corrigido
+- Campanha: agente continuava em modo campanha apos marcar sucesso
+- Campanha: confusao entre IDs quando o mesmo lead tinha multiplas campanhas ativas
+- Cloud API: campos obrigatorios ausentes em chamadas de handoff e comandos
+- Leads: status nao sincronizado ao mover lead de etapa no funil
+- Pause: condicao de corrida entre `/pausar` e resposta do agente ja em processamento
+
+---
+
+## [2026-01-22 a 2026-02-03] Vozes por Agente, TTS, Agendamento Fase 2 e Webhook Meta
+
+### Adicionado
+- **Voice per Agent (Eleven Labs)**: voz configurada por agente, com vozes distintas para diferentes bots no mesmo workspace
+- **Follow-up endpoint**: disparo de mensagens de follow-up com logica de IA
+- **Deduplicacao de mensagens**: mensagens identicas enviadas em sequencia rapida sao descartadas
+- **Analise de PDF com IA**: extrair texto e informacoes de PDFs enviados pelo lead
+- **Agendamento Fase 2**: periodo de disponibilidade armazenado entre turnos, verificacao automatica de horarios
+- **Google Meet**: link de videoconferencia incluido por padrao nos agendamentos
+- **Logs persistentes**: arquivos de log retidos 7 dias com endpoints de consulta historica
+- **Shutdown Global (`/desligar`, `/ligar`)**: bloqueia todos os agentes do workspace simultaneamente
+
+### Corrigido
+- Agendamento: slots sobrescritos quando dois agentes consultavam o calendario simultaneamente
+- Agendamento: redirect para dias uteis quando lead pedia fim de semana
+- Saudacao repetida em toda mensagem apos o agente ser cacheado
+- TTS: limite ultrapassado causando erro na API, split automatico para audios longos
+
+---
+
+## [2026-01-08 a 2026-01-21] Prompt Modules, Google Calendar e Scheduling Lock
+
+### Adicionado
+- **Sistema modular de prompts**: orchestrator monta o prompt completo a partir de modulos independentes por workspace
+- **Sincronizacao Google Calendar** antes de verificar disponibilidade
+- **Tool `verificar_conexao_calendario`**: diagnostica problemas de conexao com handoff automatico se nao houver agenda conectada
+- **Presence no WhatsApp** ("Digitando..." ou "Gravando..."): feedback visual ao lead enquanto o agente processa
+- **Guardrails anti-alucinacao**: bloqueio pre-LLM de respostas com datas ou dados inventados
+- **Reciprocidade de audio**: quando lead envia audio, agente responde com audio TTS se TTS habilitado
+- **Deploy automatico no CI** na branch `develop`
+- **Contexto temporal** injetado em todos os agentes: data, hora, dia da semana e fuso horario
+- **Deteccao de handoff por linguagem natural**: palavras-chave detectadas antes de passar ao LLM
+- **Scheduling Lock**: quando em fluxo de agendamento, mensagens vao diretamente ao agente Agenda
+
+### Alterado
+- Modelo LLM atualizado para versao mais recente
+
+### Corrigido
+- Prompt modules habilitados por padrao para todos os workspaces
+- Calendar: link Google Calendar ausente na confirmacao; erros de tool sem mensagem util
+- Saudacoes repetidas em todas as mensagens apos o agente ser cacheado
+
+---
+
+## [2026-01-04 a 2026-01-07] Campanhas Sales, Handoff e Isolamento de Sessao
+
+### Adicionado
+- **Campanha tipo SALES**: comportamento especifico para vendas com agendamento integrado ao fluxo
+- **Sistema de handoff**: transferencia para atendimento humano com pausa do agente, notificacao ao operador e registro no CRM
+- **Isolamento de sessao por campanha**: cada campanha tem seu proprio contexto
+- **Indicacao com envio WhatsApp imediato**: ao criar indicacao, o indicado recebe mensagem automatica
+
+### Corrigido
+- Isolamento de memorias entre leads: memorias de um lead vazavam para outro no mesmo workspace
+- Deteccao de referral em campanhas
+
+---
+
+## [2025-12-15 a 2025-12-29] Team Router, TTS, Produtos e Migracao PgVector
+
+### Adicionado
+- **Team Router**: roteamento inteligente entre 4 agentes especializados (Conversa, Agenda, CRM, Campanha)
+- **Agentes especializados por etapa do funil**: comportamentos dinamicos por etapa via painel MySellers
+- **Isolamento multi-tenant**: cada workspace opera com contexto totalmente isolado
+- **Sincronizacao de memorias**: memorias do agente salvas no CRM para persistencia
+- **TTS via Eleven Labs**: envio de audio no WhatsApp com chunking automatico para textos longos
+- **Tool `enviar_foto_produto`**: envia imagem de produto via WhatsApp com legenda
+- **Tool `buscar_produtos`**: busca de produtos no catalogo
+- **Suporte a midia no webhook**: recebimento e processamento de imagens, audio e documentos
+- **Campanha de disparo em massa**: sistema completo com status e rastreamento
+- **Langfuse para observabilidade**: rastreamento de chamadas, tools e latencia por conversa
+
+### Alterado
+- Migracao RAG para PgVector (Supabase): melhor integracao com o banco de dados existente
+
+### Corrigido
+- RAG duplicado no historico: contexto estava sendo incluido em cada mensagem, consumindo ~80% dos tokens desnecessariamente
+- Team Router: bugs de delegacao, duplicacao de baloes e case-sensitive em IDs
+- Bugs de concorrencia e isolamento entre workspaces
+
+---
+
+## [2025-12-01 a 2025-12-14] Fundacao: Migracao API, Suite de Testes e Arquitetura Multi-Agente
+
+### Adicionado
+- **Projeto MySellers-AI**: virada de um script simples para uma plataforma de agentes IA
+- **Framework de agentes com structured output**: resposta dividida em baloes WhatsApp pelo proprio modelo
+- **FastAPI + Uvicorn** com webhook para recebimento de mensagens
+- **Base de conhecimento** por workspace
+- **Buffer de mensagens com debounce**: agrupa mensagens rapidas antes de processar
+- **Arquitetura multi-agente** com RAG dinamico, pause/unpause e tools por contexto
+- **Suite de testes inicial**: centenas de testes automatizados
+- **Auto-deploy via webhook**: push para `develop` ou `main` dispara redeploy automatico
+- **Comandos `/pausar` e `/despausar`** via WhatsApp
+
+### Corrigido
+- Race conditions e memory leak no processamento concorrente de mensagens
+- Leads misturados entre workspaces por ausencia de isolamento multi-tenant

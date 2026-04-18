@@ -1,0 +1,87 @@
+---
+title: "Catalogo de Produtos"
+description: "O agente busca produtos, exibe precos e envia fotos diretamente na conversa do WhatsApp."
+icon: "bag-shopping"
+---
+
+O agente tem acesso ao catalogo de produtos do seu workspace e pode buscar, apresentar e enviar fotos de produtos diretamente na conversa do WhatsApp — sem que o lead precise sair do app.
+
+---
+
+## Como o lead consulta produtos
+
+O lead pode perguntar sobre produtos de forma natural, sem precisar saber nomes exatos:
+
+```
+Lead: "tem camiseta azul?"
+Lead: "quanto custa o plano business?"
+Lead: "me manda a foto do produto X"
+Lead: "qual o preco do plano mensal?"
+```
+
+O agente entende a intencao, busca no catalogo e responde com as informacoes relevantes.
+
+---
+
+## O que o agente exibe
+
+Ao encontrar produtos, o agente retorna:
+
+- **Nome do produto**
+- **Preco** (compra unica ou assinatura mensal/anual)
+- **Descricao** resumida
+- **Link de pagamento** (quando disponivel)
+
+```
+*Plano Business* - R$ 1.497,00/mes
+CRM completo com multi-funis e automacoes
+Comprar: https://checkout.mysellers.com/plan-business
+```
+
+---
+
+## Envio de foto de produto
+
+Quando o lead pede para ver a imagem de um produto, o agente envia a foto diretamente no WhatsApp — como imagem, nao como link.
+
+```
+Lead: "me manda a foto do plano business"
+Agente: [envia imagem do produto com legenda incluindo nome, preco e link de pagamento]
+```
+
+<Note>
+  O agente so envia a foto se o produto tiver uma imagem cadastrada no MySellers. Se nao houver imagem, o agente informa e apresenta as informacoes em texto.
+</Note>
+
+---
+
+## Tipos de preco suportados
+
+| Tipo | Formato exibido |
+|------|-----------------|
+| Compra unica | R$ 49,90 |
+| Assinatura mensal | R$ 1.497,00/mes |
+| Assinatura anual | R$ 12.000,00/ano |
+| Sem preco cadastrado | Preco sob consulta |
+
+---
+
+## Fallback para base de conhecimento
+
+Se o produto nao for encontrado no catalogo pelo nome exato, o agente tenta:
+
+1. Buscar ignorando acentos e variantes de escrita
+2. Buscar por similaridade de nome
+3. Consultar a base de conhecimento do workspace (documentos enviados)
+
+Isso garante que o agente consiga responder mesmo que o lead escreva o nome do produto de forma diferente do cadastro.
+
+---
+
+## Configuracao no painel
+
+Para que o agente use o catalogo de produtos, os produtos precisam estar cadastrados e ativos no MySellers. O agente busca apenas produtos com status **ativo**.
+
+<Tip>
+  Mantenha o catalogo atualizado com fotos e links de pagamento para aproveitar ao maximo o recurso de envio de imagem e checkout direto pelo WhatsApp.
+</Tip>

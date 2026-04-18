@@ -1,0 +1,97 @@
+---
+title: "Agendamento"
+description: "O agente agenda reunioes e consultas diretamente pelo WhatsApp, integrado ao Google Calendar."
+icon: "calendar"
+---
+
+O sistema de agendamento permite que leads marquem reunioes, consultas ou demonstracoes diretamente pelo WhatsApp, sem precisar acessar nenhum link externo. O agente cuida de tudo: verifica disponibilidade, sugere horarios e confirma o agendamento.
+
+---
+
+## Como funciona para o lead
+
+O fluxo e completamente conversacional. O lead nao precisa preencher formularios nem acessar links.
+
+<Steps>
+  <Step title="Lead manifesta interesse">
+    O lead menciona que quer agendar — pode ser de forma direta ("quero agendar uma reuniao") ou com horario especifico ("pode ser amanha as 14h?").
+  </Step>
+  <Step title="Agente verifica disponibilidade">
+    O agente consulta o Google Calendar em tempo real para ver quais horarios estao livres. Essa verificacao acontece sempre antes de qualquer sugestao.
+  </Step>
+  <Step title="Agente confirma ou sugere alternativas">
+    - Se o horario pedido esta livre: o agente confirma diretamente.
+    - Se o horario esta ocupado: o agente sugere ate 2 alternativas proximas (mesmo horario no dia seguinte ou mesmo periodo do dia).
+  </Step>
+  <Step title="Agente solicita o email">
+    Apos confirmar o horario, o agente pede o email do lead para enviar o convite do Google Calendar.
+  </Step>
+  <Step title="Agendamento criado">
+    O agendamento e criado no Google Calendar com link do Google Meet incluido. O lead recebe o convite por email e a confirmacao pelo WhatsApp.
+  </Step>
+</Steps>
+
+---
+
+## Exemplos de conversa
+
+<Tabs>
+  <Tab title="Horario disponivel">
+    ```
+    Lead: "Pode ser amanha as 14h?"
+    Agente: "Confirmado! Amanha, 14h. Qual seu email para eu enviar o convite?"
+    Lead: "joao@empresa.com"
+    Agente: "Agendado! Voce vai receber o convite no email. O link do Google Meet estara incluso."
+    ```
+  </Tab>
+  <Tab title="Horario ocupado">
+    ```
+    Lead: "Quero agendar para hoje as 10h"
+    Agente: "10h de hoje ja esta ocupado. Que tal hoje as 11h ou amanha as 10h?"
+    Lead: "Amanha as 10h esta otimo"
+    Agente: "Perfeito! Me passa seu email para enviar o convite?"
+    ```
+  </Tab>
+  <Tab title="Periodo generico">
+    ```
+    Lead: "Quero algo a tarde"
+    Agente: "Hoje a tarde tenho 14h ou 16h. Qual fica melhor para voce?"
+    Lead: "16h"
+    Agente: "Combinado! 16h de hoje. Me passa seu email?"
+    ```
+  </Tab>
+</Tabs>
+
+---
+
+## Comportamento do agente
+
+<AccordionGroup>
+  <Accordion title="O agente sempre verifica disponibilidade antes de confirmar">
+    Nunca ha risco de o agente confirmar um horario que ja esta ocupado. A consulta ao calendario e obrigatoria antes de qualquer confirmacao ou sugestao de horario.
+  </Accordion>
+  <Accordion title="Sugestoes assertivas, nao cardapio">
+    O agente oferece no maximo 2 opcoes de horario. Isso evita a experiencia de "cardapio" com muitas opcoes e acelera o fechamento do agendamento.
+  </Accordion>
+  <Accordion title="O lead pode escolher qualquer horario disponivel">
+    Mesmo que o agente sugira apenas 2 opcoes, o lead pode pedir outro horario disponivel no mesmo dia e o agente valida e confirma normalmente.
+  </Accordion>
+  <Accordion title="Google Meet incluido por padrao">
+    Todos os agendamentos incluem link do Google Meet. O link aparece no convite do Calendar e pode ser enviado na confirmacao pelo WhatsApp.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Consultar agendamentos existentes
+
+O lead pode perguntar quais reunioes ja tem marcadas:
+
+```
+Lead: "Quais sao meus agendamentos?"
+Agente: "Voce tem uma reuniao marcada para amanha, dia 31/03, as 14h."
+```
+
+<Warning>
+  Para que o agendamento funcione, o Google Calendar do operador precisa estar conectado ao MySellers. Se o calendario nao estiver conectado, o agente vai informar o lead e acionar o operador.
+</Warning>

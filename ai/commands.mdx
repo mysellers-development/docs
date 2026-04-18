@@ -1,0 +1,203 @@
+---
+title: "Comandos WhatsApp"
+description: "Controle o agente de IA diretamente pelo WhatsApp usando comandos especiais."
+icon: "terminal"
+---
+
+Operadores podem enviar comandos diretamente no WhatsApp para controlar o comportamento do agente. Os comandos funcionam em letras maiusculas ou minusculas (`/reset`, `/Reset` e `/RESET` sao equivalentes).
+
+<Info>
+  Comandos marcados como **operador** so funcionam para numeros configurados como operadores no painel MySellers.
+</Info>
+
+---
+
+## Gerenciamento de Conversa
+
+### /reset
+
+Apaga o historico e as memorias da conversa atual com o agente.
+
+**Requer confirmacao:** o agente vai perguntar se voce tem certeza. Responda `sim` para confirmar ou qualquer outra coisa para cancelar. A confirmacao expira em 60 segundos.
+
+**O que e apagado:**
+- Historico de mensagens do agente
+- Memorias que o agente aprendeu sobre voce
+
+**O que e preservado:**
+- Historico no CRM MySellers (para auditoria)
+- Dados do lead (nome, telefone)
+
+```
+/reset
+→ "Tem certeza que deseja apagar todo o historico da conversa? Responda sim para confirmar..."
+```
+
+---
+
+### /resetar \<numero\> `operador`
+
+Reseta o historico de um contato especifico sem precisar entrar na conversa dele.
+
+```
+/resetar 11999998888
+→ "Reset concluido para 5511999998888: 3 memorias removidas. Chat fechado."
+```
+
+---
+
+### /resetar todos `operador`
+
+Reseta o historico de **todos** os contatos do agente. Requer confirmacao com `sim`.
+
+```
+/resetar todos
+→ "ATENCAO: Isso vai APAGAR todas as sessoes e memorias de TODOS os contatos deste agente..."
+```
+
+---
+
+## Pausar e Retomar
+
+### /pausar
+
+Pausa o agente para a conversa atual. O agente ignora mensagens silenciosamente ate voce despausar.
+
+```
+/pausar
+→ "Chat pausado. Vou ignorar mensagens ate voce digitar /despausar"
+```
+
+---
+
+### /pausar \<numero\> `operador`
+
+Pausa o agente para o chat de outro contato sem notifica-lo.
+
+```
+/pausar 11999998888
+→ "Chat 5511999998888 pausado silenciosamente."
+```
+
+---
+
+### /pausar tudo `operador`
+
+Pausa o agente para **todos** os chats da instancia ao mesmo tempo.
+
+```
+/pausar tudo
+→ "Instancia pausada. Todas as conversas serao ignoradas ate voce digitar /despausar"
+```
+
+---
+
+### /despausar
+
+Remove a pausa da conversa atual (ou da instancia, se a instancia estiver pausada).
+
+```
+/despausar
+→ "Chat retomado! Estou de volta."
+```
+
+Alias aceito: `/retomar`
+
+---
+
+### /despausar \<numero\> `operador`
+
+Remove a pausa do chat de outro contato remotamente.
+
+```
+/despausar 11999998888
+→ "Chat 5511999998888 despausado."
+```
+
+---
+
+## Handoff
+
+### /resolver `operador`
+
+Encerra um handoff ativo e devolve o controle ao agente. Use apos terminar o atendimento humano com um lead.
+
+```
+/resolver 11999998888
+→ "Handoff resolvido para 11988887777. O agente vai retomar o atendimento."
+```
+
+<Tip>
+  Apos `/resolver`, o agente volta a responder automaticamente as mensagens do lead. O contador de limite diario de mensagens tambem e resetado.
+</Tip>
+
+---
+
+## Controle Global
+
+### /desligar `operador`
+
+Desliga o agente para **todos** os chats do workspace simultaneamente. Util para manutencoes ou situacoes de emergencia.
+
+```
+/desligar
+→ Agente para de responder em todos os chats.
+```
+
+---
+
+### /ligar `operador`
+
+Reativa o agente apos ter sido desligado com `/desligar`.
+
+```
+/ligar
+→ Agente volta a responder normalmente.
+```
+
+---
+
+## Informacao e Diagnostico
+
+### /status `operador`
+
+Exibe o estado atual do agente: se esta ativo, pausado ou em handoff.
+
+### /info `operador`
+
+Exibe informacoes sobre a configuracao atual do agente.
+
+### /limite `operador`
+
+Exibe o contador de mensagens diarias do lead atual e o limite configurado.
+
+### /prompt `operador`
+
+Permite editar os modulos de prompt do agente diretamente pelo WhatsApp, com versionamento automatico.
+
+### /help
+
+Lista os comandos disponiveis para o seu perfil (lead ou operador).
+
+---
+
+## Tabela Resumida
+
+| Comando | Quem pode usar | O que faz |
+|---------|---------------|-----------|
+| `/reset` | Qualquer lead | Apaga historico da propria conversa (com confirmacao) |
+| `/resetar <numero>` | Operador | Reseta historico de outro contato |
+| `/resetar todos` | Operador | Reseta todos os historicos (com confirmacao) |
+| `/pausar` | Qualquer lead | Pausa o agente na propria conversa |
+| `/pausar <numero>` | Operador | Pausa o agente no chat de outro contato |
+| `/pausar tudo` | Operador | Pausa o agente em todos os chats |
+| `/despausar` | Qualquer lead | Remove a pausa da propria conversa |
+| `/despausar <numero>` | Operador | Remove pausa do chat de outro contato |
+| `/resolver <numero>` | Operador | Encerra handoff e devolve controle ao agente |
+| `/desligar` | Operador | Desliga o agente para todo o workspace |
+| `/ligar` | Operador | Reativa o agente apos `/desligar` |
+| `/status` | Operador | Estado atual do agente |
+| `/info` | Operador | Informacoes de configuracao |
+| `/limite` | Operador | Contador de mensagens diarias |
+| `/prompt` | Operador | Edita prompt modules pelo WhatsApp |
+| `/help` | Qualquer lead | Lista comandos disponiveis |

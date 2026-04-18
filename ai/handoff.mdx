@@ -1,0 +1,101 @@
+---
+title: "Transferencia para Humano"
+description: "Como o agente transfere uma conversa para atendimento humano e como o operador retoma o controle."
+icon: "user-headset"
+---
+
+Handoff e o mecanismo pelo qual o agente de IA transfere uma conversa para um atendente humano. Quando isso acontece, o agente pausa automaticamente e o operador recebe uma notificacao pelo WhatsApp.
+
+---
+
+## Quando o handoff e ativado
+
+O agente transfere para humano em tres situacoes:
+
+<CardGroup cols={1}>
+  <Card title="Lead pede atendimento humano" icon="comment">
+    O lead envia uma mensagem pedindo falar com uma pessoa, como "quero falar com um atendente", "me passa pra um humano" ou "preciso falar com alguem". O agente detecta a intencao automaticamente, mesmo com variacoes na escrita.
+  </Card>
+  <Card title="Reclamacao grave ou lead muito irritado" icon="face-angry">
+    Apos tentar resolver o problema, se o lead continuar extremamente insatisfeito, o agente aciona o handoff para evitar piora da situacao.
+  </Card>
+  <Card title="Acao exclusivamente humana necessaria" icon="lock">
+    Quando o proximo passo exige algo que so um humano pode fazer — aprovar um preco especial, gerar uma proposta personalizada ou acessar um sistema interno — e todas as informacoes ja foram coletadas, o agente transfere.
+  </Card>
+</CardGroup>
+
+---
+
+## O que acontece durante o handoff
+
+<Steps>
+  <Step title="Agente confirma para o lead">
+    O lead recebe uma mensagem informando que sera transferido e que um atendente vai assumir.
+
+    ```
+    Agente: "Certo, vou te transferir para um atendente. Aguarde um momento."
+    ```
+
+    Em horario comercial (seg-sex, 8h-18h), a mensagem indica que alguem vai atender em breve. Fora do horario comercial, o agente informa quando o atendimento esta disponivel.
+  </Step>
+  <Step title="Operador e notificado">
+    O operador configurado recebe uma mensagem no WhatsApp informando que ha um lead aguardando atendimento humano.
+  </Step>
+  <Step title="Agente pausa">
+    O agente para de responder automaticamente. Mensagens do lead durante o handoff sao ignoradas pelo agente — o operador assume o controle total da conversa.
+  </Step>
+</Steps>
+
+---
+
+## Como o operador retoma
+
+Apos finalizar o atendimento humano, o operador usa o comando `/resolver` para devolver o controle ao agente:
+
+```
+/resolver 11999998888
+→ "Handoff resolvido para 11999998888. O agente vai retomar o atendimento."
+```
+
+Apos o `/resolver`:
+- O agente volta a responder mensagens do lead normalmente
+- O contador de limite diario de mensagens do lead e resetado
+- O lead pode continuar a conversa como se nada tivesse acontecido
+
+<Tip>
+  Use `/resolver` assim que terminar o atendimento. Enquanto o handoff estiver ativo, o agente nao responde ao lead.
+</Tip>
+
+---
+
+## Frases que acionam o handoff
+
+O agente reconhece automaticamente pedidos de atendimento humano, mesmo escritos de formas diferentes:
+
+| O lead escreve... | Resultado |
+|-------------------|-----------|
+| "quero falar com um atendente" | Handoff acionado |
+| "me passa pra um humano" | Handoff acionado |
+| "preciso falar com uma pessoa" | Handoff acionado |
+| "tem alguem ai?" | Handoff acionado |
+| "gostaria de conversar com alguem" | Handoff acionado |
+| "como faco para falar com o suporte?" | **Nao** aciona (e uma pergunta) |
+| "voce e humano?" | **Nao** aciona (contexto diferente) |
+
+---
+
+## Notificacao ao operador sem pausar o agente
+
+Ha situacoes em que o operador precisa ser avisado, mas o agente pode continuar respondendo. Por exemplo, quando o lead demonstra alta intencao de compra ou quando ha uma situacao que precisa de atencao sem interromper o fluxo.
+
+Nesse caso, o operador recebe um aviso, mas o agente **continua ativo** na conversa. Diferente do handoff completo, o agente nao pausa e nao e necessario usar `/resolver`.
+
+<Note>
+  A decisao entre pausar completamente (handoff) ou apenas notificar e feita automaticamente pelo agente com base no contexto da situacao.
+</Note>
+
+---
+
+## Limite diario de mensagens
+
+Se um lead enviar muitas mensagens em um unico dia e atingir o limite configurado, o sistema aciona um handoff silencioso automaticamente. O contador e resetado quando o operador usa `/resolver` ou `/despausar`.

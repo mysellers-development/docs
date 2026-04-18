@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "MySellers API",
+  "name": "MySellers",
   "colors": {
     "primary": "#7C3AED",
     "light": "#A78BFA",
@@ -10,177 +10,218 @@
   "favicon": "/favicon.svg",
   "css": "/custom.css",
   "navigation": {
-    "tabs": [
+    "products": [
       {
-        "tab": "API Reference",
-        "groups": [
+        "product": "MySellers API",
+        "icon": "code",
+        "tabs": [
           {
-            "group": "Visao Geral",
-            "pages": [
-              "api-reference/introduction"
+            "tab": "API Reference",
+            "groups": [
+              {
+                "group": "Visao Geral",
+                "pages": ["api-reference/introduction"]
+              },
+              {
+                "group": "Leads",
+                "pages": [
+                  "api-reference/leads/create",
+                  "api-reference/leads/list",
+                  "api-reference/leads/get",
+                  "api-reference/leads/update",
+                  "api-reference/leads/delete",
+                  "api-reference/leads/search",
+                  "api-reference/leads/bulk-create",
+                  "api-reference/leads/create-with-deal"
+                ]
+              },
+              {
+                "group": "Funnels",
+                "pages": [
+                  "api-reference/funnels/create",
+                  "api-reference/funnels/list",
+                  "api-reference/funnels/list-by-workspace",
+                  "api-reference/funnels/get",
+                  "api-reference/funnels/update",
+                  "api-reference/funnels/delete",
+                  "api-reference/funnels/set-default",
+                  "api-reference/funnels/associate-stages",
+                  "api-reference/funnels/remove-stage",
+                  "api-reference/funnels/reorder-stages"
+                ]
+              },
+              {
+                "group": "Deals",
+                "pages": [
+                  "api-reference/deals/create",
+                  "api-reference/deals/list",
+                  "api-reference/deals/get",
+                  "api-reference/deals/update",
+                  "api-reference/deals/delete",
+                  "api-reference/deals/update-stage",
+                  "api-reference/deals/update-status",
+                  "api-reference/deals/history",
+                  "api-reference/deals/messages",
+                  "api-reference/deals/list-by-funnel",
+                  "api-reference/deals/list-by-lead",
+                  "api-reference/deals/stats"
+                ]
+              },
+              {
+                "group": "Custom Fields",
+                "pages": [
+                  "api-reference/custom-fields/create",
+                  "api-reference/custom-fields/list",
+                  "api-reference/custom-fields/get",
+                  "api-reference/custom-fields/update",
+                  "api-reference/custom-fields/delete",
+                  "api-reference/custom-fields/reorder"
+                ]
+              },
+              {
+                "group": "Stages",
+                "pages": [
+                  "api-reference/stages/create",
+                  "api-reference/stages/list",
+                  "api-reference/stages/get",
+                  "api-reference/stages/update",
+                  "api-reference/stages/delete",
+                  "api-reference/stages/list-by-workspace"
+                ]
+              },
+              {
+                "group": "Phone Numbers",
+                "pages": [
+                  "api-reference/phone-numbers/list",
+                  "api-reference/phone-numbers/get",
+                  "api-reference/phone-numbers/find-by-number",
+                  "api-reference/phone-numbers/list-by-lead",
+                  "api-reference/phone-numbers/list-by-workspace",
+                  "api-reference/phone-numbers/list-by-user",
+                  "api-reference/phone-numbers/list-by-instance",
+                  "api-reference/phone-numbers/create",
+                  "api-reference/phone-numbers/update",
+                  "api-reference/phone-numbers/set-primary",
+                  "api-reference/phone-numbers/delete"
+                ]
+              },
+              {
+                "group": "Chats",
+                "pages": [
+                  "api-reference/chats/list",
+                  "api-reference/chats/get",
+                  "api-reference/chats/get-history",
+                  "api-reference/chats/list-by-workspace",
+                  "api-reference/chats/list-by-workspace-optimized",
+                  "api-reference/chats/list-open",
+                  "api-reference/chats/list-by-status",
+                  "api-reference/chats/list-by-instance",
+                  "api-reference/chats/list-by-cloud-api-instance",
+                  "api-reference/chats/list-by-phone-number",
+                  "api-reference/chats/get-ai-status",
+                  "api-reference/chats/needs-analysis",
+                  "api-reference/chats/create",
+                  "api-reference/chats/update",
+                  "api-reference/chats/update-ai-status",
+                  "api-reference/chats/mark-ai-processed",
+                  "api-reference/chats/close",
+                  "api-reference/chats/archive",
+                  "api-reference/chats/reopen",
+                  "api-reference/chats/send-presence",
+                  "api-reference/chats/delete"
+                ]
+              },
+              {
+                "group": "Unified Messages",
+                "pages": [
+                  "api-reference/unified-messages/list-by-chat",
+                  "api-reference/unified-messages/get",
+                  "api-reference/unified-messages/count-by-chat",
+                  "api-reference/unified-messages/count-unread",
+                  "api-reference/unified-messages/mark-as-read",
+                  "api-reference/unified-messages/update-status"
+                ]
+              },
+              {
+                "group": "Lead History",
+                "pages": [
+                  "api-reference/lead-history/list-by-workspace",
+                  "api-reference/lead-history/list-by-lead",
+                  "api-reference/lead-history/list-by-deal",
+                  "api-reference/lead-history/get",
+                  "api-reference/lead-history/create"
+                ]
+              },
+              {
+                "group": "WhatsApp Instances",
+                "pages": [
+                  "api-reference/instances/list",
+                  "api-reference/instances/get",
+                  "api-reference/instances/list-by-workspace",
+                  "api-reference/instances/list-connected-by-workspace",
+                  "api-reference/instances/find-by-name",
+                  "api-reference/instances/list-by-agent",
+                  "api-reference/instances/check-whatsapp-status",
+                  "api-reference/instances/create-with-uazapi",
+                  "api-reference/instances/connect-whatsapp",
+                  "api-reference/instances/disconnect-whatsapp",
+                  "api-reference/instances/sync-workspace",
+                  "api-reference/instances/get-webhook",
+                  "api-reference/instances/set-webhook",
+                  "api-reference/instances/send-text-message",
+                  "api-reference/instances/send-media-message",
+                  "api-reference/instances/check-numbers",
+                  "api-reference/instances/delete"
+                ]
+              },
+              {
+                "group": "Chat Analytics",
+                "pages": [
+                  "api-reference/chat-analytics/overview",
+                  "api-reference/chat-analytics/volume",
+                  "api-reference/chat-analytics/response-time",
+                  "api-reference/chat-analytics/top-chats",
+                  "api-reference/chat-analytics/ai-metrics"
+                ]
+              },
+              {
+                "group": "Integrations",
+                "pages": [
+                  "api-reference/integrations/dados-fazenda/pre-sale-check"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "product": "MySellers AI",
+        "icon": "robot",
+        "tabs": [
+          {
+            "tab": "Documentacao",
+            "groups": [
+              {
+                "group": "Inicio",
+                "pages": ["ai/index"]
+              },
+              {
+                "group": "Funcionalidades",
+                "pages": [
+                  "ai/commands",
+                  "ai/scheduling",
+                  "ai/handoff",
+                  "ai/products",
+                  "ai/media",
+                  "ai/campaigns",
+                  "ai/knowledge-base"
+                ]
+              }
             ]
           },
           {
-            "group": "Leads",
-            "pages": [
-              "api-reference/leads/create",
-              "api-reference/leads/list",
-              "api-reference/leads/get",
-              "api-reference/leads/update",
-              "api-reference/leads/delete",
-              "api-reference/leads/search",
-              "api-reference/leads/bulk-create",
-              "api-reference/leads/create-with-deal"
-            ]
-          },
-          {
-            "group": "Funnels",
-            "pages": [
-              "api-reference/funnels/create",
-              "api-reference/funnels/list",
-              "api-reference/funnels/list-by-workspace",
-              "api-reference/funnels/get",
-              "api-reference/funnels/update",
-              "api-reference/funnels/delete",
-              "api-reference/funnels/set-default",
-              "api-reference/funnels/associate-stages",
-              "api-reference/funnels/remove-stage",
-              "api-reference/funnels/reorder-stages"
-            ]
-          },
-          {
-            "group": "Deals",
-            "pages": [
-              "api-reference/deals/create",
-              "api-reference/deals/list",
-              "api-reference/deals/get",
-              "api-reference/deals/update",
-              "api-reference/deals/delete",
-              "api-reference/deals/update-stage",
-              "api-reference/deals/update-status",
-              "api-reference/deals/history",
-              "api-reference/deals/messages",
-              "api-reference/deals/list-by-funnel",
-              "api-reference/deals/list-by-lead",
-              "api-reference/deals/stats"
-            ]
-          },
-          {
-            "group": "Custom Fields",
-            "pages": [
-              "api-reference/custom-fields/create",
-              "api-reference/custom-fields/list",
-              "api-reference/custom-fields/get",
-              "api-reference/custom-fields/update",
-              "api-reference/custom-fields/delete",
-              "api-reference/custom-fields/reorder"
-            ]
-          },
-          {
-            "group": "Stages",
-            "pages": [
-              "api-reference/stages/create",
-              "api-reference/stages/list",
-              "api-reference/stages/get",
-              "api-reference/stages/update",
-              "api-reference/stages/delete",
-              "api-reference/stages/list-by-workspace"
-            ]
-          },
-          {
-            "group": "Phone Numbers",
-            "pages": [
-              "api-reference/phone-numbers/list",
-              "api-reference/phone-numbers/get",
-              "api-reference/phone-numbers/find-by-number",
-              "api-reference/phone-numbers/list-by-lead",
-              "api-reference/phone-numbers/list-by-workspace",
-              "api-reference/phone-numbers/list-by-user",
-              "api-reference/phone-numbers/list-by-instance",
-              "api-reference/phone-numbers/create",
-              "api-reference/phone-numbers/update",
-              "api-reference/phone-numbers/set-primary",
-              "api-reference/phone-numbers/delete"
-            ]
-          },
-          {
-            "group": "Chats",
-            "pages": [
-              "api-reference/chats/list",
-              "api-reference/chats/get",
-              "api-reference/chats/get-history",
-              "api-reference/chats/list-by-workspace",
-              "api-reference/chats/list-by-workspace-optimized",
-              "api-reference/chats/list-open",
-              "api-reference/chats/list-by-status",
-              "api-reference/chats/list-by-instance",
-              "api-reference/chats/list-by-cloud-api-instance",
-              "api-reference/chats/list-by-phone-number",
-              "api-reference/chats/get-ai-status",
-              "api-reference/chats/needs-analysis",
-              "api-reference/chats/create",
-              "api-reference/chats/update",
-              "api-reference/chats/update-ai-status",
-              "api-reference/chats/mark-ai-processed",
-              "api-reference/chats/close",
-              "api-reference/chats/archive",
-              "api-reference/chats/reopen",
-              "api-reference/chats/send-presence",
-              "api-reference/chats/delete"
-            ]
-          },
-          {
-            "group": "Unified Messages",
-            "pages": [
-              "api-reference/unified-messages/list-by-chat",
-              "api-reference/unified-messages/get",
-              "api-reference/unified-messages/count-by-chat",
-              "api-reference/unified-messages/count-unread",
-              "api-reference/unified-messages/mark-as-read",
-              "api-reference/unified-messages/update-status"
-            ]
-          },
-          {
-            "group": "Lead History",
-            "pages": [
-              "api-reference/lead-history/list-by-workspace",
-              "api-reference/lead-history/list-by-lead",
-              "api-reference/lead-history/list-by-deal",
-              "api-reference/lead-history/get",
-              "api-reference/lead-history/create"
-            ]
-          },
-          {
-            "group": "WhatsApp Instances",
-            "pages": [
-              "api-reference/instances/list",
-              "api-reference/instances/get",
-              "api-reference/instances/list-by-workspace",
-              "api-reference/instances/list-connected-by-workspace",
-              "api-reference/instances/find-by-name",
-              "api-reference/instances/list-by-agent",
-              "api-reference/instances/check-whatsapp-status",
-              "api-reference/instances/create-with-uazapi",
-              "api-reference/instances/connect-whatsapp",
-              "api-reference/instances/disconnect-whatsapp",
-              "api-reference/instances/sync-workspace",
-              "api-reference/instances/get-webhook",
-              "api-reference/instances/set-webhook",
-              "api-reference/instances/send-text-message",
-              "api-reference/instances/send-media-message",
-              "api-reference/instances/check-numbers",
-              "api-reference/instances/delete"
-            ]
-          },
-          {
-            "group": "Chat Analytics",
-            "pages": [
-              "api-reference/chat-analytics/overview",
-              "api-reference/chat-analytics/volume",
-              "api-reference/chat-analytics/response-time",
-              "api-reference/chat-analytics/top-chats",
-              "api-reference/chat-analytics/ai-metrics"
-            ]
+            "tab": "Changelog",
+            "pages": ["ai/changelog"]
           }
         ]
       }

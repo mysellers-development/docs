@@ -1,0 +1,101 @@
+---
+title: "Base de Conhecimento"
+description: "Suba documentos da sua empresa e o agente os usa para responder perguntas dos leads com precisao."
+icon: "book-open"
+---
+
+A base de conhecimento e o repositorio de documentos que o agente usa para responder perguntas dos leads. Em vez de depender apenas do que esta configurado no prompt, o agente consulta automaticamente os documentos que voce subiu — catalogos, FAQs, politicas, tabelas de preco, contratos de servico e qualquer outro material relevante.
+
+---
+
+## O que voce pode subir
+
+| Formato | Uso tipico |
+|---------|-----------|
+| **PDF** | Catalogos, contratos, apresentacoes, manuais |
+| **DOCX** | Documentos Word, propostas, termos de uso |
+| **TXT** | FAQs, scripts de atendimento, textos simples |
+| **CSV** | Tabelas de preco, listas de produtos, dados estruturados |
+| **MD** | Documentacao interna em Markdown |
+
+Tamanho maximo por arquivo: **10 MB**
+
+---
+
+## Como o agente usa os documentos
+
+Quando um lead faz uma pergunta, o agente busca automaticamente na base de conhecimento antes de responder. Voce nao precisa instruir o agente a "consultar o catalogo" — ele faz isso sozinho sempre que a pergunta parece precisar de informacoes especificas.
+
+```
+Lead: "Qual e a politica de cancelamento de voces?"
+Agente: [busca nos documentos] → responde com base no documento de politicas enviado
+```
+
+---
+
+## Como funciona a busca
+
+O sistema usa **busca hibrida**, que combina dois metodos complementares:
+
+<CardGroup cols={2}>
+  <Card title="Busca semantica" icon="brain">
+    Entende o **significado** da pergunta, mesmo que o lead use palavras diferentes das que estao no documento. Funciona bem para perguntas abertas e sinonimos.
+  </Card>
+  <Card title="Busca por palavras-chave" icon="magnifying-glass">
+    Localiza **termos exatos**, como nomes de produtos, numeros, siglas e termos tecnicos. Funciona bem quando o lead usa o nome exato de algo.
+  </Card>
+</CardGroup>
+
+A combinacao dos dois metodos garante boas respostas tanto para perguntas abertas quanto para buscas por termos especificos.
+
+---
+
+## Como subir documentos
+
+<Steps>
+  <Step title="Acesse o painel MySellers">
+    Va ate a secao de configuracao do agente ou da instancia.
+  </Step>
+  <Step title="Acesse a Base de Conhecimento">
+    Localize a aba ou secao de documentos/base de conhecimento.
+  </Step>
+  <Step title="Faca o upload do arquivo">
+    Selecione o arquivo (PDF, DOCX, TXT, CSV ou MD) e envie. O tamanho maximo e 10 MB por arquivo.
+  </Step>
+  <Step title="Aguarde o processamento">
+    O documento e processado automaticamente. Em alguns segundos ja esta disponivel para o agente.
+  </Step>
+</Steps>
+
+<Tip>
+  Documentos mais focados geram respostas mais precisas. Em vez de um PDF enorme com tudo, prefira arquivos separados por tema: um para precos, um para politicas, um para o catalogo de produtos.
+</Tip>
+
+---
+
+## Boas praticas
+
+<AccordionGroup>
+  <Accordion title="Use documentos atualizados">
+    O agente responde com base no que esta na base. Se um preco ou politica mudar, atualize o documento correspondente para evitar respostas desatualizadas.
+  </Accordion>
+  <Accordion title="PDFs protegidos por senha nao funcionam">
+    Documentos com protecao por senha nao podem ser lidos pelo agente. Remova a protecao antes de subir.
+  </Accordion>
+  <Accordion title="Textos escaneados (imagens em PDF) tem limitacoes">
+    PDFs que sao apenas fotos de documentos (sem texto real) podem nao ser processados corretamente. Prefira PDFs com texto selecionavel.
+  </Accordion>
+  <Accordion title="A base e compartilhada por workspace">
+    Todos os agentes do mesmo workspace tem acesso aos mesmos documentos. Voce nao precisa subir o mesmo arquivo para cada agente separadamente.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Gerenciar documentos
+
+Voce pode listar, visualizar e remover documentos no painel MySellers a qualquer momento. Documentos removidos deixam de ser usados pelo agente imediatamente.
+
+<Warning>
+  Remover um documento e permanente. Se precisar atualizar o conteudo, remova o arquivo antigo e suba a versao nova.
+</Warning>
