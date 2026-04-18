@@ -1,0 +1,8 @@
+---
+title: 'Listar chats de um workspace (otimizado)'
+openapi: 'GET /chats/workspace/{workspace_id}/optimized'
+---
+
+<Tip>
+  Endpoint otimizado (ARCH-053) que retorna `unreadCount` e `lastMessage` em uma unica query, evitando N+1. Aceita filtros por `status`, `search`, `lastMessageMinutes`, `campaignId` e `awaitingReply`.
+</Tip>

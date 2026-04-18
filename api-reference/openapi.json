@@ -2192,6 +2192,2908 @@
         }
       }
     },
+    "/phone-numbers": {
+      "get": {
+        "tags": [
+          "Phone Numbers"
+        ],
+        "summary": "Listar telefones",
+        "description": "Lista telefones com filtros opcionais. Prioridade: lead_id > user_id > workspace_id > number.",
+        "operationId": "listPhoneNumbers",
+        "parameters": [
+          {
+            "name": "lead_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "workspace_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "number",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de telefones",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PhoneNumber"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Phone Numbers"
+        ],
+        "summary": "Cadastrar telefone",
+        "operationId": "createPhoneNumber",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePhoneNumberRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Telefone criado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhoneNumber"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/phone-numbers/{id}": {
+      "get": {
+        "tags": [
+          "Phone Numbers"
+        ],
+        "summary": "Buscar telefone por ID",
+        "operationId": "getPhoneNumberById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Telefone encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhoneNumber"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acesso negado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Nao encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Phone Numbers"
+        ],
+        "summary": "Atualizar telefone",
+        "operationId": "updatePhoneNumber",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePhoneNumberRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Telefone atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhoneNumber"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Phone Numbers"
+        ],
+        "summary": "Deletar telefone",
+        "operationId": "deletePhoneNumber",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deletado"
+          }
+        }
+      }
+    },
+    "/phone-numbers/{id}/primary": {
+      "patch": {
+        "tags": [
+          "Phone Numbers"
+        ],
+        "summary": "Definir telefone como primario",
+        "operationId": "setPhoneNumberPrimary",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Telefone marcado como primario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhoneNumber"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/phone-numbers/lead/{lead_id}": {
+      "get": {
+        "tags": [
+          "Phone Numbers"
+        ],
+        "summary": "Listar telefones por lead",
+        "operationId": "listPhoneNumbersByLead",
+        "parameters": [
+          {
+            "name": "lead_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de telefones",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PhoneNumber"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/phone-numbers/user/{user_id}": {
+      "get": {
+        "tags": [
+          "Phone Numbers"
+        ],
+        "summary": "Listar telefones por user",
+        "operationId": "listPhoneNumbersByUser",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de telefones",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PhoneNumber"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/phone-numbers/workspace/{workspace_id}": {
+      "get": {
+        "tags": [
+          "Phone Numbers"
+        ],
+        "summary": "Listar telefones por workspace",
+        "operationId": "listPhoneNumbersByWorkspace",
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de telefones",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PhoneNumber"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/phone-numbers/instance/{instance_id}": {
+      "get": {
+        "tags": [
+          "Phone Numbers"
+        ],
+        "summary": "Listar telefones por instance",
+        "operationId": "listPhoneNumbersByInstance",
+        "parameters": [
+          {
+            "name": "instance_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de telefones",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PhoneNumber"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/phone-numbers/number/{number}": {
+      "get": {
+        "tags": [
+          "Phone Numbers"
+        ],
+        "summary": "Buscar telefone pelo numero",
+        "operationId": "findPhoneNumberByNumber",
+        "parameters": [
+          {
+            "name": "number",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "5511999998888"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Telefone(s) encontrado(s)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PhoneNumber"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats": {
+      "get": {
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Listar chats",
+        "operationId": "listChats",
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada de chats",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedChats"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Criar chat",
+        "operationId": "createChat",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "numberId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "workspaceId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "startedBy": {
+                    "type": "string",
+                    "enum": [
+                      "lead",
+                      "agent",
+                      "system"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Chat criado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Chat"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/{id}": {
+      "get": {
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Buscar chat por ID",
+        "operationId": "getChatById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "includeMessages",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Chat"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Atualizar chat",
+        "operationId": "updateChat",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Chat atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Chat"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Deletar chat",
+        "operationId": "deleteChat",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deletado"
+          }
+        }
+      }
+    },
+    "/chats/{id}/history": {
+      "get": {
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Historico normalizado do chat",
+        "description": "Retorna as ultimas mensagens do chat em formato normalizado (merge de providers).",
+        "operationId": "getChatHistory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 30
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Historico",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UnifiedMessage"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/{id}/ai-processed": {
+      "patch": {
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Marcar chat como processado pela IA",
+        "operationId": "markChatAiProcessed",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "workerStartTime"
+                ],
+                "properties": {
+                  "workerStartTime": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "affected": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/{id}/ai-status": {
+      "patch": {
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Habilitar ou desabilitar IA no chat",
+        "operationId": "updateChatAiStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "isAiEnabled"
+                ],
+                "properties": {
+                  "isAiEnabled": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Chat"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/{id}/close": {
+      "patch": {
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Fechar chat",
+        "operationId": "closeChat",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Chat"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/{id}/archive": {
+      "patch": {
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Arquivar chat",
+        "operationId": "archiveChat",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Chat"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/{id}/reopen": {
+      "patch": {
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Reabrir chat",
+        "operationId": "reopenChat",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Chat"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/{id}/presence": {
+      "post": {
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Enviar presenca no chat",
+        "operationId": "sendChatPresence",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "presence"
+                ],
+                "properties": {
+                  "presence": {
+                    "type": "string",
+                    "enum": [
+                      "composing",
+                      "recording",
+                      "paused"
+                    ]
+                  },
+                  "delay": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Enviado"
+          }
+        }
+      }
+    },
+    "/chats/workspace/{workspace_id}": {
+      "get": {
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Listar chats de um workspace",
+        "operationId": "listChatsByWorkspace",
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedChats"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/workspace/{workspace_id}/open": {
+      "get": {
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Listar chats abertos",
+        "operationId": "listOpenChatsByWorkspace",
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedChats"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/workspace/{workspace_id}/status/{status}": {
+      "get": {
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Listar chats por status",
+        "operationId": "listChatsByStatus",
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "status",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "open",
+                "closed",
+                "archived"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedChats"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/workspace/{workspace_id}/optimized": {
+      "get": {
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Listar chats de um workspace (otimizado)",
+        "operationId": "listChatsByWorkspaceOptimized",
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "open",
+                "closed",
+                "archived"
+              ]
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lastMessageMinutes",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "campaignId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "awaitingReply",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista otimizada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedChats"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/instance/{instance_id}": {
+      "get": {
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Listar chats por instancia",
+        "operationId": "listChatsByInstance",
+        "parameters": [
+          {
+            "name": "instance_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "workspace_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "open",
+                "closed",
+                "archived"
+              ]
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lastMessageMinutes",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "campaignId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "awaitingReply",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedChats"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/cloud-api-instance/{instance_id}": {
+      "get": {
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Listar chats por instancia Cloud API",
+        "operationId": "listChatsByCloudApiInstance",
+        "parameters": [
+          {
+            "name": "instance_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "workspace_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "open",
+                "closed",
+                "archived"
+              ]
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lastMessageMinutes",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "campaignId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "awaitingReply",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedChats"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/phone-number/{number_id}": {
+      "get": {
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Listar chats de um telefone",
+        "operationId": "listChatsByPhoneNumber",
+        "parameters": [
+          {
+            "name": "number_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedChats"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/ai-status/{phone}": {
+      "get": {
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Status da IA para um telefone",
+        "operationId": "getAiStatusByPhone",
+        "parameters": [
+          {
+            "name": "phone",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "5511999998888"
+          },
+          {
+            "name": "workspaceId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/needs-analysis": {
+      "get": {
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Chats que precisam de analise pelo System Agent",
+        "operationId": "listChatsNeedsAnalysis",
+        "parameters": [
+          {
+            "name": "workspaceIds",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "IDs de workspace separados por virgula"
+          },
+          {
+            "name": "idleSeconds",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 120
+            }
+          },
+          {
+            "name": "minMessages",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 3
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 25
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de chats",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Chat"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/unified-messages/{id}": {
+      "get": {
+        "tags": [
+          "Unified Messages"
+        ],
+        "summary": "Buscar mensagem por ID",
+        "operationId": "getUnifiedMessageById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mensagem",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnifiedMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/unified-messages/chat/{chatId}": {
+      "get": {
+        "tags": [
+          "Unified Messages"
+        ],
+        "summary": "Listar mensagens de um chat",
+        "operationId": "listUnifiedMessagesByChat",
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 50
+            }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Cursor: retorna mensagens anteriores a este ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mensagens paginadas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedUnifiedMessages"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/unified-messages/chat/{chatId}/count": {
+      "get": {
+        "tags": [
+          "Unified Messages"
+        ],
+        "summary": "Contar mensagens de um chat",
+        "operationId": "countUnifiedMessagesByChat",
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Total",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/unified-messages/chat/{chatId}/unread": {
+      "get": {
+        "tags": [
+          "Unified Messages"
+        ],
+        "summary": "Contar mensagens nao lidas",
+        "operationId": "countUnreadUnifiedMessages",
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Nao lidas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/unified-messages/chat/{chatId}/read": {
+      "patch": {
+        "tags": [
+          "Unified Messages"
+        ],
+        "summary": "Marcar mensagens como lidas",
+        "operationId": "markChatMessagesAsRead",
+        "parameters": [
+          {
+            "name": "chatId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Atualizado"
+          }
+        }
+      }
+    },
+    "/unified-messages/{id}/status": {
+      "patch": {
+        "tags": [
+          "Unified Messages"
+        ],
+        "summary": "Atualizar status de uma mensagem",
+        "operationId": "updateUnifiedMessageStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "sent",
+                "delivered",
+                "read",
+                "failed"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnifiedMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/lead-history": {
+      "post": {
+        "tags": [
+          "Lead History"
+        ],
+        "summary": "Criar registro de historico",
+        "operationId": "createLeadHistory",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLeadHistoryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Criado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadHistory"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/lead-history/{id}": {
+      "get": {
+        "tags": [
+          "Lead History"
+        ],
+        "summary": "Buscar registro por ID",
+        "operationId": "getLeadHistoryById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Registro",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadHistory"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/lead-history/workspace/{workspaceId}": {
+      "get": {
+        "tags": [
+          "Lead History"
+        ],
+        "summary": "Listar historico do workspace",
+        "operationId": "listLeadHistoryByWorkspace",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "interactionType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "campaignId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "agentId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "referringLeadId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/LeadHistory"
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "page": {
+                      "type": "integer"
+                    },
+                    "limit": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/lead-history/workspace/{workspaceId}/lead/{leadId}": {
+      "get": {
+        "tags": [
+          "Lead History"
+        ],
+        "summary": "Timeline de um lead",
+        "operationId": "getLeadTimeline",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "leadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "interactionType",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Timeline",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LeadHistory"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/lead-history/deal/{dealId}": {
+      "get": {
+        "tags": [
+          "Lead History"
+        ],
+        "summary": "Historico de uma oportunidade",
+        "operationId": "listLeadHistoryByDeal",
+        "parameters": [
+          {
+            "name": "dealId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "workspace_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Historico do deal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LeadHistory"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances": {
+      "get": {
+        "tags": [
+          "WhatsApp Instances"
+        ],
+        "summary": "Listar instancias",
+        "operationId": "listInstances",
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Instance"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/{id}": {
+      "get": {
+        "tags": [
+          "WhatsApp Instances"
+        ],
+        "summary": "Buscar instancia por ID",
+        "operationId": "getInstanceById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Instancia",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Instance"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/workspace/{workspace_id}": {
+      "get": {
+        "tags": [
+          "WhatsApp Instances"
+        ],
+        "summary": "Listar instancias de um workspace",
+        "operationId": "listInstancesByWorkspace",
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Instance"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/workspace/{workspace_id}/connected": {
+      "get": {
+        "tags": [
+          "WhatsApp Instances"
+        ],
+        "summary": "Listar instancias conectadas do workspace",
+        "operationId": "listConnectedInstancesByWorkspace",
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Instance"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/name/{name}": {
+      "get": {
+        "tags": [
+          "WhatsApp Instances"
+        ],
+        "summary": "Buscar instancia por nome",
+        "operationId": "findInstanceByName",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "workspace_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Instancia",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Instance"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/agent/{ai_agent_id}": {
+      "get": {
+        "tags": [
+          "WhatsApp Instances"
+        ],
+        "summary": "Listar instancias de um agente de IA",
+        "operationId": "listInstancesByAiAgent",
+        "parameters": [
+          {
+            "name": "ai_agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Instance"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/uazapi/create": {
+      "post": {
+        "tags": [
+          "WhatsApp Instances"
+        ],
+        "summary": "Criar instancia na UAZAPI",
+        "operationId": "createInstanceWithUazapi",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "workspaceId"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Sera sanitizado automaticamente (lowercase, sem acentos)"
+                  },
+                  "workspaceId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "systemName": {
+                    "type": "string"
+                  },
+                  "aiAgentId": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Criada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Instance"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/{id}/whatsapp/status": {
+      "get": {
+        "tags": [
+          "WhatsApp Instances"
+        ],
+        "summary": "Verificar status da instancia na UAZAPI",
+        "operationId": "checkInstanceWhatsappStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/{id}/whatsapp/connect": {
+      "post": {
+        "tags": [
+          "WhatsApp Instances"
+        ],
+        "summary": "Conectar instancia ao WhatsApp",
+        "operationId": "connectInstanceToWhatsapp",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phone": {
+                    "type": "string",
+                    "description": "Opcional. Se informado, gera paircode em vez de QR"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "QR/paircode",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/{id}/whatsapp/disconnect": {
+      "post": {
+        "tags": [
+          "WhatsApp Instances"
+        ],
+        "summary": "Desconectar instancia do WhatsApp",
+        "operationId": "disconnectInstanceFromWhatsapp",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reason": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Desconectado"
+          }
+        }
+      }
+    },
+    "/instances/sync/{workspace_id}": {
+      "post": {
+        "tags": [
+          "WhatsApp Instances"
+        ],
+        "summary": "Sincronizar instancias do workspace com UAZAPI",
+        "operationId": "syncInstancesFromUazapi",
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sincronizado"
+          }
+        }
+      }
+    },
+    "/instances/{id}/webhook": {
+      "get": {
+        "tags": [
+          "WhatsApp Instances"
+        ],
+        "summary": "Obter configuracao do webhook",
+        "operationId": "getInstanceWebhook",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Webhook",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "WhatsApp Instances"
+        ],
+        "summary": "Configurar webhook da instancia",
+        "operationId": "setInstanceWebhook",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Configurado"
+          }
+        }
+      }
+    },
+    "/instances/{id}/message/text": {
+      "post": {
+        "tags": [
+          "WhatsApp Instances"
+        ],
+        "summary": "Enviar mensagem de texto via instancia",
+        "operationId": "sendTextMessageViaInstance",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "number",
+                  "text"
+                ],
+                "properties": {
+                  "number": {
+                    "type": "string"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Enviada"
+          }
+        }
+      }
+    },
+    "/instances/{id}/message/media": {
+      "post": {
+        "tags": [
+          "WhatsApp Instances"
+        ],
+        "summary": "Enviar midia via instancia",
+        "operationId": "sendMediaMessageViaInstance",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Enviada"
+          }
+        }
+      }
+    },
+    "/instances/{id}/check-numbers": {
+      "post": {
+        "tags": [
+          "WhatsApp Instances"
+        ],
+        "summary": "Verificar se numeros estao no WhatsApp",
+        "operationId": "checkNumbersOnInstance",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "numbers"
+                ],
+                "properties": {
+                  "numbers": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resultado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instances/{id}/uazapi": {
+      "delete": {
+        "tags": [
+          "WhatsApp Instances"
+        ],
+        "summary": "Deletar instancia (UAZAPI + banco)",
+        "operationId": "deleteInstanceWithUazapi",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deletada"
+          }
+        }
+      }
+    },
+    "/chat-analytics/overview": {
+      "get": {
+        "tags": [
+          "Chat Analytics"
+        ],
+        "summary": "Visao geral de chats",
+        "operationId": "getChatAnalyticsOverview",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metricas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chat-analytics/volume": {
+      "get": {
+        "tags": [
+          "Chat Analytics"
+        ],
+        "summary": "Volume de mensagens por dia",
+        "operationId": "getChatAnalyticsVolume",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 30
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Serie temporal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "date": {
+                        "type": "string",
+                        "format": "date"
+                      },
+                      "count": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chat-analytics/response-time": {
+      "get": {
+        "tags": [
+          "Chat Analytics"
+        ],
+        "summary": "Metricas de tempo de resposta",
+        "operationId": "getChatAnalyticsResponseTime",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metricas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chat-analytics/top-chats": {
+      "get": {
+        "tags": [
+          "Chat Analytics"
+        ],
+        "summary": "Top chats por volume",
+        "operationId": "getChatAnalyticsTopChats",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Top chats",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chat-analytics/ai-metrics": {
+      "get": {
+        "tags": [
+          "Chat Analytics"
+        ],
+        "summary": "Metricas de IA",
+        "operationId": "getChatAnalyticsAiMetrics",
+        "parameters": [
+          {
+            "name": "workspaceId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metricas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/integrations/dados-fazenda/pre-sale-check": {
       "post": {
         "tags": [
@@ -3619,6 +6521,670 @@
           "error": {
             "type": "string",
             "description": "Tipo do erro"
+          }
+        }
+      },
+      "PhoneNumber": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "number": {
+            "type": "string",
+            "example": "5511999998888"
+          },
+          "internationalNumber": {
+            "type": "string"
+          },
+          "remoteJid": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "mobile",
+              "whatsapp",
+              "landline",
+              "voip",
+              "fax",
+              "other"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive",
+              "blocked",
+              "invalid"
+            ]
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "isPrimary": {
+            "type": "boolean"
+          },
+          "atendimentoFinalizado": {
+            "type": "boolean"
+          },
+          "leadId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "workspaceId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "instanceId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "aiAgentId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "responseId": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CreatePhoneNumberRequest": {
+        "type": "object",
+        "required": [
+          "number"
+        ],
+        "properties": {
+          "number": {
+            "type": "string"
+          },
+          "internationalNumber": {
+            "type": "string"
+          },
+          "remoteJid": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "mobile",
+              "whatsapp",
+              "landline",
+              "voip",
+              "fax",
+              "other"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive",
+              "blocked",
+              "invalid"
+            ]
+          },
+          "isPrimary": {
+            "type": "boolean"
+          },
+          "leadId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "workspaceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "instanceId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "UpdatePhoneNumberRequest": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "string"
+          },
+          "internationalNumber": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "mobile",
+              "whatsapp",
+              "landline",
+              "voip",
+              "fax",
+              "other"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive",
+              "blocked",
+              "invalid"
+            ]
+          },
+          "isPrimary": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Chat": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "numberId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "workspaceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "instanceId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "cloudApiInstanceId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "facebookPageId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "startedBy": {
+            "type": "string",
+            "enum": [
+              "lead",
+              "agent",
+              "system"
+            ]
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed",
+              "archived"
+            ]
+          },
+          "sessionStatus": {
+            "type": "string",
+            "enum": [
+              "active",
+              "expired",
+              "none"
+            ]
+          },
+          "lastMessageAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "lastLeadMessageAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "lastCustomerMessageAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "lastAiProcessedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "isAiEnabled": {
+            "type": "boolean"
+          },
+          "unreadCount": {
+            "type": "integer"
+          },
+          "lastMessageContent": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastMessageId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "PaginatedChats": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Chat"
+            }
+          },
+          "total": {
+            "type": "integer"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "limit": {
+            "type": "integer"
+          }
+        }
+      },
+      "UnifiedMessage": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "chatId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "workspaceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "uazapi",
+              "cloud_api",
+              "facebook"
+            ]
+          },
+          "externalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "inbound",
+              "outbound"
+            ]
+          },
+          "senderType": {
+            "type": "string",
+            "enum": [
+              "lead",
+              "agent",
+              "ai",
+              "system"
+            ]
+          },
+          "senderId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "contentType": {
+            "type": "string",
+            "enum": [
+              "text",
+              "image",
+              "audio",
+              "video",
+              "document",
+              "sticker",
+              "location",
+              "contacts",
+              "template",
+              "interactive",
+              "reaction"
+            ]
+          },
+          "content": {
+            "type": "string",
+            "nullable": true
+          },
+          "metadata": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": true
+          },
+          "mediaUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "mediaMimeType": {
+            "type": "string",
+            "nullable": true
+          },
+          "mediaFilename": {
+            "type": "string",
+            "nullable": true
+          },
+          "mediaFileSize": {
+            "type": "integer",
+            "nullable": true
+          },
+          "thumbnailUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "templateName": {
+            "type": "string",
+            "nullable": true
+          },
+          "templateLanguage": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "sent",
+              "delivered",
+              "read",
+              "failed"
+            ]
+          },
+          "statusUpdatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "errorCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "errorMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "replyToId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "forwardedFromId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "isForwarded": {
+            "type": "boolean"
+          },
+          "campaignId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "PaginatedUnifiedMessages": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UnifiedMessage"
+            }
+          },
+          "total": {
+            "type": "integer"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "limit": {
+            "type": "integer"
+          }
+        }
+      },
+      "AiStatusResponse": {
+        "type": "object",
+        "properties": {
+          "isAiEnabled": {
+            "type": "boolean"
+          },
+          "chatId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "chatStatus": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed",
+              "archived"
+            ],
+            "nullable": true
+          }
+        }
+      },
+      "LeadHistory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "leadId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "workspaceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "dealId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "interactionType": {
+            "type": "string",
+            "description": "Tipo da interacao (ex: indicacao_recebida, agendamento_confirmado)"
+          },
+          "channel": {
+            "type": "string",
+            "description": "Canal (ex: whatsapp, email, campanha)"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "metadata": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": true
+          },
+          "campaignId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "agentId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "referringLeadId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CreateLeadHistoryRequest": {
+        "type": "object",
+        "required": [
+          "leadId",
+          "workspaceId",
+          "interactionType"
+        ],
+        "properties": {
+          "leadId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "workspaceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "dealId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "interactionType": {
+            "type": "string"
+          },
+          "channel": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "campaignId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "agentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "referringLeadId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "Instance": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "systemName": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string"
+          },
+          "workspaceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "aiAgentId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "externalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "qrcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "paircode": {
+            "type": "string",
+            "nullable": true
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "connectedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "disconnectedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },

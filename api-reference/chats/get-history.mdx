@@ -1,0 +1,8 @@
+---
+title: 'Historico normalizado do chat'
+openapi: 'GET /chats/{id}/history'
+---
+
+<Tip>
+  Retorna as ultimas mensagens do chat vindas da tabela `unified_messages`, fazendo **merge** de todos os providers (UAZAPI, Cloud API, Facebook) em formato unico. Use `?limit=30` para ajustar a quantidade.
+</Tip>
