@@ -5100,7 +5100,7 @@
           "Integrations"
         ],
         "summary": "Verificar atendimento pre-conversao",
-        "description": "Recebe uma lista de telefones + datas de primeiro pagamento e retorna, para cada telefone, se houve atendimento (IA ou humano) antes da data informada.\n\n**Workspace scope:** o workspaceId e inferido automaticamente da API Key.\n\n**Timezone:** datas sem offset sao interpretadas como `America/Sao_Paulo` (UTC-3).",
+        "description": "Recebe uma lista de telefones + `funnelId` + `stageId` e retorna, para cada telefone, se houve atendimento (IA ou humano) ANTES do deal entrar no stage alvo.\n\n**Workspace scope:** inferido da API Key. `stageId` precisa pertencer ao `funnelId` no workspace correspondente.\n\n**Timezone:** `stageEnteredAt` sempre em UTC (ISO 8601 com sufixo Z).",
         "operationId": "preSaleCheck",
         "security": [
           {
@@ -5116,17 +5116,14 @@
               },
               "examples": {
                 "default": {
-                  "summary": "Dois clientes para checar",
+                  "summary": "Tres clientes para checar",
                   "value": {
-                    "checks": [
-                      {
-                        "phone": "5551999998888",
-                        "firstPaymentDate": "2026-03-10"
-                      },
-                      {
-                        "phone": "5548988887777",
-                        "firstPaymentDate": "2026-02-22"
-                      }
+                    "funnelId": "b56f3d7d-584b-4f86-aaf1-e957beab7651",
+                    "stageId": "49e60e1c-dcbf-4f2b-8064-e58a511844ca",
+                    "phones": [
+                      "5551999998888",
+                      "5548988887777",
+                      "5511988776655"
                     ]
                   }
                 }
@@ -5148,10 +5145,16 @@
                       "results": [
                         {
                           "phone": "5551999998888",
+                          "inStage": true,
+                          "stageEnteredAt": "2026-03-10T17:35:28.563Z",
                           "hadPreSaleInteraction": true,
+                          "hadAiInteraction": true,
+                          "hadHumanInteraction": true,
+                          "aiMessageCount": 18,
+                          "humanMessageCount": 9,
+                          "messageCount": 27,
                           "firstInteractionAt": "2026-01-04T14:22:10.000Z",
                           "lastInteractionAt": "2026-03-09T18:00:05.000Z",
-                          "messageCount": 27,
                           "channels": [
                             "uazapi",
                             "cloud_api"
@@ -5159,10 +5162,32 @@
                         },
                         {
                           "phone": "5548988887777",
+                          "inStage": true,
+                          "stageEnteredAt": "2026-02-22T10:00:00.000Z",
+                          "hadPreSaleInteraction": true,
+                          "hadAiInteraction": true,
+                          "hadHumanInteraction": false,
+                          "aiMessageCount": 12,
+                          "humanMessageCount": 0,
+                          "messageCount": 12,
+                          "firstInteractionAt": "2026-02-01T10:00:00.000Z",
+                          "lastInteractionAt": "2026-02-20T16:00:00.000Z",
+                          "channels": [
+                            "uazapi"
+                          ]
+                        },
+                        {
+                          "phone": "5511988776655",
+                          "inStage": false,
+                          "stageEnteredAt": null,
                           "hadPreSaleInteraction": false,
+                          "hadAiInteraction": false,
+                          "hadHumanInteraction": false,
+                          "aiMessageCount": 0,
+                          "humanMessageCount": 0,
+                          "messageCount": 0,
                           "firstInteractionAt": null,
                           "lastInteractionAt": null,
-                          "messageCount": 0,
                           "channels": []
                         }
                       ]
@@ -5173,7 +5198,7 @@
             }
           },
           "400": {
-            "description": "Dados invalidos (ex: mais de 500 telefones, formato de data incorreto)",
+            "description": "Dados invalidos (ex: mais de 500 telefones, UUID malformado)",
             "content": {
               "application/json": {
                 "schema": {
@@ -5184,6 +5209,16 @@
           },
           "403": {
             "description": "API Key sem workspace associado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "`stageId` nao pertence ao `funnelId` neste workspace",
             "content": {
               "application/json": {
                 "schema": {
@@ -7188,40 +7223,36 @@
           }
         }
       },
-      "DadosFazendaCheckItem": {
-        "type": "object",
-        "required": [
-          "phone",
-          "firstPaymentDate"
-        ],
-        "properties": {
-          "phone": {
-            "type": "string",
-            "minLength": 8,
-            "maxLength": 20,
-            "description": "Telefone do cliente. Caracteres nao numericos sao removidos automaticamente (ex: `+55 (51) 99999-8888` vira `5551999998888`).",
-            "example": "5551999998888"
-          },
-          "firstPaymentDate": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Data do primeiro pagamento em ISO 8601. Se passar so a data (`2026-03-10`), e interpretada como 00:00 em America/Sao_Paulo.",
-            "example": "2026-03-10"
-          }
-        }
-      },
       "PreSaleCheckRequest": {
         "type": "object",
         "required": [
-          "checks"
+          "funnelId",
+          "stageId",
+          "phones"
         ],
         "properties": {
-          "checks": {
+          "funnelId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID do funil. Fornecido pelo MySellers separadamente.",
+            "example": "b56f3d7d-584b-4f86-aaf1-e957beab7651"
+          },
+          "stageId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID do estagio alvo (ex: \"Assinante\"). Precisa pertencer ao funnelId.",
+            "example": "49e60e1c-dcbf-4f2b-8064-e58a511844ca"
+          },
+          "phones": {
             "type": "array",
             "minItems": 1,
             "maxItems": 500,
             "items": {
-              "$ref": "#/components/schemas/DadosFazendaCheckItem"
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 20,
+              "description": "Telefone em qualquer formato. Caracteres nao numericos sao removidos.",
+              "example": "5551999998888"
             }
           }
         }
@@ -7234,25 +7265,51 @@
             "description": "Telefone normalizado (apenas digitos).",
             "example": "5551999998888"
           },
+          "inStage": {
+            "type": "boolean",
+            "description": "True se o deal do lead esta atualmente no stageId informado."
+          },
+          "stageEnteredAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Timestamp em UTC da ultima entrada do deal no stage. `null` se `inStage=false`."
+          },
           "hadPreSaleInteraction": {
             "type": "boolean",
-            "description": "true se houve pelo menos uma mensagem com sender_type ai ou agent antes de firstPaymentDate."
+            "description": "Equivale a `hadAiInteraction OR hadHumanInteraction`. Indicador agregado."
+          },
+          "hadAiInteraction": {
+            "type": "boolean",
+            "description": "True se houve pelo menos 1 mensagem com sender_type=ai antes de stageEnteredAt."
+          },
+          "hadHumanInteraction": {
+            "type": "boolean",
+            "description": "True se houve pelo menos 1 mensagem com sender_type=agent antes de stageEnteredAt."
+          },
+          "aiMessageCount": {
+            "type": "integer",
+            "description": "Total de mensagens da IA antes da entrada no stage."
+          },
+          "humanMessageCount": {
+            "type": "integer",
+            "description": "Total de mensagens do atendente humano antes da entrada no stage."
+          },
+          "messageCount": {
+            "type": "integer",
+            "description": "Soma de `aiMessageCount + humanMessageCount`."
           },
           "firstInteractionAt": {
             "type": "string",
             "format": "date-time",
             "nullable": true,
-            "description": "Data da primeira interacao pre-pagamento. `null` se nao houve."
+            "description": "Data da primeira interacao pre-stage. `null` se nao houve."
           },
           "lastInteractionAt": {
             "type": "string",
             "format": "date-time",
             "nullable": true,
-            "description": "Data da ultima interacao pre-pagamento. `null` se nao houve."
-          },
-          "messageCount": {
-            "type": "integer",
-            "description": "Total de mensagens (IA + humano) antes do primeiro pagamento."
+            "description": "Data da ultima interacao pre-stage. `null` se nao houve."
           },
           "channels": {
             "type": "array",
@@ -7264,7 +7321,7 @@
                 "facebook"
               ]
             },
-            "description": "Canais distintos onde houve interacao pre-pagamento."
+            "description": "Canais distintos onde houve interacao pre-stage."
           }
         }
       },

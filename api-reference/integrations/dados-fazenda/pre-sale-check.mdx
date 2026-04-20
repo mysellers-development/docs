@@ -4,39 +4,49 @@ openapi: 'POST /integrations/dados-fazenda/pre-sale-check'
 ---
 
 <Tip>
-  **Caso de uso:** voce tem uma lista de clientes que ja pagaram e quer saber quais deles conversaram com a gente (IA ou atendente humano) **antes** do primeiro pagamento. Este endpoint cruza seus telefones + datas com a nossa base de mensagens e retorna, por telefone, se houve atendimento pre-conversao.
+  **Caso de uso:** voce tem uma lista de clientes e quer saber quais deles conversaram com a gente (IA ou atendente humano) **antes** de virarem clientes. Este endpoint identifica "virou cliente" pelo momento em que o deal entrou no estagio alvo do funil — e retorna, por telefone, a agregacao de mensagens anteriores a essa entrada.
 </Tip>
 
 ## Como funciona
 
-Para cada item da lista:
+Para cada telefone da lista:
 
 1. Normalizamos o telefone (removemos `+`, espacos, parenteses, hifens)
-2. Buscamos o telefone na tabela `phone_numbers` do workspace amarrado a sua API Key
-3. Agregamos todas as mensagens em `unified_messages` cujo `created_at < firstPaymentDate` e `sender_type` esteja em `['ai', 'agent']`
-4. Devolvemos a agregacao (primeira data, ultima data, total, canais)
+2. Buscamos o lead pelo telefone no workspace amarrado a sua API Key
+3. Verificamos se o deal desse lead esta **atualmente** no `stageId` informado (e se o stage pertence ao `funnelId`)
+4. Se estiver, pegamos a data da ultima entrada no estagio em `deal_stage_history`
+5. Agregamos mensagens em `unified_messages` cujo `created_at < stageEnteredAt` e `sender_type` em `['ai', 'agent']`
+6. Separamos a contagem por tipo (IA vs humano) e devolvemos tudo
 
-Toda a consulta roda em **uma unica query SQL** usando CTE com `VALUES`, entao o tempo de resposta cresce de forma mais previsivel que fazendo N chamadas separadas.
+Toda a consulta roda em **uma unica query SQL** com CTE + LATERAL, entao o tempo de resposta cresce de forma sub-linear com o tamanho do batch.
 
 ## Autenticacao
 
 <Note>
-  Requer autenticacao via **`x-api-key`** vinculada a um workspace. O `workspaceId` e inferido automaticamente do token (voce nao precisa enviar). Requests sem API Key de workspace recebem `403 Forbidden`.
+  Requer `x-api-key` vinculada a um workspace. O `workspaceId` e inferido automaticamente do token (voce nao precisa enviar). Requests sem API Key de workspace recebem `403 Forbidden`.
 </Note>
 
-## Timezone
+## Validacao de funnelId e stageId
 
 <Warning>
-  O campo `firstPaymentDate` e interpretado como **America/Sao_Paulo (UTC−3)** quando voce passar apenas a data (ex: `"2026-03-10"`).
+  O `stageId` precisa pertencer ao `funnelId` no workspace da API Key. Se nao pertencer (ou se nenhum dos dois existir nesse workspace), o endpoint retorna `404 Not Found`.
 
-  Se voce mandar `"2026-03-10"`, a gente trata como `2026-03-10 00:00:00-03:00`. Para fusos diferentes, envie em ISO 8601 com offset explicito (ex: `"2026-03-10T00:00:00Z"` para UTC).
+  O MySellers te fornece esses UUIDs separadamente — normalmente o `funnelId` e o id do funil da sua jornada e o `stageId` e o id do estagio que marca "virou cliente" (ex: "Assinante", "Ganhou", "Fechado").
 </Warning>
 
 ## Limites
 
 - **Max 500 telefones por request.** Acima disso retorna `400 Bad Request` — quebre em varios requests.
-- **Rate limit padrao da API** (50 req / 10s). Com 500 telefones por request isso da ate 25.000 telefones processados por 10s por API Key.
+- **Rate limit padrao da API** (50 req / 10s). Com 500 telefones por request, ate **25.000 telefones a cada 10 segundos** por API Key.
 - Resposta preserva a **mesma ordem** da lista de entrada.
+
+## Como interpretar a resposta
+
+- **`inStage: true`** — deal do lead esta atualmente no estagio alvo. Todos os contadores tem significado.
+- **`inStage: false`** — deal nao esta no estagio (ou lead nao existe). Contadores zerados, datas `null`.
+- **`hadAiInteraction`** — marca clientes que interagiram com a IA antes de virar cliente.
+- **`hadHumanInteraction`** — marca clientes que falaram com atendente humano antes de virar cliente.
+- **`hadPreSaleInteraction`** — `hadAiInteraction OR hadHumanInteraction`. Indicador agregado.
 
 ## Exemplo
 
@@ -45,9 +55,12 @@ curl -X POST https://apiap.mysellers.com.br/integrations/dados-fazenda/pre-sale-
   -H "x-api-key: ms_live_..." \
   -H "Content-Type: application/json" \
   -d '{
-    "checks": [
-      { "phone": "5551999998888", "firstPaymentDate": "2026-03-10" },
-      { "phone": "5548988887777", "firstPaymentDate": "2026-02-22" }
+    "funnelId": "b56f3d7d-584b-4f86-aaf1-e957beab7651",
+    "stageId": "49e60e1c-dcbf-4f2b-8064-e58a511844ca",
+    "phones": [
+      "5551999998888",
+      "5548988887777",
+      "5511988776655"
     ]
   }'
 ```
@@ -59,18 +72,44 @@ Resposta:
   "results": [
     {
       "phone": "5551999998888",
+      "inStage": true,
+      "stageEnteredAt": "2026-03-10T17:35:28.563Z",
       "hadPreSaleInteraction": true,
+      "hadAiInteraction": true,
+      "hadHumanInteraction": true,
+      "aiMessageCount": 18,
+      "humanMessageCount": 9,
+      "messageCount": 27,
       "firstInteractionAt": "2026-01-04T14:22:10.000Z",
       "lastInteractionAt": "2026-03-09T18:00:05.000Z",
-      "messageCount": 27,
       "channels": ["uazapi", "cloud_api"]
     },
     {
       "phone": "5548988887777",
+      "inStage": true,
+      "stageEnteredAt": "2026-02-22T10:00:00.000Z",
+      "hadPreSaleInteraction": true,
+      "hadAiInteraction": true,
+      "hadHumanInteraction": false,
+      "aiMessageCount": 12,
+      "humanMessageCount": 0,
+      "messageCount": 12,
+      "firstInteractionAt": "2026-02-01T10:00:00.000Z",
+      "lastInteractionAt": "2026-02-20T16:00:00.000Z",
+      "channels": ["uazapi"]
+    },
+    {
+      "phone": "5511988776655",
+      "inStage": false,
+      "stageEnteredAt": null,
       "hadPreSaleInteraction": false,
+      "hadAiInteraction": false,
+      "hadHumanInteraction": false,
+      "aiMessageCount": 0,
+      "humanMessageCount": 0,
+      "messageCount": 0,
       "firstInteractionAt": null,
       "lastInteractionAt": null,
-      "messageCount": 0,
       "channels": []
     }
   ]
