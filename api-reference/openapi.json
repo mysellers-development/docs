@@ -5229,6 +5229,122 @@
           }
         }
       }
+    },
+    "/integrations/dados-fazenda/chats-with-messages": {
+      "get": {
+        "tags": [
+          "Integrations"
+        ],
+        "summary": "Exportar conversas com mensagens",
+        "description": "Lista chats do workspace autenticado com mensagens embutidas, filtradas por janela de tempo e por quem respondeu (cliente, atendente humano, IA ou sistema). Resposta paginada por cursor.\n\n**Workspace scope:** inferido da API Key.\n\n**Filtros aplicam-se as mensagens:** chats que ficariam vazios apos os filtros sao excluidos da resposta.\n\n**Janela default:** 30 dias. **Maxima:** 365 dias.",
+        "operationId": "getChatsWithMessages",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "description": "Inicio da janela (ISO 8601). Default: agora - 30 dias.",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2026-04-07T00:00:00Z"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "description": "Fim da janela (ISO 8601). Default: agora.",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2026-05-07T23:59:59Z"
+            }
+          },
+          {
+            "name": "senderType",
+            "in": "query",
+            "required": false,
+            "description": "Filtra mensagens por tipo de remetente. CSV — combinar valores separados por virgula. Default: todos.",
+            "schema": {
+              "type": "string",
+              "example": "ai,agent"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "required": false,
+            "description": "Filtra mensagens por direcao. `inbound` = do lead. `outbound` = da empresa. Default: ambos.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "inbound",
+                "outbound"
+              ]
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "description": "ID do ultimo chat da pagina anterior. Use o `meta.nextCursor` da resposta anterior.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Quantidade maxima de chats por pagina. Default 50, maximo 500.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pagina de chats com mensagens embutidas.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatsWithMessagesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Parametros invalidos (ex: janela > 365d, from > to, cursor malformado, senderType invalido)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "API Key sem workspace associado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -7334,6 +7450,185 @@
               "$ref": "#/components/schemas/PreSaleCheckResult"
             },
             "description": "Resultados na mesma ordem da lista de entrada."
+          }
+        }
+      },
+      "ChatMessage": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID da mensagem."
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "inbound",
+              "outbound"
+            ],
+            "description": "`inbound` = do lead pra empresa. `outbound` = da empresa pro lead."
+          },
+          "senderType": {
+            "type": "string",
+            "enum": [
+              "lead",
+              "agent",
+              "ai",
+              "system"
+            ],
+            "description": "Tipo do remetente (granular). `lead` = cliente final, `agent` = atendente humano, `ai` = IA, `system` = mensagem automatica do sistema."
+          },
+          "authorRole": {
+            "type": "string",
+            "enum": [
+              "human",
+              "ai",
+              "system"
+            ],
+            "description": "Categoria simplificada. `lead` e `agent` colapsam em `human`. Atalho pra distinguir IA de humano."
+          },
+          "content": {
+            "type": "string",
+            "nullable": true,
+            "description": "Conteudo de texto da mensagem. `null` quando e so midia."
+          },
+          "contentType": {
+            "type": "string",
+            "enum": [
+              "text",
+              "image",
+              "audio",
+              "video",
+              "document",
+              "sticker",
+              "location",
+              "contacts",
+              "template",
+              "interactive",
+              "reaction",
+              "ptt"
+            ],
+            "description": "Tipo do conteudo principal."
+          },
+          "mediaUrl": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL da midia quando aplicavel. `null` para mensagens de texto."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Quando a mensagem foi criada (UTC)."
+          }
+        }
+      },
+      "ChatWithMessages": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID do chat."
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true,
+            "description": "Telefone do lead (apenas digitos)."
+          },
+          "leadId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "ID do lead vinculado ao chat."
+          },
+          "leadName": {
+            "type": "string",
+            "nullable": true,
+            "description": "Nome completo do lead."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed",
+              "archived"
+            ],
+            "description": "Status atual do chat."
+          },
+          "isAiEnabled": {
+            "type": "boolean",
+            "description": "Se a IA esta habilitada para responder neste chat."
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Quando o chat foi iniciado."
+          },
+          "lastMessageAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Quando a ultima mensagem do chat foi recebida ou enviada."
+          },
+          "totalMessagesInWindow": {
+            "type": "integer",
+            "description": "Total de mensagens deste chat retornadas apos os filtros."
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatMessage"
+            },
+            "description": "Mensagens do chat dentro da janela e que passaram pelos filtros, ordenadas por `createdAt ASC`."
+          }
+        }
+      },
+      "ChatsWithMessagesMeta": {
+        "type": "object",
+        "properties": {
+          "nextCursor": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Cursor pra proxima pagina. `null` quando nao ha mais paginas."
+          },
+          "windowFrom": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Inicio efetivo da janela aplicada."
+          },
+          "windowTo": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Fim efetivo da janela aplicada."
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Limit aplicado nesta pagina."
+          },
+          "returnedChats": {
+            "type": "integer",
+            "description": "Quantidade de chats retornados nesta pagina (apos exclusao de chats sem mensagens)."
+          },
+          "hasMore": {
+            "type": "boolean",
+            "description": "Se existe pagina seguinte. Quando `true`, use `nextCursor`."
+          }
+        }
+      },
+      "ChatsWithMessagesResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatWithMessages"
+            },
+            "description": "Chats da pagina, ordenados por `lastMessageAt DESC`."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ChatsWithMessagesMeta"
           }
         }
       }

@@ -187,7 +187,8 @@
               {
                 "group": "Integrations",
                 "pages": [
-                  "api-reference/integrations/dados-fazenda/pre-sale-check"
+                  "api-reference/integrations/dados-fazenda/pre-sale-check",
+                  "api-reference/integrations/dados-fazenda/chats-with-messages"
                 ]
               }
             ]
