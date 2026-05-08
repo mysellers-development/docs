@@ -78,7 +78,7 @@ O `cursor` e o `id` do ultimo chat da pagina anterior. Mantenha os mesmos `from`
 ### Ultimos 30 dias (default)
 
 ```bash
-curl https://apiap.mysellers.com.br/integrations/dados-fazenda/chats-with-messages \
+curl https://api.mysellers.com.br/integrations/dados-fazenda/chats-with-messages \
   -H "x-api-key: ms_live_..." \
   -G --data-urlencode "limit=50"
 ```
@@ -86,7 +86,7 @@ curl https://apiap.mysellers.com.br/integrations/dados-fazenda/chats-with-messag
 ### 90 dias, so respostas (IA + humano), sem mensagens do lead
 
 ```bash
-curl https://apiap.mysellers.com.br/integrations/dados-fazenda/chats-with-messages \
+curl https://api.mysellers.com.br/integrations/dados-fazenda/chats-with-messages \
   -H "x-api-key: ms_live_..." \
   -G \
   --data-urlencode "from=2026-02-07T00:00:00Z" \
@@ -98,7 +98,7 @@ curl https://apiap.mysellers.com.br/integrations/dados-fazenda/chats-with-messag
 ### Paginar a proxima pagina
 
 ```bash
-curl https://apiap.mysellers.com.br/integrations/dados-fazenda/chats-with-messages \
+curl https://api.mysellers.com.br/integrations/dados-fazenda/chats-with-messages \
   -H "x-api-key: ms_live_..." \
   -G \
   --data-urlencode "from=2026-02-07T00:00:00Z" \
