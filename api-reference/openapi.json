@@ -11,7 +11,7 @@
   },
   "servers": [
     {
-      "url": "https://apiap.mysellers.com.br",
+      "url": "https://api.mysellers.com.br",
       "description": "Production"
     }
   ],
