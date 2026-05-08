@@ -36,6 +36,7 @@ A resposta e paginada por **cursor** — voce nunca recebe tudo num request so. 
 |---|---|---|
 | `senderType` | csv: `lead`, `agent`, `ai`, `system` | So traz mensagens cujo `senderType` esta na lista. Ex: `?senderType=ai,agent` traz so respostas (sem mensagens do lead). |
 | `direction` | `inbound` ou `outbound` | `inbound` = do lead pra empresa. `outbound` = da empresa pro lead (atendente ou IA). |
+| `leadEmail` | email valido | Match exato e case-insensitive no email do lead. Filtro aplicado nos chats — so retorna chats cujo lead tem o email informado. Se nao houver chat com esse email, retorna `data: []`. |
 
 ## Como identificar IA × humano
 
@@ -93,6 +94,15 @@ curl https://api.mysellers.com.br/integrations/dados-fazenda/chats-with-messages
   --data-urlencode "to=2026-05-07T23:59:59Z" \
   --data-urlencode "senderType=ai,agent" \
   --data-urlencode "limit=500"
+```
+
+### So os chats de um email especifico
+
+```bash
+curl https://api.mysellers.com.br/integrations/dados-fazenda/chats-with-messages \
+  -H "x-api-key: ms_live_..." \
+  -G \
+  --data-urlencode "leadEmail=joao@example.com"
 ```
 
 ### Paginar a proxima pagina

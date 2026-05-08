@@ -5290,6 +5290,17 @@
             }
           },
           {
+            "name": "leadEmail",
+            "in": "query",
+            "required": false,
+            "description": "Filtra chats pelo email do lead. Match exato e case-insensitive. Se nao houver chat com esse email, retorna data vazio (sem erro).",
+            "schema": {
+              "type": "string",
+              "format": "email",
+              "example": "joao@example.com"
+            }
+          },
+          {
             "name": "cursor",
             "in": "query",
             "required": false,
