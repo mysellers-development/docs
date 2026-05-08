@@ -7547,6 +7547,12 @@
             "nullable": true,
             "description": "Nome completo do lead."
           },
+          "leadEmail": {
+            "type": "string",
+            "format": "email",
+            "nullable": true,
+            "description": "Email do lead. `null` quando o lead nao tem email cadastrado."
+          },
           "status": {
             "type": "string",
             "enum": [
