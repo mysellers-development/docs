@@ -5301,6 +5301,18 @@
             }
           },
           {
+            "name": "phone",
+            "in": "query",
+            "required": false,
+            "description": "Filtra chats pelo telefone do lead. Match exato apos normalizacao (caracteres nao numericos sao removidos). Aceita qualquer formato. Apos normalizacao precisa ter entre 8 e 20 digitos.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 20,
+              "example": "5551999998888"
+            }
+          },
+          {
             "name": "cursor",
             "in": "query",
             "required": false,

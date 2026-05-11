@@ -37,6 +37,7 @@ A resposta e paginada por **cursor** — voce nunca recebe tudo num request so. 
 | `senderType` | csv: `lead`, `agent`, `ai`, `system` | So traz mensagens cujo `senderType` esta na lista. Ex: `?senderType=ai,agent` traz so respostas (sem mensagens do lead). |
 | `direction` | `inbound` ou `outbound` | `inbound` = do lead pra empresa. `outbound` = da empresa pro lead (atendente ou IA). |
 | `leadEmail` | email valido | Match exato e case-insensitive no email do lead. Filtro aplicado nos chats — so retorna chats cujo lead tem o email informado. Se nao houver chat com esse email, retorna `data: []`. |
+| `phone` | string numerica | Match exato no telefone do lead. Normalizacao automatica: caracteres nao numericos sao removidos do input. Aceita qualquer formato (`+55 (51) 99999-8888`, `5551999998888`, etc). Apos normalizacao precisa ter entre 8 e 20 digitos. Se nao houver chat com esse telefone, retorna `data: []`. |
 
 ## Como identificar IA × humano
 
@@ -104,6 +105,17 @@ curl https://api.mysellers.com.br/integrations/dados-fazenda/chats-with-messages
   -G \
   --data-urlencode "leadEmail=joao@example.com"
 ```
+
+### So os chats de um telefone especifico
+
+```bash
+curl https://api.mysellers.com.br/integrations/dados-fazenda/chats-with-messages \
+  -H "x-api-key: ms_live_..." \
+  -G \
+  --data-urlencode "phone=5551999998888"
+```
+
+> Tambem aceita formato com mascara — `phone=+55 (51) 99999-8888` resulta na mesma busca. Caracteres nao numericos sao removidos no servidor.
 
 ### Paginar a proxima pagina
 
