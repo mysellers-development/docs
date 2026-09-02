@@ -1,0 +1,12 @@
+---
+title: 'Deletar empresas em massa'
+openapi: 'POST /enterprises/bulk-delete'
+---
+
+<Warning>
+  Esta acao e **irreversivel**. Maximo de 100 IDs por requisicao.
+</Warning>
+
+<Note>
+  O campo `workspaceId` e obrigatorio na validacao, mas o valor enviado e descartado: a remocao acontece sempre no workspace do seu token. IDs de outro workspace voltam na lista `failed`.
+</Note>

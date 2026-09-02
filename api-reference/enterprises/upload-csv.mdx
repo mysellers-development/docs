@@ -1,0 +1,12 @@
+---
+title: 'Importar empresas por CSV'
+openapi: 'POST /enterprises/upload'
+---
+
+<Note>
+  Envie o arquivo como `multipart/form-data` no campo `file`. Limite de 10 MB.
+</Note>
+
+<Tip>
+  Linhas com erro nao interrompem a importacao: o retorno traz `success`, `errors` e o detalhamento linha a linha em `errorDetails`.
+</Tip>
