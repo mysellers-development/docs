@@ -45,6 +45,14 @@
       "description": "Campos personalizados para leads e produtos — definir, listar e gerenciar campos extras do seu CRM."
     },
     {
+      "name": "Enterprises",
+      "description": "Gerenciamento de empresas — criar, listar, atualizar, deletar e vincular leads como contatos da empresa."
+    },
+    {
+      "name": "Users",
+      "description": "Gerenciamento de usuarios do workspace — criar, listar, atualizar, alterar cargo e senha, e consultar permissoes."
+    },
+    {
       "name": "Integrations",
       "description": "Endpoints dedicados a integracoes externas (ex: Dados Fazenda)."
     }
@@ -5368,6 +5376,1969 @@
           }
         }
       }
+    },
+    "/enterprises": {
+      "post": {
+        "tags": [
+          "Enterprises"
+        ],
+        "summary": "Criar empresa",
+        "description": "Cria uma empresa no workspace do token. Exige a permissao `prospecting.search`.",
+        "operationId": "createEnterprise",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEnterpriseRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Empresa criada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Enterprise"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados invalidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sem permissao",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Enterprises"
+        ],
+        "summary": "Listar empresas",
+        "description": "Lista as empresas do workspace do token. Sem `page` nem `limit`, retorna a lista completa; com qualquer um dos dois, retorna o envelope paginado.",
+        "operationId": "listEnterprises",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Numero da pagina (default: 1)",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Quantidade por pagina (default: 20, maximo 100)",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de empresas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/PaginatedEnterprises"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Enterprise"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sem permissao",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/enterprises/search": {
+      "get": {
+        "tags": [
+          "Enterprises"
+        ],
+        "summary": "Buscar empresas",
+        "description": "Busca empresas por nome ou CNPJ dentro do workspace do token. Mesmo formato de `GET /leads/search`.",
+        "operationId": "searchEnterprises",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "description": "Texto a buscar em nome ou CNPJ",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Quantidade de resultados (default: 20)",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Empresas encontradas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Enterprise"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sem permissao",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/enterprises/lookup-cnpjs": {
+      "post": {
+        "tags": [
+          "Enterprises"
+        ],
+        "summary": "Consultar CNPJs em lote",
+        "description": "Recebe uma lista de CNPJs e devolve um mapa `CNPJ -> ID da empresa` apenas para os que ja existem no workspace. Serve para evitar cadastro duplicado antes de importar.",
+        "operationId": "lookupEnterpriseCnpjs",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LookupCnpjsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Mapa de CNPJs encontrados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LookupCnpjsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sem permissao",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/enterprises/bulk-delete": {
+      "post": {
+        "tags": [
+          "Enterprises"
+        ],
+        "summary": "Deletar empresas em massa",
+        "description": "Remove ate 100 empresas de uma vez. Empresas de outro workspace sao ignoradas e voltam na lista `failed`.",
+        "operationId": "bulkDeleteEnterprises",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkDeleteEnterprisesRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Resultado da remocao",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkDeleteEnterprisesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados invalidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sem permissao",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/enterprises/upload": {
+      "post": {
+        "tags": [
+          "Enterprises"
+        ],
+        "summary": "Importar empresas por CSV",
+        "description": "Cria empresas em lote a partir de um arquivo CSV. Limite de 10 MB. Linhas com erro nao interrompem a importacao: elas voltam detalhadas em `errorDetails`.",
+        "operationId": "uploadEnterprisesCsv",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Arquivo CSV com as empresas (maximo 10 MB)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Arquivo processado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnterpriseCsvUploadResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Arquivo invalido ou acima de 10 MB",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sem permissao",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/enterprises/workspace/{workspace_id}": {
+      "get": {
+        "tags": [
+          "Enterprises"
+        ],
+        "summary": "Listar empresas do workspace",
+        "description": "Mesma listagem de `GET /enterprises`, com busca textual opcional. O `workspace_id` da URL e decorativo: o workspace efetivo vem sempre do token.",
+        "operationId": "listEnterprisesByWorkspace",
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "description": "UUID do workspace (decorativo)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Numero da pagina (default: 1)",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Quantidade por pagina (default: 20, maximo 100)",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Texto a buscar em nome ou CNPJ",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de empresas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/PaginatedEnterprises"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Enterprise"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sem permissao",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/enterprises/workspace/{workspace_id}/search": {
+      "get": {
+        "tags": [
+          "Enterprises"
+        ],
+        "summary": "Buscar empresas do workspace",
+        "description": "Busca enxuta para autocomplete. O `workspace_id` da URL e decorativo: o workspace efetivo vem sempre do token.",
+        "operationId": "searchEnterprisesByWorkspace",
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "description": "UUID do workspace (decorativo)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Texto a buscar",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Quantidade de resultados (default: 10)",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Empresas encontradas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Enterprise"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sem permissao",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/enterprises/workspace/{workspace_id}/filter": {
+      "post": {
+        "tags": [
+          "Enterprises"
+        ],
+        "summary": "Filtrar empresas",
+        "description": "Busca empresas com filtros compostos, combinando regras por `AND` ou `OR`. Sempre retorna o envelope paginado. O `workspace_id` da URL e decorativo.",
+        "operationId": "filterEnterprises",
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "description": "UUID do workspace (decorativo)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Numero da pagina (default: 1)",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Quantidade por pagina (default: 20, maximo 100)",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FilterEnterprisesRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Empresas filtradas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedEnterprises"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Filtro invalido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sem permissao",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/enterprises/lead/{lead_id}": {
+      "get": {
+        "tags": [
+          "Enterprises"
+        ],
+        "summary": "Listar empresas de um lead",
+        "description": "Retorna os vinculos entre o lead informado e as empresas do workspace.",
+        "operationId": "listEnterprisesByLead",
+        "parameters": [
+          {
+            "name": "lead_id",
+            "in": "path",
+            "description": "UUID do lead",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vinculos do lead",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EnterpriseLeadLink"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sem permissao",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Lead nao encontrado no seu workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/enterprises/{id}": {
+      "get": {
+        "tags": [
+          "Enterprises"
+        ],
+        "summary": "Buscar empresa por ID",
+        "description": "Retorna os detalhes de uma empresa, incluindo os leads vinculados.",
+        "operationId": "getEnterpriseById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "UUID da empresa",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalhes da empresa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Enterprise"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sem permissao",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Empresa nao encontrada no seu workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Enterprises"
+        ],
+        "summary": "Atualizar empresa",
+        "description": "Atualiza os dados de uma empresa. Envie apenas os campos que deseja alterar.",
+        "operationId": "updateEnterprise",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "UUID da empresa",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEnterpriseRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Empresa atualizada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Enterprise"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados invalidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sem permissao",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Empresa nao encontrada no seu workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Enterprises"
+        ],
+        "summary": "Deletar empresa",
+        "description": "Remove permanentemente uma empresa e seus vinculos com leads. **Esta acao e irreversivel.** Os leads em si nao sao removidos.",
+        "operationId": "deleteEnterprise",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "UUID da empresa",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Empresa deletada com sucesso"
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sem permissao",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Empresa nao encontrada no seu workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/enterprises/{enterprise_id}/leads": {
+      "get": {
+        "tags": [
+          "Enterprises"
+        ],
+        "summary": "Listar leads de uma empresa",
+        "description": "Retorna os vinculos da empresa com seus leads, cada um com o cargo ocupado.",
+        "operationId": "listLeadsByEnterprise",
+        "parameters": [
+          {
+            "name": "enterprise_id",
+            "in": "path",
+            "description": "UUID da empresa",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vinculos da empresa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EnterpriseLeadLink"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sem permissao",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Empresa nao encontrada no seu workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/enterprises/{enterprise_id}/leads/associate": {
+      "post": {
+        "tags": [
+          "Enterprises"
+        ],
+        "summary": "Associar varios leads",
+        "description": "Vincula varios leads a uma empresa de uma vez, com cargo opcional por lead. Leads de outro workspace sao rejeitados.",
+        "operationId": "associateLeadsToEnterprise",
+        "parameters": [
+          {
+            "name": "enterprise_id",
+            "in": "path",
+            "description": "UUID da empresa",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssociateLeadsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Empresa com os vinculos atualizados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Enterprise"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados invalidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sem permissao",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Empresa ou lead nao encontrado no seu workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/enterprises/{enterprise_id}/leads/dissociate": {
+      "post": {
+        "tags": [
+          "Enterprises"
+        ],
+        "summary": "Desassociar varios leads",
+        "description": "Remove de uma vez o vinculo entre a empresa e os leads informados. Os leads nao sao deletados.",
+        "operationId": "dissociateLeadsFromEnterprise",
+        "parameters": [
+          {
+            "name": "enterprise_id",
+            "in": "path",
+            "description": "UUID da empresa",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DissociateLeadsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Empresa com os vinculos atualizados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Enterprise"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados invalidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sem permissao",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Empresa nao encontrada no seu workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/enterprises/{enterprise_id}/lead/{lead_id}": {
+      "post": {
+        "tags": [
+          "Enterprises"
+        ],
+        "summary": "Associar lead a empresa",
+        "description": "Vincula um lead a uma empresa. O corpo e opcional e serve apenas para informar o cargo.",
+        "operationId": "associateLeadToEnterprise",
+        "parameters": [
+          {
+            "name": "enterprise_id",
+            "in": "path",
+            "description": "UUID da empresa",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "lead_id",
+            "in": "path",
+            "description": "UUID do lead",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssociateSingleLeadRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Empresa com os vinculos atualizados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Enterprise"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados invalidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sem permissao",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Empresa ou lead nao encontrado no seu workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Enterprises"
+        ],
+        "summary": "Desassociar lead da empresa",
+        "description": "Remove o vinculo entre um lead e uma empresa. O lead nao e deletado.",
+        "operationId": "dissociateLeadFromEnterprise",
+        "parameters": [
+          {
+            "name": "enterprise_id",
+            "in": "path",
+            "description": "UUID da empresa",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "lead_id",
+            "in": "path",
+            "description": "UUID do lead",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Empresa com os vinculos atualizados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Enterprise"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sem permissao",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Empresa ou lead nao encontrado no seu workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Criar usuario",
+        "description": "Cria um usuario no workspace do token. Exige a permissao `users.invite`. Informe `roleId`: sem cargo, o usuario entra sem nenhuma permissao.",
+        "operationId": "createUser",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuario criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados invalidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sem permissao ou limite de usuarios do plano atingido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email ja cadastrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Listar usuarios",
+        "description": "Lista todos os usuarios do workspace do token.",
+        "operationId": "listUsers",
+        "responses": {
+          "200": {
+            "description": "Lista de usuarios",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/workspace/{workspace_id}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Listar usuarios do workspace",
+        "description": "Mesma lista de `GET /users`, ordenada pela data de criacao. O `workspace_id` da URL e decorativo: o workspace efetivo vem sempre do token.",
+        "operationId": "listUsersByWorkspace",
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "description": "UUID do workspace (decorativo)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de usuarios",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/workspace/{workspace_id}/first": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Buscar usuario padrao do workspace",
+        "description": "Retorna o usuario mais antigo do workspace. Util como responsavel padrao quando a integracao nao sabe a quem atribuir. Retorna `null` se o workspace nao tiver usuarios.",
+        "operationId": "getFirstUserByWorkspace",
+        "parameters": [
+          {
+            "name": "workspace_id",
+            "in": "path",
+            "description": "UUID do workspace (decorativo)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuario mais antigo do workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}/permissions": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Listar permissoes do usuario",
+        "description": "Retorna o cargo e as permissoes ja resolvidas do usuario, somando as do cargo com os ajustes individuais.",
+        "operationId": "getUserPermissions",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "UUID do usuario",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cargo e permissoes do usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPermissionsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuario nao encontrado no seu workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}/referrals": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Listar leads indicados pelo usuario",
+        "description": "Retorna os leads que foram indicados por este usuario.",
+        "operationId": "getUserReferrals",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "UUID do usuario",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Leads indicados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Lead"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuario nao encontrado no seu workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Buscar usuario por ID",
+        "description": "Retorna os dados de um usuario do workspace do token.",
+        "operationId": "getUserById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "UUID do usuario",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalhes do usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuario nao encontrado no seu workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Atualizar usuario",
+        "description": "Atualiza nome, email, telefone, senha ou situacao. Exige a permissao `users.edit`. Envie apenas os campos que deseja alterar. Cargo nao muda por aqui: use `PATCH /users/{id}/role`.",
+        "operationId": "updateUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "UUID do usuario",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuario atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados invalidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sem permissao",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuario nao encontrado no seu workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email ja cadastrado para outro usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Deletar usuario",
+        "description": "Remove permanentemente um usuario e revoga seus tokens de acesso. **Esta acao e irreversivel.**",
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "UUID do usuario",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuario deletado com sucesso"
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuario nao encontrado no seu workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}/role": {
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Alterar cargo do usuario",
+        "description": "Atribui um cargo ao usuario ou o marca como dono do workspace. Exige a permissao `users.manage_roles`. O cargo precisa pertencer ao mesmo workspace do usuario.",
+        "operationId": "updateUserRole",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "UUID do usuario",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRoleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuario com o cargo atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados invalidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sem permissao ou cargo de outro workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuario ou cargo nao encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}/password": {
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Alterar senha do usuario",
+        "description": "Troca a senha exigindo a senha atual. E o caminho de troca pelo proprio usuario. Um email de confirmacao e enviado.",
+        "operationId": "changeUserPassword",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "UUID do usuario",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Senha alterada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangePasswordResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados invalidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nao autenticado ou senha atual incorreta",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuario nao encontrado no seu workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -7658,6 +9629,626 @@
           },
           "meta": {
             "$ref": "#/components/schemas/ChatsWithMessagesMeta"
+          }
+        }
+      },
+      "Enterprise": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Identificador unico da empresa"
+          },
+          "enterpriseName": {
+            "type": "string",
+            "description": "Razao social ou nome fantasia"
+          },
+          "cnpj": {
+            "type": "string",
+            "nullable": true,
+            "description": "CNPJ da empresa"
+          },
+          "sector": {
+            "type": "string",
+            "nullable": true,
+            "description": "Setor de atuacao"
+          },
+          "workspaceId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID do workspace"
+          },
+          "enterpriseLeads": {
+            "type": "array",
+            "description": "Vinculos com leads. Presente quando a relacao e carregada.",
+            "items": {
+              "$ref": "#/components/schemas/EnterpriseLeadLink"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data de criacao"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data da ultima atualizacao"
+          }
+        }
+      },
+      "EnterpriseLeadLink": {
+        "type": "object",
+        "description": "Vinculo entre uma empresa e um lead, com o cargo ocupado.",
+        "properties": {
+          "enterpriseId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID da empresa"
+          },
+          "leadId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID do lead"
+          },
+          "position": {
+            "type": "string",
+            "nullable": true,
+            "description": "Cargo do lead na empresa (ex: Diretor Comercial)"
+          },
+          "lead": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Lead"
+              }
+            ],
+            "description": "Dados do lead. O campo position do vinculo e copiado para dentro deste objeto."
+          }
+        }
+      },
+      "PaginatedEnterprises": {
+        "type": "object",
+        "description": "Resposta paginada. Retornada apenas quando page ou limit sao enviados.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Enterprise"
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "integer",
+                "description": "Total de registros"
+              },
+              "page": {
+                "type": "integer",
+                "description": "Pagina atual"
+              },
+              "limit": {
+                "type": "integer",
+                "description": "Limite por pagina"
+              },
+              "totalPages": {
+                "type": "integer",
+                "description": "Total de paginas"
+              },
+              "hasNextPage": {
+                "type": "boolean",
+                "description": "Existe proxima pagina"
+              },
+              "hasPreviousPage": {
+                "type": "boolean",
+                "description": "Existe pagina anterior"
+              }
+            }
+          }
+        }
+      },
+      "CreateEnterpriseRequest": {
+        "type": "object",
+        "required": [
+          "enterpriseName",
+          "workspaceId"
+        ],
+        "properties": {
+          "enterpriseName": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Razao social ou nome fantasia"
+          },
+          "cnpj": {
+            "type": "string",
+            "minLength": 1,
+            "description": "CNPJ da empresa"
+          },
+          "sector": {
+            "type": "string",
+            "description": "Setor de atuacao"
+          },
+          "workspaceId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Obrigatorio na validacao, mas o valor efetivo vem sempre do token. Envie o UUID do seu proprio workspace."
+          }
+        }
+      },
+      "UpdateEnterpriseRequest": {
+        "type": "object",
+        "description": "Todos os campos sao opcionais. O workspace da empresa nao pode ser alterado.",
+        "properties": {
+          "enterpriseName": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Razao social ou nome fantasia"
+          },
+          "cnpj": {
+            "type": "string",
+            "minLength": 1,
+            "description": "CNPJ da empresa"
+          },
+          "sector": {
+            "type": "string",
+            "description": "Setor de atuacao"
+          }
+        }
+      },
+      "AssociateSingleLeadRequest": {
+        "type": "object",
+        "properties": {
+          "position": {
+            "type": "string",
+            "description": "Cargo do lead na empresa (ex: Socio, Diretor Comercial)"
+          }
+        }
+      },
+      "AssociateLeadsRequest": {
+        "type": "object",
+        "required": [
+          "leadIds"
+        ],
+        "properties": {
+          "leadIds": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "IDs dos leads a associar"
+          },
+          "positions": {
+            "type": "array",
+            "description": "Cargo por lead. Leads sem entrada aqui ficam sem cargo.",
+            "items": {
+              "type": "object",
+              "required": [
+                "leadId"
+              ],
+              "properties": {
+                "leadId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "position": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "DissociateLeadsRequest": {
+        "type": "object",
+        "required": [
+          "leadIds"
+        ],
+        "properties": {
+          "leadIds": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "IDs dos leads a desassociar"
+          }
+        }
+      },
+      "BulkDeleteEnterprisesRequest": {
+        "type": "object",
+        "required": [
+          "ids",
+          "workspaceId"
+        ],
+        "properties": {
+          "ids": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "IDs das empresas a remover. Maximo de 100 por requisicao."
+          },
+          "workspaceId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Obrigatorio na validacao, mas o valor efetivo vem sempre do token."
+          }
+        }
+      },
+      "BulkDeleteEnterprisesResponse": {
+        "type": "object",
+        "properties": {
+          "deleted": {
+            "type": "integer",
+            "description": "Quantidade de empresas removidas"
+          },
+          "failed": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "IDs que nao puderam ser removidos"
+          }
+        }
+      },
+      "FilterEnterprisesRequest": {
+        "type": "object",
+        "required": [
+          "filters"
+        ],
+        "properties": {
+          "filters": {
+            "type": "object",
+            "required": [
+              "connector",
+              "groups"
+            ],
+            "properties": {
+              "version": {
+                "type": "string",
+                "default": "1.0",
+                "description": "Versao do formato de filtro"
+              },
+              "connector": {
+                "type": "string",
+                "enum": [
+                  "AND",
+                  "OR"
+                ],
+                "description": "Como combinar os grupos"
+              },
+              "groups": {
+                "type": "array",
+                "description": "Regras ou grupos aninhados. Cada regra tem field, operator e value.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "LookupCnpjsRequest": {
+        "type": "object",
+        "required": [
+          "cnpjs"
+        ],
+        "properties": {
+          "cnpjs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "CNPJs a consultar"
+          }
+        }
+      },
+      "LookupCnpjsResponse": {
+        "type": "object",
+        "description": "Mapa de CNPJ para ID da empresa. CNPJs sem empresa cadastrada nao aparecem no retorno.",
+        "additionalProperties": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "EnterpriseCsvUploadResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Mensagem de confirmacao"
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total de linhas lidas"
+          },
+          "success": {
+            "type": "integer",
+            "description": "Empresas criadas com sucesso"
+          },
+          "errors": {
+            "type": "integer",
+            "description": "Linhas com erro"
+          },
+          "errorDetails": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "row": {
+                  "type": "integer",
+                  "description": "Numero da linha no CSV"
+                },
+                "error": {
+                  "type": "string",
+                  "description": "Motivo do erro"
+                }
+              }
+            }
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "description": "O hash da senha nunca e retornado.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Identificador unico do usuario"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome do usuario"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email de login"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Telefone"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive",
+              "pending"
+            ],
+            "description": "Situacao do usuario"
+          },
+          "roleId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "ID do cargo. Nulo significa ZERO permissoes, exceto para o dono do workspace."
+          },
+          "isWorkspaceOwner": {
+            "type": "boolean",
+            "description": "Dono do workspace. Quando verdadeiro, tem acesso total e roleId e sempre nulo."
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "owner",
+              "admin",
+              "manager",
+              "operator",
+              "broker",
+              "sdr",
+              "viewer"
+            ],
+            "deprecated": true,
+            "description": "Campo legado. E apenas um espelho derivado do cargo e nao decide acesso. Use roleId e isWorkspaceOwner."
+          },
+          "workspaceId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "ID do workspace"
+          },
+          "lastLogin": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Ultimo login"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data de criacao"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data da ultima atualizacao"
+          }
+        }
+      },
+      "CreateUserRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "email",
+          "phone",
+          "password"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "description": "Nome do usuario"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email de login. Precisa ser unico em toda a plataforma."
+          },
+          "phone": {
+            "type": "string",
+            "description": "Telefone"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "description": "Senha inicial, minimo 8 caracteres"
+          },
+          "roleId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Cargo do usuario. Sem ele o usuario nasce SEM PERMISSAO NENHUMA."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive",
+              "pending"
+            ],
+            "default": "pending",
+            "description": "Situacao inicial"
+          },
+          "workspaceId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Ignorado. O usuario nasce sempre no workspace do token."
+          }
+        }
+      },
+      "UpdateUserRequest": {
+        "type": "object",
+        "description": "Todos os campos sao opcionais. Cargo nao se altera por aqui, use PATCH /users/{id}/role.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "description": "Nome do usuario"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Novo email. Precisa continuar unico."
+          },
+          "phone": {
+            "type": "string",
+            "description": "Telefone"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "description": "Redefine a senha sem exigir a senha atual. Para troca pelo proprio usuario, use PATCH /users/{id}/password."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive",
+              "pending"
+            ],
+            "description": "Situacao do usuario"
+          },
+          "workspaceId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Aceito na validacao, porem descartado. Nao e possivel mover um usuario de workspace por aqui."
+          }
+        }
+      },
+      "UpdateUserRoleRequest": {
+        "type": "object",
+        "description": "roleId e isWorkspaceOwner verdadeiro sao mutuamente exclusivos: o dono do workspace nao tem cargo.",
+        "properties": {
+          "roleId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "ID do cargo. Precisa pertencer ao mesmo workspace do usuario. Nulo deixa o usuario sem cargo."
+          },
+          "isWorkspaceOwner": {
+            "type": "boolean",
+            "description": "Marca o usuario como dono do workspace (acesso total). Quando verdadeiro, roleId e forcado para nulo."
+          }
+        }
+      },
+      "ChangePasswordRequest": {
+        "type": "object",
+        "required": [
+          "currentPassword",
+          "newPassword"
+        ],
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "description": "Senha atual, e verificada antes da troca"
+          },
+          "newPassword": {
+            "type": "string",
+            "minLength": 8,
+            "description": "Nova senha, minimo 8 caracteres"
+          }
+        }
+      },
+      "ChangePasswordResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Mensagem de confirmacao"
+          }
+        }
+      },
+      "UserPermissionsResponse": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "object",
+            "nullable": true,
+            "description": "Cargo do usuario. Nulo para o dono do workspace ou para usuario sem cargo.",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Nome do cargo"
+              },
+              "slug": {
+                "type": "string",
+                "description": "Identificador do cargo"
+              }
+            }
+          },
+          "legacyRole": {
+            "type": "string",
+            "enum": [
+              "owner",
+              "admin",
+              "manager",
+              "operator",
+              "broker",
+              "sdr",
+              "viewer"
+            ],
+            "description": "Cargo traduzido para o enum legado. Derivado na hora a partir do cargo atual."
+          },
+          "isWorkspaceOwner": {
+            "type": "boolean",
+            "description": "Dono do workspace (acesso total)"
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Permissoes resolvidas (cargo mais ajustes individuais). Vazio para o dono, que passa por bypass."
           }
         }
       }

@@ -1,0 +1,12 @@
+---
+title: 'Alterar cargo do usuario'
+openapi: 'PATCH /users/{id}/role'
+---
+
+<Note>
+  Exige a permissao `users.manage_roles`. O cargo precisa pertencer ao mesmo workspace do usuario, senao a API responde 403.
+</Note>
+
+<Tip>
+  `roleId` e `isWorkspaceOwner: true` sao mutuamente exclusivos: o dono do workspace tem acesso total e fica fora do sistema de cargos, entao seu `roleId` e forcado para `null`.
+</Tip>

@@ -68,6 +68,45 @@
                 ]
               },
               {
+                "group": "Enterprises",
+                "pages": [
+                  "api-reference/enterprises/create",
+                  "api-reference/enterprises/list",
+                  "api-reference/enterprises/list-by-workspace",
+                  "api-reference/enterprises/get",
+                  "api-reference/enterprises/update",
+                  "api-reference/enterprises/delete",
+                  "api-reference/enterprises/search",
+                  "api-reference/enterprises/search-by-workspace",
+                  "api-reference/enterprises/filter",
+                  "api-reference/enterprises/lookup-cnpjs",
+                  "api-reference/enterprises/bulk-delete",
+                  "api-reference/enterprises/upload-csv",
+                  "api-reference/enterprises/associate-lead",
+                  "api-reference/enterprises/dissociate-lead",
+                  "api-reference/enterprises/list-leads",
+                  "api-reference/enterprises/list-by-lead",
+                  "api-reference/enterprises/associate-leads",
+                  "api-reference/enterprises/dissociate-leads"
+                ]
+              },
+              {
+                "group": "Users",
+                "pages": [
+                  "api-reference/users/create",
+                  "api-reference/users/list",
+                  "api-reference/users/list-by-workspace",
+                  "api-reference/users/get-first-by-workspace",
+                  "api-reference/users/get",
+                  "api-reference/users/update",
+                  "api-reference/users/update-role",
+                  "api-reference/users/change-password",
+                  "api-reference/users/delete",
+                  "api-reference/users/permissions",
+                  "api-reference/users/referrals"
+                ]
+              },
+              {
                 "group": "Custom Fields",
                 "pages": [
                   "api-reference/custom-fields/create",

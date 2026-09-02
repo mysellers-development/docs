@@ -1,0 +1,12 @@
+---
+title: 'Associar varios leads'
+openapi: 'POST /enterprises/{enterprise_id}/leads/associate'
+---
+
+<Tip>
+  O cargo e opcional e vai em `positions`, casando por `leadId`. Leads sem entrada em `positions` ficam vinculados sem cargo.
+</Tip>
+
+<Note>
+  Leads de outro workspace sao rejeitados com 404.
+</Note>

@@ -1,0 +1,12 @@
+---
+title: 'Buscar usuario padrao do workspace'
+openapi: 'GET /users/workspace/{workspace_id}/first'
+---
+
+<Tip>
+  Devolve o usuario mais antigo do workspace. Serve como responsavel padrao quando a integracao nao sabe a quem atribuir um lead, uma oportunidade ou um agendamento.
+</Tip>
+
+<Note>
+  Retorna `null` se o workspace nao tiver nenhum usuario.
+</Note>

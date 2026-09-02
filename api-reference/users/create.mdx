@@ -1,0 +1,16 @@
+---
+title: 'Criar usuario'
+openapi: 'POST /users'
+---
+
+<Warning>
+  Informe sempre o `roleId`. Sem cargo, o usuario e criado **sem nenhuma permissao** e nao consegue acessar nada na plataforma.
+</Warning>
+
+<Note>
+  Exige a permissao `users.invite`. O email precisa ser unico em toda a plataforma e o workspace vem sempre do token — o `workspaceId` do corpo e ignorado.
+</Note>
+
+<Tip>
+  Se o plano do workspace ja estiver no limite de usuarios, a API responde 403 pedindo upgrade ou compra de usuarios extras.
+</Tip>

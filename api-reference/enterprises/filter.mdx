@@ -1,0 +1,12 @@
+---
+title: 'Filtrar empresas'
+openapi: 'POST /enterprises/workspace/{workspace_id}/filter'
+---
+
+<Tip>
+  Combine regras com `AND` ou `OR` em `filters.connector`. Cada item de `filters.groups` pode ser uma regra (`field`, `operator`, `value`) ou um grupo aninhado com seu proprio conector.
+</Tip>
+
+<Note>
+  Diferente das listagens, este endpoint sempre devolve o envelope paginado com `data` e `meta`.
+</Note>

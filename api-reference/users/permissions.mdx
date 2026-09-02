@@ -1,0 +1,12 @@
+---
+title: 'Listar permissoes do usuario'
+openapi: 'GET /users/{user_id}/permissions'
+---
+
+<Tip>
+  Retorna as permissoes ja resolvidas, somando as do cargo com os ajustes individuais — nao e preciso cruzar cargo e overrides por conta propria.
+</Tip>
+
+<Note>
+  Para o dono do workspace, `role` vem `null` e `permissions` vem vazio: ele passa por bypass e tem acesso total. Cheque `isWorkspaceOwner` antes de concluir que o usuario nao tem permissao nenhuma.
+</Note>

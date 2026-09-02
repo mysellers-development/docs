@@ -1,0 +1,16 @@
+---
+title: 'Atualizar usuario'
+openapi: 'PATCH /users/{id}'
+---
+
+<Note>
+  Envie apenas os campos que deseja alterar. Exige a permissao `users.edit`.
+</Note>
+
+<Warning>
+  Cargo **nao** se altera por aqui — `role` e `roleId` sao recusados. Use `PATCH /users/{id}/role`.
+</Warning>
+
+<Tip>
+  Enviar `password` redefine a senha sem exigir a senha atual. Para a troca feita pelo proprio usuario, use `PATCH /users/{id}/password`.
+</Tip>
