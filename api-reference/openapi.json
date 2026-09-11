@@ -7441,16 +7441,6 @@
               }
             }
           },
-          "403": {
-            "description": "API Key sem workspace associado",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
           "404": {
             "description": "`instanceId` não existe neste workspace",
             "content": {
