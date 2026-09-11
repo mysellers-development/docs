@@ -25,6 +25,8 @@ Se o telefone ainda não tem chat na instância, o chat é criado. Não é criad
 
 Informe `externalId` com o id da mensagem no provedor (na Meta, o `wamid` que a API devolve ao enviar). Chamada repetida com o mesmo `externalId` devolve `200` com a mensagem já existente e `deduplicated: true`, sem duplicar.
 
+O `externalId` só é reconhecido dentro do seu workspace. Se ele já existir em outro workspace, a chamada devolve `409 Conflict`.
+
 <Warning>
   Sem `externalId` não há proteção contra duplicata: cada chamada grava uma mensagem nova.
 </Warning>
@@ -52,6 +54,7 @@ Pra trazer mensagens que já foram enviadas antes da integração:
 | `401` | Sem `x-api-key` ou chave inválida |
 | `403` | API Key não vinculada a um workspace |
 | `404` | `instanceId` não existe neste workspace |
+| `409` | `externalId` já registrado em outro workspace |
 
 ## Exemplo
 
