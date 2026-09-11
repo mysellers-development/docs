@@ -7441,6 +7441,16 @@
               }
             }
           },
+          "403": {
+            "description": "Workspace sem assinatura ativa (`SUBSCRIPTION_REQUIRED`): a conta está em modo somente leitura",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
           "404": {
             "description": "`instanceId` não existe neste workspace",
             "content": {

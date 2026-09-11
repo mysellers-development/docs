@@ -52,6 +52,7 @@ Pra trazer mensagens que já foram enviadas antes da integração:
 |---|---|
 | `400` | Campo obrigatório ausente, telefone inválido, `text` ou `source` fora do tamanho, `sentAt` inválido ou no futuro |
 | `401` | Sem `x-api-key` ou chave inválida |
+| `403` | Workspace sem assinatura ativa (`SUBSCRIPTION_REQUIRED`): a conta está em modo somente leitura |
 | `404` | `instanceId` não existe neste workspace |
 | `409` | `externalId` já registrado em outro workspace |
 
