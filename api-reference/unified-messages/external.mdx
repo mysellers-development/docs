@@ -51,7 +51,7 @@ Pra trazer mensagens que já foram enviadas antes da integração:
 
 | HTTP | Quando |
 |---|---|
-| `400` | Campo obrigatório ausente, campo que não existe no corpo, telefone inválido, `text` ou `source` fora do tamanho, `sentAt` sem fuso, `sentAt` inválido ou no futuro |
+| `400` | Campo obrigatório ausente, campo que não existe no corpo, telefone inválido, `text` vazio ou só com espaços, `text` ou `source` fora do tamanho, `sentAt` sem fuso, `sentAt` inválido ou no futuro, instância que não é de WhatsApp |
 | `401` | Sem `x-api-key` ou chave inválida |
 | `403` | Workspace sem assinatura ativa: a conta está em modo somente leitura |
 | `404` | `instanceId` não existe neste workspace |
