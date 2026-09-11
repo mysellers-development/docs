@@ -178,7 +178,8 @@
                   "api-reference/unified-messages/count-by-chat",
                   "api-reference/unified-messages/count-unread",
                   "api-reference/unified-messages/mark-as-read",
-                  "api-reference/unified-messages/update-status"
+                  "api-reference/unified-messages/update-status",
+                  "api-reference/unified-messages/external"
                 ]
               },
               {

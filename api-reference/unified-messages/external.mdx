@@ -1,0 +1,87 @@
+---
+title: 'Registrar mensagem enviada por outro sistema'
+openapi: 'POST /unified-messages/external'
+---
+
+<Tip>
+  **Caso de uso:** o seu sistema envia mensagens de WhatsApp por conta própria (por exemplo, direto na Meta Cloud API) usando o mesmo número que está conectado na MySellers, e a sua equipe acompanha os atendimentos pelo nosso chat. A Meta não repassa o conteúdo de mensagem enviada por outro aplicativo, então essas mensagens não aparecem no chat. Este endpoint registra a mensagem depois que você enviou, sem enviar de novo.
+</Tip>
+
+## Como funciona
+
+1. Você envia a mensagem pelo seu sistema, como já faz.
+2. Logo depois, chama este endpoint com o telefone, o texto, o nome do seu sistema (`source`) e, se tiver, o id da mensagem no provedor (`externalId`).
+3. A mensagem entra no chat do contato como enviada, com um selo `via {source}` pra equipe saber que não foi ela nem a IA.
+
+Se o telefone ainda não tem chat na instância, o chat é criado. Não é criado lead nem oportunidade.
+
+Pensado para números conectados pela API oficial do WhatsApp. Em números conectados pelo WhatsApp não oficial, o que é enviado pelo próprio aparelho já aparece no chat automaticamente.
+
+## Autenticação
+
+<Note>
+  Use a `x-api-key` gerada no seu workspace (Integrações › Chaves de API). Não é preciso informar o workspace: ele é inferido da chave. A `instanceId` precisa pertencer a esse workspace, senão `404 Not Found`.
+</Note>
+
+## Idempotência
+
+Informe `externalId` com o id da mensagem no provedor (na Meta, o `wamid` que a API devolve ao enviar). Chamada repetida com o mesmo `externalId` devolve `200` com a mensagem já existente e `deduplicated: true`, sem duplicar. Nessa resposta repetida, `phone` e `leadId` refletem o telefone enviado nesta chamada.
+
+O `externalId` só é reconhecido dentro do seu workspace. Se ele já existir em outro workspace, a chamada devolve `409 Conflict`.
+
+<Warning>
+  Sem `externalId` não há proteção contra duplicata: cada chamada grava uma mensagem nova.
+</Warning>
+
+## Importar histórico
+
+Pra trazer mensagens que já foram enviadas antes da integração:
+
+- Envie uma por chamada, em ordem crescente de `sentAt`.
+- A mensagem entra com a data informada em `sentAt`. Mensagem antiga não faz o chat subir na lista.
+- Rodar de novo é seguro se as mensagens tiverem `externalId`.
+
+## O que este endpoint não faz
+
+- Não envia nada pro WhatsApp.
+- Não abre a janela de 24 horas da API oficial.
+- Não dispara a IA.
+
+## Erros
+
+| HTTP | Quando |
+|---|---|
+| `400` | Campo obrigatório ausente, campo que não existe no corpo, telefone inválido, `text` vazio ou só com espaços, `text` ou `source` fora do tamanho, `sentAt` sem fuso, `sentAt` inválido ou no futuro, instância que não é de WhatsApp |
+| `401` | Sem `x-api-key` ou chave inválida |
+| `403` | Workspace sem assinatura ativa: a conta está em modo somente leitura |
+| `404` | `instanceId` não existe neste workspace |
+| `409` | `externalId` já registrado em outro workspace |
+
+## Exemplo
+
+```bash
+curl -X POST https://api.mysellers.com.br/unified-messages/external \
+  -H "x-api-key: ms_live_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "instanceId": "3ff9791d-345f-454a-a800-93299b336247",
+    "phone": "5562994263142",
+    "text": "Oi! Aqui é a Alana, da Dados Fazenda. Vi que seu plano encerrou e você não renovou. Aconteceu alguma coisa?",
+    "source": "Dados Fazenda",
+    "externalId": "wamid.HBgLNTU2Mjk0MjYzMTQyFQIAERgSMTIzNDU2Nzg5MEFCQ0RFRgA=",
+    "sentAt": "2026-09-09T22:15:00-03:00"
+  }'
+```
+
+Resposta `201`:
+
+```json
+{
+  "id": "6b1c2d3e-4f50-4a6b-9c7d-8e9f0a1b2c3d",
+  "chatId": "d244347d-6e7c-486d-819d-5819a76a58ba",
+  "leadId": "f8a1b2c3-d4e5-6789-abcd-ef0123456789",
+  "phone": "5562994263142",
+  "sentAt": "2026-09-10T01:15:00.000Z",
+  "deduplicated": false
+}
+```
