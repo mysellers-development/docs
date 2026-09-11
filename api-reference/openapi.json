@@ -7339,6 +7339,130 @@
           }
         }
       }
+    },
+    "/unified-messages/external": {
+      "post": {
+        "tags": [
+          "Unified Messages"
+        ],
+        "summary": "Registrar mensagem enviada por outro sistema",
+        "description": "Registra no chat uma mensagem de saída que outro sistema já enviou (por exemplo, pela Meta Cloud API no mesmo número conectado à plataforma). Não envia nada: só grava a mensagem para a equipe ver no chat, com um selo de origem.\n\n**Workspace scope:** inferido da API Key. A instância precisa pertencer a esse workspace.\n\n**Idempotência:** informe `externalId` (o `wamid` da Meta). Chamada repetida com o mesmo `externalId` devolve `200` com a mensagem existente, sem duplicar.\n\n**Importar histórico:** ordene por `sentAt` crescente. A mensagem entra com a data informada e a lista de chats não é reordenada por mensagem antiga.",
+        "operationId": "recordExternalMessage",
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExternalMessageRequest"
+              },
+              "examples": {
+                "default": {
+                  "summary": "Follow-up enviado pelo sistema do cliente",
+                  "value": {
+                    "instanceId": "3ff9791d-345f-454a-a800-93299b336247",
+                    "phone": "5562994263142",
+                    "text": "Oi! Aqui é a Alana, da Dados Fazenda. Vi que seu plano encerrou e você não renovou. Aconteceu alguma coisa?",
+                    "source": "Dados Fazenda",
+                    "externalId": "wamid.HBgLNTU2Mjk0MjYzMTQyFQIAERgSMTIzNDU2Nzg5MEFCQ0RFRgA=",
+                    "sentAt": "2026-09-09T22:15:00-03:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Mensagem registrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalMessageResponse"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "id": "6b1c2d3e-4f50-4a6b-9c7d-8e9f0a1b2c3d",
+                      "chatId": "d244347d-6e7c-486d-819d-5819a76a58ba",
+                      "leadId": "f8a1b2c3-d4e5-6789-abcd-ef0123456789",
+                      "phone": "5562994263142",
+                      "sentAt": "2026-09-10T01:15:00.000Z",
+                      "deduplicated": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "`externalId` já existia. Devolve a mensagem existente, sem gravar de novo.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalMessageResponse"
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "id": "6b1c2d3e-4f50-4a6b-9c7d-8e9f0a1b2c3d",
+                      "chatId": "d244347d-6e7c-486d-819d-5819a76a58ba",
+                      "leadId": "f8a1b2c3-d4e5-6789-abcd-ef0123456789",
+                      "phone": "5562994263142",
+                      "sentAt": "2026-09-10T01:15:00.000Z",
+                      "deduplicated": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Corpo inválido: campo obrigatório ausente, telefone que não normaliza, `text` ou `source` fora do tamanho, `sentAt` inválido ou no futuro",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem `x-api-key` ou chave inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "API Key sem workspace associado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "`instanceId` não existe neste workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -10249,6 +10373,91 @@
               "type": "string"
             },
             "description": "Permissoes resolvidas (cargo mais ajustes individuais). Vazio para o dono, que passa por bypass."
+          }
+        }
+      },
+      "ExternalMessageRequest": {
+        "type": "object",
+        "required": [
+          "instanceId",
+          "phone",
+          "text",
+          "source"
+        ],
+        "properties": {
+          "instanceId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Instância (canal) que enviou a mensagem. Tem que pertencer ao workspace da API Key."
+          },
+          "phone": {
+            "type": "string",
+            "description": "Telefone do destinatário. Aceita com ou sem 55 e com ou sem o nono dígito. Gravado com 13 dígitos.",
+            "example": "5562994263142"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096,
+            "description": "Conteúdo da mensagem."
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "description": "Nome exibido no selo da mensagem no chat.",
+            "example": "Dados Fazenda"
+          },
+          "externalId": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "Id da mensagem no provedor (`wamid` na Meta). Chave de idempotência. Sem ele não há proteção contra duplicata."
+          },
+          "sentAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Quando foi enviada, ISO 8601 com fuso. Default: agora. Não pode estar no futuro (tolerância de 5 minutos)."
+          }
+        }
+      },
+      "ExternalMessageResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "chatId",
+          "leadId",
+          "phone",
+          "sentAt",
+          "deduplicated"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Id da mensagem no chat"
+          },
+          "chatId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "leadId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Lead dono do telefone, ou `null` quando o telefone ainda não tem lead"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Telefone normalizado (13 dígitos)"
+          },
+          "sentAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data gravada na mensagem (UTC)"
+          },
+          "deduplicated": {
+            "type": "boolean",
+            "description": "`true` quando o `externalId` já existia e nada foi gravado"
           }
         }
       }
