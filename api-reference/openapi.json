@@ -7422,7 +7422,7 @@
             }
           },
           "400": {
-            "description": "Corpo inválido: campo obrigatório ausente, telefone que não normaliza, `text` ou `source` fora do tamanho, `sentAt` inválido ou no futuro",
+            "description": "Corpo inválido: campo obrigatório ausente, campo que não existe no corpo, telefone que não normaliza, `text` ou `source` fora do tamanho, `sentAt` sem fuso, `sentAt` inválido ou no futuro",
             "content": {
               "application/json": {
                 "schema": {
@@ -10426,7 +10426,7 @@
           "sentAt": {
             "type": "string",
             "format": "date-time",
-            "description": "Quando foi enviada, ISO 8601 com fuso. Default: agora. Não pode estar no futuro (tolerância de 5 minutos)."
+            "description": "Quando foi enviada, ISO 8601 com fuso obrigatório (Z ou ±hh:mm). Default: agora. Não pode estar no futuro (tolerância de 5 minutos)."
           }
         }
       },

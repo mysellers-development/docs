@@ -15,15 +15,17 @@ openapi: 'POST /unified-messages/external'
 
 Se o telefone ainda não tem chat na instância, o chat é criado. Não é criado lead nem oportunidade.
 
+Pensado para números conectados pela API oficial do WhatsApp. Em números conectados pelo WhatsApp não oficial, o que é enviado pelo próprio aparelho já aparece no chat automaticamente.
+
 ## Autenticação
 
 <Note>
-  Use a `x-api-key` gerada no seu workspace (Configurações > Tokens). Não é preciso informar o workspace: ele é inferido da chave. A `instanceId` precisa pertencer a esse workspace, senão `404 Not Found`.
+  Use a `x-api-key` gerada no seu workspace (Integrações › Chaves de API). Não é preciso informar o workspace: ele é inferido da chave. A `instanceId` precisa pertencer a esse workspace, senão `404 Not Found`.
 </Note>
 
 ## Idempotência
 
-Informe `externalId` com o id da mensagem no provedor (na Meta, o `wamid` que a API devolve ao enviar). Chamada repetida com o mesmo `externalId` devolve `200` com a mensagem já existente e `deduplicated: true`, sem duplicar.
+Informe `externalId` com o id da mensagem no provedor (na Meta, o `wamid` que a API devolve ao enviar). Chamada repetida com o mesmo `externalId` devolve `200` com a mensagem já existente e `deduplicated: true`, sem duplicar. Nessa resposta repetida, `phone` e `leadId` refletem o telefone enviado nesta chamada.
 
 O `externalId` só é reconhecido dentro do seu workspace. Se ele já existir em outro workspace, a chamada devolve `409 Conflict`.
 
@@ -43,14 +45,13 @@ Pra trazer mensagens que já foram enviadas antes da integração:
 
 - Não envia nada pro WhatsApp.
 - Não abre a janela de 24 horas da API oficial.
-- Não conta como atendimento humano nem da IA nos relatórios.
 - Não dispara a IA.
 
 ## Erros
 
 | HTTP | Quando |
 |---|---|
-| `400` | Campo obrigatório ausente, telefone inválido, `text` ou `source` fora do tamanho, `sentAt` inválido ou no futuro |
+| `400` | Campo obrigatório ausente, campo que não existe no corpo, telefone inválido, `text` ou `source` fora do tamanho, `sentAt` sem fuso, `sentAt` inválido ou no futuro |
 | `401` | Sem `x-api-key` ou chave inválida |
 | `403` | Workspace sem assinatura ativa: a conta está em modo somente leitura |
 | `404` | `instanceId` não existe neste workspace |
