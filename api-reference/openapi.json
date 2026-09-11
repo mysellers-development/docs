@@ -7442,7 +7442,7 @@
             }
           },
           "403": {
-            "description": "Workspace sem assinatura ativa (`SUBSCRIPTION_REQUIRED`): a conta está em modo somente leitura",
+            "description": "Workspace sem assinatura ativa: a conta está em modo somente leitura",
             "content": {
               "application/json": {
                 "schema": {
