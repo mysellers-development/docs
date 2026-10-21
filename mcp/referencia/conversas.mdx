@@ -1,0 +1,316 @@
+---
+title: "Conversas"
+description: "Ferramentas de conversas: finalidade, argumentos e permissões do MCP."
+---
+
+Referência do catálogo de cliente do MCP 0.8.2, conferida em 21/10/2026. A lista efetiva vem de `tools/list` da sua conexão. [Entenda o catálogo](/mcp/ferramentas).
+
+## set_chat_ai_status
+
+Liga ou pausa a IA de uma conversa do workspace e registra a alteração no histórico. Não liga o canal nem muda a situação do agente.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `chats.send`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `conversaId` | Sim | string |
+| `ativo` | Sim | boolean |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "conversaId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "ativo": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "conversaId",
+    "ativo"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## close_chat
+
+Encerra uma conversa do workspace.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `chats.close`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `conversaId` | Sim | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "conversaId": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "conversaId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## archive_chat
+
+Arquiva uma conversa do workspace.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `chats.archive`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `conversaId` | Sim | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "conversaId": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "conversaId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## reopen_chat
+
+Reabre uma conversa encerrada ou arquivada do workspace.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `chats.close`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `conversaId` | Sim | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "conversaId": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "conversaId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## list_chats
+
+Lista as conversas do workspace com o lead, a última mensagem e as etiquetas
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `status` | Não | Situação da conversa |
+| `busca` | Não | Texto no nome do lead, telefone ou conteúdo |
+| `canal` | Não | Canal da conversa |
+| `tipo` | Não | Conversas com leads ou conversas internas com a Mysa |
+| `page` | Não | Página, começando em 1 (padrão 1) |
+| `limit` | Não | Itens por página (padrão 20, teto 50) |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "closed",
+        "archived"
+      ],
+      "description": "Situação da conversa"
+    },
+    "busca": {
+      "type": "string",
+      "description": "Texto no nome do lead, telefone ou conteúdo"
+    },
+    "canal": {
+      "type": "string",
+      "enum": [
+        "uazapi",
+        "cloud_api",
+        "facebook",
+        "instagram"
+      ],
+      "description": "Canal da conversa"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "leads",
+        "mysa"
+      ],
+      "description": "Conversas com leads ou conversas internas com a Mysa"
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Página, começando em 1 (padrão 1)"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50,
+      "description": "Itens por página (padrão 20, teto 50)"
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## get_chat_messages
+
+Lista as mensagens de uma conversa, da mais recente para a mais antiga
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `chatId` | Sim | Id da conversa |
+| `page` | Não | Página, começando em 1 (padrão 1) |
+| `limit` | Não | Itens por página (padrão 20, teto 50) |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "chatId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id da conversa"
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Página, começando em 1 (padrão 1)"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50,
+      "description": "Itens por página (padrão 20, teto 50)"
+    }
+  },
+  "required": [
+    "chatId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## search_messages
+
+Procura um texto nas mensagens do workspace, opcionalmente dentro de uma conversa
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `q` | Sim | Texto procurado |
+| `chatId` | Não | Restringe a busca a uma conversa |
+| `page` | Não | Página, começando em 1 (padrão 1) |
+| `limit` | Não | Itens por página (padrão 20, teto 50) |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "q": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Texto procurado"
+    },
+    "chatId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Restringe a busca a uma conversa"
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Página, começando em 1 (padrão 1)"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50,
+      "description": "Itens por página (padrão 20, teto 50)"
+    }
+  },
+  "required": [
+    "q"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>

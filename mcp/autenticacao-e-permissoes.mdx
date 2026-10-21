@@ -1,0 +1,53 @@
+---
+title: "Autenticação e permissões"
+description: "Entenda os escopos da conexão, a visibilidade dos dados e o isolamento por empresa."
+---
+
+## OAuth
+
+O aplicativo solicita acesso, abre o login da MySellers e apresenta uma tela de consentimento. O servidor usa PKCE S256, documentos de metadata de cliente (CIMD), tokens de acesso opacos e refresh rotativo. O JWT de sessão do painel não autentica no endpoint MCP.
+
+| Escopo | Finalidade |
+| --- | --- |
+| `mysellers:read` | Consultar dados e usar ferramentas de validação que não gravam |
+| `mysellers:write` | Alterar dados; também satisfaz o escopo de leitura |
+| `offline_access` | Permitir renovação do acesso por refresh token, conforme o consentimento |
+
+A descoberta OAuth é publicada em:
+
+```text
+https://api.mysellers.com.br/.well-known/oauth-authorization-server
+https://api.mysellers.com.br/.well-known/oauth-protected-resource/mcp
+```
+
+Os aplicativos compatíveis usam esses documentos para descobrir os endpoints de autorização, token e revogação. Não é necessário criar um JWT para conectar.
+
+## Chave de API
+
+No MCP, a chave é enviada por `Authorization: Bearer sk_SUA_CHAVE`. Ela carrega o workspace e os escopos concedidos na criação. Uma chave somente de leitura não recebe ferramentas de escrita no `tools/list`.
+
+Uma chave não tem usuário nem cargo. Dentro do workspace, o acesso segue o escopo da chave, sem uma carteira pessoal. Uma chave de workspace não recebe acesso administrativo à plataforma.
+
+## Permissões da pessoa
+
+No OAuth, cada chamada confere o usuário, o workspace, os escopos e as permissões exigidas pela ferramenta. Mudanças de situação ou de empresa do usuário podem invalidar o acesso.
+
+Um vendedor com acesso somente à própria carteira continua limitado a ela. Um registro fora da visibilidade pode aparecer como não encontrado, sem revelar se pertence a outra pessoa.
+
+O catálogo é filtrado por escopo, mas a presença de uma ferramenta na lista não garante que o cargo possa executá-la. Uma recusa de permissão deve ser resolvida com quem administra os acessos, sem tentar outros registros para contornar a restrição.
+
+## Workspace
+
+Nas conexões de cliente, a empresa vem da credencial. Não envie `workspaceId` nos argumentos das ferramentas: esse campo não faz parte do schema do cliente e é recusado como argumento desconhecido.
+
+Cada pessoa opera com a visibilidade permitida dentro da sua empresa. A documentação pública e seus exemplos descrevem esse perfil de cliente.
+
+## Assinatura e confirmação
+
+Alterações de dados exigem assinatura ativa. O login e as consultas não comprovam que a empresa está habilitada para gravar.
+
+Algumas operações também exigem prévia e token de confirmação. O token confirma aquele pedido e contexto, não uma autorização genérica para futuras alterações. Veja [operação segura](/mcp/operacao-segura).
+
+## Disponibilidade
+
+O código permite a conexão de workspaces por padrão, mas o ambiente pode restringir a disponibilidade. Se a MySellers informar que o recurso não está liberado para a sua empresa, procure o suporte. Isso é diferente de uma permissão de cargo ausente.

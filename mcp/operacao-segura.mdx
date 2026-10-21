@@ -1,0 +1,76 @@
+---
+title: "Operação segura"
+description: "Leia antes de alterar, confira resultados e respeite as confirmações de cada operação."
+---
+
+## Comece pelo guia e pelos dados atuais
+
+O assistente deve ler `get_guide` e consultar os registros envolvidos antes de uma alteração. Os IDs precisam vir de uma leitura recente; o schema da ferramenta define os nomes dos campos aceitos.
+
+| Tarefa | Guia |
+| --- | --- |
+| Entender o servidor | `visao-geral` |
+| Manter leads e oportunidades | `leads-e-oportunidades` |
+| Alterar funis e etapas | `funis` |
+| Criar ou editar agente e prompt | `agentes-e-prompt` e `prompt-qualidade` |
+| Organizar compromissos | `atividades-e-agenda` |
+| Produtos, imóveis e pessoas | `cadastros` |
+| Conhecimento, configuração, canais existentes, filas e relatórios | `operacao-do-workspace` |
+| Etiquetas e listas | `segmentacao` |
+| MyFlows e follow-ups | `automacoes` |
+
+## Prévias e confirmação
+
+Ao receber uma prévia, o assistente deve mostrar seu impacto e aguardar a confirmação da pessoa antes de repetir a operação com o token. Preserve os dados do pedido validado. Mudança de pedido, conexão ou estado do alvo pode exigir nova prévia.
+
+- Exclusões de lead, oportunidade e atividade usam o campo `token` previsto no schema.
+- Ativação de canal, mudanças sensíveis de prompt, cadastro validado de produtos e certas operações em automações usam `tokenConfirmacao`.
+- Não reutilize um token como autorização para outro registro ou outra operação.
+
+## Edição de prompt
+
+1. Leia `get_ai_agent` e preserve o objeto `promptModules` inteiro e o `hashDoPrompt` retornado.
+2. Altere somente o conteúdo pedido, preservando o restante. `update_prompt_modules` substitui o objeto inteiro.
+3. Use `validate_prompt_modules` para conferir erros e avisos.
+4. Envie o objeto completo com `hashEsperado` igual ao hash lido. Mostre a prévia e confirme quando houver remoção de conteúdo ou mudança de nome.
+5. Confira `versaoGuardada`, os avisos e uma nova leitura do agente. Salvar o prompt não comprova o comportamento da conversa no WhatsApp.
+
+## Produtos, imóveis e fotos
+
+Produto comum simples pode usar `create_product`. Imóvel, empreendimento ou cadastro com fotos usa `validate_product_registration` e `create_product_registration`.
+
+1. Envie o cadastro para validação. A resposta informa `falta`, `corrigir` e `valePerguntar`.
+2. Colete as informações necessárias e valide novamente com o cadastro inteiro e a mesma `chaveDoCadastro`.
+3. Com `pronto: true`, mostre a prévia e peça confirmação.
+4. Envie o mesmo cadastro, a chave e o token para criação. Confira `repetido`, os itens criados e as fotos vinculadas.
+
+O MCP não guarda rascunho entre chamadas. Após erro de rede ou tempo esgotado, preserve a chave para repetir o mesmo cadastro sem duplicá-lo. Uma chave nova representa outro cadastro. Leia o guia `cadastros` para o roteiro completo.
+
+## Conhecimento e processamento em fila
+
+Adicionar documento pode apenas enfileirar o processamento. Consulte `get_knowledge_job` com o identificador retornado para confirmar o resultado; enfileirado não significa concluído.
+
+## Automações e atendimento
+
+Criar um MyFlow ou regra de follow-up não equivale a executar um envio. Ativar automações ou editar as que já estão ativas pode permitir ações e mensagens automáticas, por isso as ferramentas podem exigir prévia e confirmação.
+
+Ativar um agente em um canal existente pode substituir o agente atual e ligar o atendimento automático. Confira a prévia e a configuração devolvida. Isso não cria conexão WhatsApp nova nem envia uma mensagem de teste.
+
+## Leia o resultado
+
+| Campo | O que conferir |
+| --- | --- |
+| `criado: false` | O registro pode já existir; não afirme que criou outro |
+| `alterado: false` | A operação não mudou o estado |
+| `repetido: true` | O pedido de cadastro já havia sido gravado |
+| `versaoGuardada` | Versão anterior preservada, não prova isolada de que a alteração terminou |
+| `avisos` | Limitações e resultados parciais que precisam ser comunicados |
+| `truncado` | Conteúdo incompleto; não conclua pelo que não foi retornado |
+
+## Compromissos e efeitos associados
+
+Datas de compromissos usam hora local em `America/Sao_Paulo`, conforme o schema. Envie hora de início e fim para reuniões com duração específica.
+
+Criar reunião com um lead sem oportunidade aberta pode criar uma oportunidade com o título da reunião. Confira a carteira após a operação. Compromisso pessoal, sem lead, segue outro caminho e não cria oportunidade.
+
+Para remarcar uma reunião pelo MCP, o caminho disponível é cancelar e criar outra. Confira os avisos sobre o Google Calendar antes de afirmar que um evento foi criado ou removido.

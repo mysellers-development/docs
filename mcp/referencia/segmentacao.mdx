@@ -1,0 +1,633 @@
+---
+title: "Etiquetas e listas"
+description: "Ferramentas de etiquetas e listas: finalidade, argumentos e permissões do MCP."
+---
+
+Referência do catálogo de cliente do MCP 0.8.2, conferida em 21/10/2026. A lista efetiva vem de `tools/list` da sua conexão. [Entenda o catálogo](/mcp/ferramentas).
+
+## list_tags
+
+Lista as etiquetas disponíveis no workspace. Use os ids para etiquetar leads.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+Não recebe argumentos no perfil cliente.
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## create_tag
+
+Cria uma etiqueta no workspace. Cor em #RRGGBB ou #RRGGBBAA.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `settings.manage_tags`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `nome` | Sim | string |
+| `descricao` | Não | string |
+| `cor` | Sim | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "descricao": {
+      "type": "string"
+    },
+    "cor": {
+      "type": "string",
+      "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$"
+    }
+  },
+  "required": [
+    "nome",
+    "cor"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## update_tag
+
+Edita o nome, a cor ou a descrição de uma etiqueta do workspace.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `settings.manage_tags`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `etiquetaId` | Sim | string |
+| `nome` | Não | string |
+| `cor` | Não | string |
+| `descricao` | Não | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "etiquetaId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "nome": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "cor": {
+      "type": "string",
+      "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$"
+    },
+    "descricao": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "etiquetaId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## list_static_lists
+
+Lista as listas estáticas de leads do workspace. Quantidade é o total compartilhado da lista; os itens respeitam a visibilidade de quem consulta.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+Não recebe argumentos no perfil cliente.
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## create_static_list
+
+Cria uma lista estática de leads vazia no workspace.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `leads.create`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `nome` | Sim | string |
+| `descricao` | Não | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "descricao": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "nome"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## update_static_list
+
+Edita o nome ou a descrição de uma lista estática do workspace.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `leads.edit`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `listaId` | Sim | string |
+| `nome` | Não | string |
+| `descricao` | Não | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "listaId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "nome": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "descricao": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "listaId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## get_static_list_leads
+
+Consulta os leads de uma lista estática com paginação e as mesmas restrições de responsável do painel.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `listaId` | Sim | string |
+| `pagina` | Não | integer |
+| `limite` | Não | integer |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "listaId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "pagina": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "limite": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    }
+  },
+  "required": [
+    "listaId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## add_leads_to_static_list
+
+Adiciona os leads visíveis à lista estática.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `leads.edit`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `listaId` | Sim | string |
+| `leadIds` | Sim | array |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "listaId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "leadIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "minItems": 1,
+      "maxItems": 100
+    }
+  },
+  "required": [
+    "listaId",
+    "leadIds"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## remove_leads_from_static_list
+
+Remove os leads visíveis da lista estática. Os leads continuam cadastrados.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `leads.edit`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `listaId` | Sim | string |
+| `leadIds` | Sim | array |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "listaId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "leadIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "minItems": 1,
+      "maxItems": 100
+    }
+  },
+  "required": [
+    "listaId",
+    "leadIds"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## list_segmented_lists
+
+Lista os segmentos de leads que a credencial pode ver (privados e de equipe de outras pessoas ficam de fora) e suas regras. Não devolve dados dos leads. Para a frase em português de uma lista, use get_segmented_list.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+Não recebe argumentos no perfil cliente.
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## get_segmented_list
+
+Lê as regras e a frase em português (resumo) de um segmento que a credencial pode ver, antes de editar.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `listaId` | Sim | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "listaId": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "listaId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## create_segmented_list
+
+Cria um segmento de leads com a regra v2 (`{version:2, combinar, filtros}`). Leia get_guide segmentacao e use preview_segmented_list antes de criar.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `leads.create`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `nome` | Sim | string |
+| `descricao` | Não | string |
+| `regras` | Sim | object |
+| `ativa` | Não | boolean |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "descricao": {
+      "type": "string"
+    },
+    "regras": {
+      "type": "object",
+      "additionalProperties": {}
+    },
+    "ativa": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "nome",
+    "regras"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## update_segmented_list
+
+Edita nome, descrição, regras (v2) ou ativação de um segmento. ativa = atualizar sozinha (desligado congela a lista a partir da entrega 2). Regras substituem o objeto anterior; leia get_segmented_list e preserve os filtros que não foram pedidos para remover. Um filtro de lista restrita (outra_lista com listaId null): reenviar a regra igual não muda nada; para mudar a regra, remova o filtro de lista restrita.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `leads.edit`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `listaId` | Sim | string |
+| `nome` | Não | string |
+| `descricao` | Não | string |
+| `regras` | Não | object |
+| `ativa` | Não | boolean |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "listaId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "nome": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "descricao": {
+      "type": "string"
+    },
+    "regras": {
+      "type": "object",
+      "additionalProperties": {}
+    },
+    "ativa": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "listaId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## preview_segmented_list
+
+Mostra quantos leads uma regra v2 traria (com a visibilidade da credencial), até 25 exemplos e a frase em português. Não grava nada.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `regras` | Sim | object |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "regras": {
+      "type": "object",
+      "additionalProperties": {}
+    }
+  },
+  "required": [
+    "regras"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## add_tags_to_lead
+
+Coloca etiquetas em um lead
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `leads.edit`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `leadId` | Sim | Id do lead |
+| `etiquetaIds` | Sim | Ids das etiquetas |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "leadId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do lead"
+    },
+    "etiquetaIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "minItems": 1,
+      "description": "Ids das etiquetas"
+    }
+  },
+  "required": [
+    "leadId",
+    "etiquetaIds"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## remove_tags_from_lead
+
+Tira etiquetas de um lead
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `leads.edit`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `leadId` | Sim | Id do lead |
+| `etiquetaIds` | Sim | Ids das etiquetas |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "leadId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do lead"
+    },
+    "etiquetaIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "minItems": 1,
+      "description": "Ids das etiquetas"
+    }
+  },
+  "required": [
+    "leadId",
+    "etiquetaIds"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>

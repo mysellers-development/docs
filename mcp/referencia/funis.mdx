@@ -1,0 +1,357 @@
+---
+title: "Funis e etapas"
+description: "Ferramentas de funis e etapas: finalidade, argumentos e permissões do MCP."
+---
+
+Referência do catálogo de cliente do MCP 0.8.2, conferida em 21/10/2026. A lista efetiva vem de `tools/list` da sua conexão. [Entenda o catálogo](/mcp/ferramentas).
+
+## list_funnels
+
+Lista os funis do workspace com as etapas de cada um, na ordem do quadro
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `tipo` | Não | Tipo do funil |
+| `ativo` | Não | Só funis ativos (true) ou só inativos (false) |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "sales",
+        "marketing",
+        "support",
+        "custom"
+      ],
+      "description": "Tipo do funil"
+    },
+    "ativo": {
+      "type": "boolean",
+      "description": "Só funis ativos (true) ou só inativos (false)"
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## create_funnel
+
+Cria um funil no workspace. Antes: confira `list_funnels` para não duplicar e escolha `tipo` entre os valores do schema, que fica `sales` quando não vem; leia o guia `funis` em `get_guide`. Depois: o funil nasce com as etapas de ganho e de perdido, nas posições 1000 e 1001, e NÃO vira padrão sozinho; confira as etapas devolvidas. Não faz: criar as demais etapas, que entram uma por chamada em `add_funnel_stage`, marcar como padrão, que é `set_default_funnel`, nem excluir funil.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `deals.manage_funnels`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `nome` | Sim | Nome do funil, como aparece no quadro |
+| `descricao` | Não | Para que serve este funil |
+| `tipo` | Não | Tipo do funil. Padrão: sales |
+| `ativo` | Não | Funil ativo no quadro. Padrão: true |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Nome do funil, como aparece no quadro"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Para que serve este funil"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "sales",
+        "marketing",
+        "support",
+        "custom"
+      ],
+      "description": "Tipo do funil. Padrão: sales"
+    },
+    "ativo": {
+      "type": "boolean",
+      "description": "Funil ativo no quadro. Padrão: true"
+    }
+  },
+  "required": [
+    "nome"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## update_funnel
+
+Altera nome, descrição ou situação de um funil. Informe ao menos um campo
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `deals.manage_funnels`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `funilId` | Sim | Id do funil, de list_funnels |
+| `nome` | Não | Novo nome do funil |
+| `descricao` | Não | Nova descrição do funil |
+| `ativo` | Não | true ativa, false desativa |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "funilId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do funil, de list_funnels"
+    },
+    "nome": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Novo nome do funil"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Nova descrição do funil"
+    },
+    "ativo": {
+      "type": "boolean",
+      "description": "true ativa, false desativa"
+    }
+  },
+  "required": [
+    "funilId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## set_default_funnel
+
+Marca o funil como padrão do workspace. Antes: veja em `list_funnels` qual é o padrão hoje, porque só existe um por workspace e o atual deixa de ser; leia o guia `funis` em `get_guide`. Depois: confira o funil devolvido como padrão. Não faz: criar funil, ordenar etapas nem escolher um substituto quando o funil padrão é desativado, caso em que o workspace fica sem padrão nenhum.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `deals.manage_funnels`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `funilId` | Sim | Id do funil, de list_funnels |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "funilId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do funil, de list_funnels"
+    }
+  },
+  "required": [
+    "funilId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## add_funnel_stage
+
+Cria uma etapa e a acrescenta ao funil na posição informada. Antes: liste as etapas reais com `list_funnels`, escolha uma `ordem` livre de 0 a 999, porque 1000 e 1001 são ganho e perdido, e use um nome da convenção que o bot entende; leia o guia `funis` em `get_guide`. Depois: confira a lista de etapas devolvida. Não faz: posição já ocupada, que é recusada, duas chamadas ao mesmo tempo no mesmo funil, em que a segunda é recusada, nem excluir etapa.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `deals.manage_funnels`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `funilId` | Sim | Id do funil, de list_funnels |
+| `nome` | Sim | Nome da etapa, como aparece na coluna |
+| `descricao` | Não | O que acontece nesta etapa |
+| `cor` | Não | Cor da coluna em hex, por exemplo #FF8800 |
+| `ordem` | Sim | Posição da etapa no quadro, de 0 a 999, da menor para a maior. Precisa estar livre no funil |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "funilId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do funil, de list_funnels"
+    },
+    "nome": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Nome da etapa, como aparece na coluna"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "O que acontece nesta etapa"
+    },
+    "cor": {
+      "type": "string",
+      "pattern": "^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$",
+      "description": "Cor da coluna em hex, por exemplo #FF8800"
+    },
+    "ordem": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 999,
+      "description": "Posição da etapa no quadro, de 0 a 999, da menor para a maior. Precisa estar livre no funil"
+    }
+  },
+  "required": [
+    "funilId",
+    "nome",
+    "ordem"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## update_stage
+
+Altera nome, descrição ou cor de uma etapa. Antes: a etapa é compartilhada, então a mudança vale para TODO funil que a usa, e nome fora da convenção muda o comportamento do bot em silêncio; leia o guia `funis` em `get_guide`. Depois: confira o nome devolvido. Não faz: mexer em etapa global, que volta como não encontrada, mudar a posição, que é `reorder_funnel_stages`, mudar o tipo de fechamento nem excluir a etapa.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `deals.manage_funnels`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `etapaId` | Sim | Id da etapa, das etapas de list_funnels |
+| `nome` | Não | Novo nome da etapa |
+| `descricao` | Não | Nova descrição da etapa |
+| `cor` | Não | Nova cor da coluna em hex |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "etapaId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id da etapa, das etapas de list_funnels"
+    },
+    "nome": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Novo nome da etapa"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Nova descrição da etapa"
+    },
+    "cor": {
+      "type": "string",
+      "pattern": "^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$",
+      "description": "Nova cor da coluna em hex"
+    }
+  },
+  "required": [
+    "etapaId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## reorder_funnel_stages
+
+Muda a posição das etapas de um funil. Antes: liste as etapas reais com `list_funnels` e mande só as que trocam de lugar, cada uma com a posição nova, porque as que ficarem de fora continuam onde estão; leia o guia `funis` em `get_guide`. Depois: confira a ordem devolvida, porque nada impede duas etapas de ficarem na mesma posição. Não faz: duas chamadas ao mesmo tempo no mesmo funil, em que a segunda é recusada; ganho e perdido obedecem igual, e tirá-las do fim desarruma o quadro.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `deals.manage_funnels`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `funilId` | Sim | Id do funil, de list_funnels |
+| `ordem` | Sim | As etapas do funil com a posição nova de cada uma |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "funilId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do funil, de list_funnels"
+    },
+    "ordem": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "etapaId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Id da etapa"
+          },
+          "ordem": {
+            "type": "integer",
+            "description": "Posição da etapa, da menor para a maior"
+          }
+        },
+        "required": [
+          "etapaId",
+          "ordem"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "description": "As etapas do funil com a posição nova de cada uma"
+    }
+  },
+  "required": [
+    "funilId",
+    "ordem"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>

@@ -1,0 +1,305 @@
+---
+title: "Follow-ups"
+description: "Ferramentas de follow-ups: finalidade, argumentos e permissões do MCP."
+---
+
+Referência do catálogo de cliente do MCP 0.8.2, conferida em 21/10/2026. A lista efetiva vem de `tools/list` da sua conexão. [Entenda o catálogo](/mcp/ferramentas).
+
+## list_followup_rules
+
+Lista as regras de follow-up de um agente do workspace com paginação.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `campaigns.view`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `agenteId` | Sim | string |
+| `pagina` | Não | integer |
+| `limite` | Não | integer |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "agenteId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "pagina": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "limite": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    }
+  },
+  "required": [
+    "agenteId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## get_followup_rule
+
+Consulta uma regra de follow-up do workspace. Leia antes de editar para preservar mensagens, filtros e comportamento.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `campaigns.view`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `regraId` | Sim | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "regraId": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "regraId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## create_followup_rule
+
+Cria uma regra de follow-up inativa para o agente. Não envia mensagens. dados segue o contrato do guia de automações. Ative depois com set_followup_rule_status e confirmação.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `campaigns.create`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `agenteId` | Sim | string |
+| `dados` | Sim | Campos do contrato: name, delayHours, delayMinutes, suggestedMessage, behaviorInstructions, maxAttempts e filtros. Consulte o guia de automações. |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "agenteId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "dados": {
+      "type": "object",
+      "additionalProperties": {},
+      "description": "Campos do contrato: name, delayHours, delayMinutes, suggestedMessage, behaviorInstructions, maxAttempts e filtros. Consulte o guia de automações."
+    }
+  },
+  "required": [
+    "agenteId",
+    "dados"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## update_followup_rule
+
+Edita uma regra de follow-up do workspace. dados contém somente campos pedidos. Se estiver ativa, exige prévia e confirmação porque altera possíveis envios automáticos.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `campaigns.edit`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `regraId` | Sim | string |
+| `dados` | Sim | Campos do contrato: name, delayHours, delayMinutes, suggestedMessage, behaviorInstructions, maxAttempts e filtros. Consulte o guia de automações. |
+| `tokenConfirmacao` | Não | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "regraId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "dados": {
+      "type": "object",
+      "additionalProperties": {},
+      "description": "Campos do contrato: name, delayHours, delayMinutes, suggestedMessage, behaviorInstructions, maxAttempts e filtros. Consulte o guia de automações."
+    },
+    "tokenConfirmacao": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "required": [
+    "regraId",
+    "dados"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## set_followup_rule_status
+
+Ativa ou pausa uma regra de follow-up. Ativar exige prévia e confirmação porque permite envios automáticos aos leads elegíveis. Pausar cancela execuções pendentes e remarcadas; reativar não recupera esses cancelamentos. Mensagens já enviadas não são desfeitas.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `campaigns.execute`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `regraId` | Sim | string |
+| `ativo` | Sim | boolean |
+| `tokenConfirmacao` | Não | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "regraId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "ativo": {
+      "type": "boolean"
+    },
+    "tokenConfirmacao": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "required": [
+    "regraId",
+    "ativo"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## list_followup_executions
+
+Consulta as execuções da regra de follow-up com a mesma visibilidade de conversas do painel. Não envia mensagens nem reprocessa execuções.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `campaigns.view`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `regraId` | Sim | string |
+| `pagina` | Não | integer |
+| `limite` | Não | integer |
+| `situacao` | Não | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "regraId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "pagina": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "limite": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "situacao": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "executed",
+        "skipped",
+        "failed",
+        "cancelled"
+      ]
+    }
+  },
+  "required": [
+    "regraId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## get_followup_metrics
+
+Consulta contadores e taxa de resposta da regra de follow-up do workspace, nos últimos dias informados.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `campaigns.view`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `regraId` | Sim | string |
+| `dias` | Não | integer |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "regraId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "dias": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 366
+    }
+  },
+  "required": [
+    "regraId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>

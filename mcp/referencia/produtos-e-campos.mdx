@@ -1,0 +1,905 @@
+---
+title: "Produtos e campos"
+description: "Ferramentas de produtos e campos: finalidade, argumentos e permissões do MCP."
+---
+
+Referência do catálogo de cliente do MCP 0.8.2, conferida em 21/10/2026. A lista efetiva vem de `tools/list` da sua conexão. [Entenda o catálogo](/mcp/ferramentas).
+
+## list_products
+
+Lista os produtos do catálogo do workspace, com busca por nome e descrição
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `products.view`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `page` | Não | Página, começando em 1 (padrão 1) |
+| `limit` | Não | Itens por página (padrão 20, teto 50) |
+| `busca` | Não | Termo livre sobre o nome e a descrição do produto |
+| `apenasAtivos` | Não | Deixa de fora os produtos desativados |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Página, começando em 1 (padrão 1)"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50,
+      "description": "Itens por página (padrão 20, teto 50)"
+    },
+    "busca": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Termo livre sobre o nome e a descrição do produto"
+    },
+    "apenasAtivos": {
+      "type": "boolean",
+      "description": "Deixa de fora os produtos desativados"
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## get_product
+
+Abre a ficha de um produto, com os valores dos campos personalizados dele
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `products.view`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `produtoId` | Sim | Id do produto |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "produtoId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do produto"
+    }
+  },
+  "required": [
+    "produtoId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## create_product
+
+Cadastra um produto no catálogo do workspace. Antes: o preço vai em REAIS, não em centavos; `intervalo` só vale com cobrança recorrente; sem moeda, fica BRL; leia o guia `cadastros` em `get_guide`. Depois: confira preço e moeda na resposta, porque valor em centavos entra como um produto cem vezes mais caro; depois de erro ou tempo esgotado, repita com a MESMA `chaveDoCadastro` e confira `repetido`. Não faz: cadastrar imóvel ou empreendimento, que vai por `validate_product_registration`, criar a DEFINIÇÃO de campo personalizado, que é `create_custom_field`, nem excluir produto.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `products.manage`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `nome` | Sim | Nome do produto |
+| `descricao` | Não | Descrição do produto |
+| `valorUnico` | Não | Preço de venda, em reais (não em centavos) |
+| `valorRecorrente` | Não | Preço da cobrança recorrente, em reais (não em centavos) |
+| `intervalo` | Não | Periodicidade da cobrança recorrente |
+| `moeda` | Não | Moeda em três letras, como BRL. Padrão BRL |
+| `ativo` | Não | Produto disponível para venda. Padrão true |
+| `linkDePagamento` | Não | Link externo de pagamento |
+| `paiId` | Não | Id do produto pai na hierarquia, quando houver |
+| `valoresPersonalizados` | Não | Valores dos campos personalizados de produto, indexados pela chave do campo (ver list_custom_fields) |
+| `chaveDoCadastro` | Não | UUID novo para cada produto a cadastrar. Reenvie o MESMO só ao repetir esta chamada depois de erro ou tempo esgotado: a resposta traz o produto já criado, sem duplicar. Produtos diferentes, chaves diferentes. |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "description": "Nome do produto"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Descrição do produto"
+    },
+    "valorUnico": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Preço de venda, em reais (não em centavos)"
+    },
+    "valorRecorrente": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Preço da cobrança recorrente, em reais (não em centavos)"
+    },
+    "intervalo": {
+      "type": "string",
+      "enum": [
+        "monthly",
+        "yearly"
+      ],
+      "description": "Periodicidade da cobrança recorrente"
+    },
+    "moeda": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3,
+      "description": "Moeda em três letras, como BRL. Padrão BRL"
+    },
+    "ativo": {
+      "type": "boolean",
+      "description": "Produto disponível para venda. Padrão true"
+    },
+    "linkDePagamento": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048,
+      "description": "Link externo de pagamento"
+    },
+    "paiId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do produto pai na hierarquia, quando houver"
+    },
+    "valoresPersonalizados": {
+      "type": "object",
+      "additionalProperties": {},
+      "description": "Valores dos campos personalizados de produto, indexados pela chave do campo (ver list_custom_fields)"
+    },
+    "chaveDoCadastro": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUID novo para cada produto a cadastrar. Reenvie o MESMO só ao repetir esta chamada depois de erro ou tempo esgotado: a resposta traz o produto já criado, sem duplicar. Produtos diferentes, chaves diferentes."
+    }
+  },
+  "required": [
+    "nome"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## update_product
+
+Altera um produto do catálogo. Não troca o modelo do produto nem o workspace
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `products.manage`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `produtoId` | Sim | Id do produto |
+| `nome` | Não | Nome do produto |
+| `descricao` | Não | Descrição do produto |
+| `valorUnico` | Não | Preço de venda, em reais (não em centavos) |
+| `valorRecorrente` | Não | Preço da cobrança recorrente, em reais (não em centavos) |
+| `intervalo` | Não | Periodicidade da cobrança recorrente |
+| `moeda` | Não | Moeda em três letras, como BRL. Padrão BRL |
+| `ativo` | Não | Produto disponível para venda. Padrão true |
+| `linkDePagamento` | Não | Link externo de pagamento |
+| `paiId` | Não | Id do produto pai na hierarquia, quando houver |
+| `valoresPersonalizados` | Não | Valores dos campos personalizados de produto, indexados pela chave do campo (ver list_custom_fields) |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "produtoId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do produto"
+    },
+    "nome": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "description": "Nome do produto"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Descrição do produto"
+    },
+    "valorUnico": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Preço de venda, em reais (não em centavos)"
+    },
+    "valorRecorrente": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Preço da cobrança recorrente, em reais (não em centavos)"
+    },
+    "intervalo": {
+      "type": "string",
+      "enum": [
+        "monthly",
+        "yearly"
+      ],
+      "description": "Periodicidade da cobrança recorrente"
+    },
+    "moeda": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3,
+      "description": "Moeda em três letras, como BRL. Padrão BRL"
+    },
+    "ativo": {
+      "type": "boolean",
+      "description": "Produto disponível para venda. Padrão true"
+    },
+    "linkDePagamento": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048,
+      "description": "Link externo de pagamento"
+    },
+    "paiId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do produto pai na hierarquia, quando houver"
+    },
+    "valoresPersonalizados": {
+      "type": "object",
+      "additionalProperties": {},
+      "description": "Valores dos campos personalizados de produto, indexados pela chave do campo (ver list_custom_fields)"
+    }
+  },
+  "required": [
+    "produtoId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## list_custom_fields
+
+Lista as definições de campo personalizado do workspace para leads, produtos ou oportunidades. É o vocabulário que update_lead, update_deal, create_product e update_product aceitam
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `entidade` | Sim | lead, product ou deal: de quem são os campos |
+| `apenasAtivos` | Não | Deixa de fora os campos desativados. Padrão true |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "entidade": {
+      "type": "string",
+      "enum": [
+        "product",
+        "lead",
+        "deal"
+      ],
+      "description": "lead, product ou deal: de quem são os campos"
+    },
+    "apenasAtivos": {
+      "type": "boolean",
+      "description": "Deixa de fora os campos desativados. Padrão true"
+    }
+  },
+  "required": [
+    "entidade"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## create_custom_field
+
+Cria a DEFINIÇÃO de um campo personalizado de lead, produto ou oportunidade. Antes: veja `list_custom_fields` para não repetir; a `chave` começa com letra minúscula e leva só minúsculas, números e underscore, e não muda depois; `select` e `multiselect` exigem `opcoes`; leia o guia `cadastros` em `get_guide`. Depois: use a chave devolvida para gravar o valor no registro. Não faz: gravar valor nenhum, mudar a chave depois nem excluir a definição.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `settings.manage_custom_fields`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `entidade` | Sim | lead, product ou deal: de quem é o campo |
+| `chave` | Sim | Chave interna do campo, como contrato_assinado. É por ela que o valor é gravado, e ela não muda depois |
+| `rotulo` | Sim | Nome do campo como as pessoas o veem na tela |
+| `tipo` | Sim | text, number, date, select, multiselect ou checkbox |
+| `opcoes` | Não | Opções da lista. Obrigatório em select e multiselect |
+| `obrigatorio` | Não | O campo precisa estar preenchido. Padrão false |
+| `ordem` | Não | Posição do campo no formulário |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "entidade": {
+      "type": "string",
+      "enum": [
+        "product",
+        "lead",
+        "deal"
+      ],
+      "description": "lead, product ou deal: de quem é o campo"
+    },
+    "chave": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 100,
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "description": "Chave interna do campo, como contrato_assinado. É por ela que o valor é gravado, e ela não muda depois"
+    },
+    "rotulo": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "description": "Nome do campo como as pessoas o veem na tela"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "text",
+        "number",
+        "date",
+        "select",
+        "multiselect",
+        "checkbox"
+      ],
+      "description": "text, number, date, select, multiselect ou checkbox"
+    },
+    "opcoes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "rotulo": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Texto que a pessoa escolhe"
+          },
+          "valor": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Valor gravado"
+          }
+        },
+        "required": [
+          "rotulo",
+          "valor"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "description": "Opções da lista. Obrigatório em select e multiselect"
+    },
+    "obrigatorio": {
+      "type": "boolean",
+      "description": "O campo precisa estar preenchido. Padrão false"
+    },
+    "ordem": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Posição do campo no formulário"
+    }
+  },
+  "required": [
+    "entidade",
+    "chave",
+    "rotulo",
+    "tipo"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## update_custom_field
+
+Altera uma definição de campo personalizado. A chave e o tipo do campo não mudam
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `settings.manage_custom_fields`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `campoId` | Sim | Id da definição de campo |
+| `rotulo` | Não | Nome do campo como as pessoas o veem na tela |
+| `opcoes` | Não | Opções da lista, em select e multiselect |
+| `obrigatorio` | Não | O campo precisa estar preenchido |
+| `ativo` | Não | Campo desativado some dos formulários e da validação |
+| `ordem` | Não | Posição do campo no formulário |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "campoId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id da definição de campo"
+    },
+    "rotulo": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "description": "Nome do campo como as pessoas o veem na tela"
+    },
+    "opcoes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "rotulo": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Texto que a pessoa escolhe"
+          },
+          "valor": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Valor gravado"
+          }
+        },
+        "required": [
+          "rotulo",
+          "valor"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "description": "Opções da lista, em select e multiselect"
+    },
+    "obrigatorio": {
+      "type": "boolean",
+      "description": "O campo precisa estar preenchido"
+    },
+    "ativo": {
+      "type": "boolean",
+      "description": "Campo desativado some dos formulários e da validação"
+    },
+    "ordem": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Posição do campo no formulário"
+    }
+  },
+  "required": [
+    "campoId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## validate_product_registration
+
+Confere um cadastro de produto comum, imóvel avulso ou empreendimento (torres, lotes de unidades e fotos por link) sem gravar nada. Devolve `falta`, `corrigir` e `valePerguntar` para você perguntar à pessoa e, com `pronto: true`, a prévia, a `chaveDoCadastro` e o `tokenConfirmacao` de `create_product_registration`. Reenvie o cadastro inteiro a cada rodada, com a mesma `chaveDoCadastro`. Chaves da ficha e passo a passo no guia `cadastros` de `get_guide`.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `products.manage`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `tipo` | Sim | produto (comum, com preço), imovel (avulso) ou empreendimento (com torres e lotes de unidades) |
+| `nome` | Não | Nome do produto |
+| `descricao` | Não | Descrição |
+| `valorUnico` | Não | Só produto comum: preço em reais, não em centavos |
+| `valorRecorrente` | Não | Só produto comum: preço recorrente, em reais |
+| `intervalo` | Não | Só produto comum: periodicidade do valor recorrente |
+| `campos` | Não | Ficha do imóvel com as chaves do catálogo (operations, salePrice, rentPrice, propertyType, district, city, state, bedrooms, privateArea, parkingSpaces...). Ver o guia cadastros |
+| `torres` | Não | Só empreendimento |
+| `lotes` | Não | Só empreendimento: lotes de unidades iguais |
+| `fotos` | Não | Até 20 links HTTPS públicos; a primeira vira a capa |
+| `chaveDoCadastro` | Não | Chave devolvida pela validação. Reenvie a mesma em toda nova rodada do mesmo cadastro |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "produto",
+        "imovel",
+        "empreendimento"
+      ],
+      "description": "produto (comum, com preço), imovel (avulso) ou empreendimento (com torres e lotes de unidades)"
+    },
+    "nome": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Nome do produto"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Descrição"
+    },
+    "valorUnico": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Só produto comum: preço em reais, não em centavos"
+    },
+    "valorRecorrente": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Só produto comum: preço recorrente, em reais"
+    },
+    "intervalo": {
+      "type": "string",
+      "enum": [
+        "monthly",
+        "yearly"
+      ],
+      "description": "Só produto comum: periodicidade do valor recorrente"
+    },
+    "campos": {
+      "type": "object",
+      "additionalProperties": {},
+      "description": "Ficha do imóvel com as chaves do catálogo (operations, salePrice, rentPrice, propertyType, district, city, state, bedrooms, privateArea, parkingSpaces...). Ver o guia cadastros"
+    },
+    "torres": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ref": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Referência curta usada pelos lotes. Sem ela, sai do nome"
+          },
+          "nome": {
+            "type": "string",
+            "description": "Nome da torre"
+          },
+          "campos": {
+            "$ref": "#/properties/campos",
+            "description": "Ficha do imóvel com as chaves do catálogo (operations, salePrice, rentPrice, propertyType, district, city, state, bedrooms, privateArea, parkingSpaces...). Ver o guia cadastros"
+          }
+        },
+        "additionalProperties": false
+      },
+      "maxItems": 200,
+      "description": "Só empreendimento"
+    },
+    "lotes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "torreRef": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Ref ou nome da torre. Sem ela, o lote fica direto no empreendimento"
+          },
+          "quantidade": {
+            "type": "number",
+            "description": "Quantas unidades iguais"
+          },
+          "prefixo": {
+            "type": "string",
+            "maxLength": 120,
+            "description": "Início do nome de cada unidade, como \"Apto\""
+          },
+          "numeroInicial": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "passo": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "digitos": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 6,
+            "description": "Zeros à esquerda do número"
+          },
+          "campos": {
+            "$ref": "#/properties/campos",
+            "description": "Ficha do imóvel com as chaves do catálogo (operations, salePrice, rentPrice, propertyType, district, city, state, bedrooms, privateArea, parkingSpaces...). Ver o guia cadastros"
+          }
+        },
+        "additionalProperties": false
+      },
+      "maxItems": 200,
+      "description": "Só empreendimento: lotes de unidades iguais"
+    },
+    "fotos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 40,
+      "description": "Até 20 links HTTPS públicos; a primeira vira a capa"
+    },
+    "chaveDoCadastro": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "Chave devolvida pela validação. Reenvie a mesma em toda nova rodada do mesmo cadastro"
+    }
+  },
+  "required": [
+    "tipo"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## create_product_registration
+
+Grava o cadastro validado: produto comum, imóvel avulso ou empreendimento com torres, lotes e fotos, numa transação só. Antes: rode `validate_product_registration`, mostre resumo e prévia à pessoa e, com a confirmação dela, envie o MESMO cadastro com `chaveDoCadastro` e `tokenConfirmacao`; leia o guia `cadastros` em `get_guide`. Depois: confira `repetido`; se a resposta for de tempo esgotado, valide de novo com a mesma chave e confirme, sem duplicar. Não faz: editar imóvel já cadastrado nem excluir produto.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `products.manage`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `tipo` | Sim | produto (comum, com preço), imovel (avulso) ou empreendimento (com torres e lotes de unidades) |
+| `nome` | Não | Nome do produto |
+| `descricao` | Não | Descrição |
+| `valorUnico` | Não | Só produto comum: preço em reais, não em centavos |
+| `valorRecorrente` | Não | Só produto comum: preço recorrente, em reais |
+| `intervalo` | Não | Só produto comum: periodicidade do valor recorrente |
+| `campos` | Não | Ficha do imóvel com as chaves do catálogo (operations, salePrice, rentPrice, propertyType, district, city, state, bedrooms, privateArea, parkingSpaces...). Ver o guia cadastros |
+| `torres` | Não | Só empreendimento |
+| `lotes` | Não | Só empreendimento: lotes de unidades iguais |
+| `fotos` | Não | Até 20 links HTTPS públicos; a primeira vira a capa |
+| `chaveDoCadastro` | Sim | Chave devolvida pela validação. Reenvie a mesma em toda nova rodada do mesmo cadastro |
+| `tokenConfirmacao` | Sim | Token devolvido pela validação com pronto: true |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "produto",
+        "imovel",
+        "empreendimento"
+      ],
+      "description": "produto (comum, com preço), imovel (avulso) ou empreendimento (com torres e lotes de unidades)"
+    },
+    "nome": {
+      "type": "string",
+      "maxLength": 255,
+      "description": "Nome do produto"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Descrição"
+    },
+    "valorUnico": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Só produto comum: preço em reais, não em centavos"
+    },
+    "valorRecorrente": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Só produto comum: preço recorrente, em reais"
+    },
+    "intervalo": {
+      "type": "string",
+      "enum": [
+        "monthly",
+        "yearly"
+      ],
+      "description": "Só produto comum: periodicidade do valor recorrente"
+    },
+    "campos": {
+      "type": "object",
+      "additionalProperties": {},
+      "description": "Ficha do imóvel com as chaves do catálogo (operations, salePrice, rentPrice, propertyType, district, city, state, bedrooms, privateArea, parkingSpaces...). Ver o guia cadastros"
+    },
+    "torres": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ref": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Referência curta usada pelos lotes. Sem ela, sai do nome"
+          },
+          "nome": {
+            "type": "string",
+            "description": "Nome da torre"
+          },
+          "campos": {
+            "$ref": "#/properties/campos",
+            "description": "Ficha do imóvel com as chaves do catálogo (operations, salePrice, rentPrice, propertyType, district, city, state, bedrooms, privateArea, parkingSpaces...). Ver o guia cadastros"
+          }
+        },
+        "additionalProperties": false
+      },
+      "maxItems": 200,
+      "description": "Só empreendimento"
+    },
+    "lotes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "torreRef": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Ref ou nome da torre. Sem ela, o lote fica direto no empreendimento"
+          },
+          "quantidade": {
+            "type": "number",
+            "description": "Quantas unidades iguais"
+          },
+          "prefixo": {
+            "type": "string",
+            "maxLength": 120,
+            "description": "Início do nome de cada unidade, como \"Apto\""
+          },
+          "numeroInicial": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "passo": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "digitos": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 6,
+            "description": "Zeros à esquerda do número"
+          },
+          "campos": {
+            "$ref": "#/properties/campos",
+            "description": "Ficha do imóvel com as chaves do catálogo (operations, salePrice, rentPrice, propertyType, district, city, state, bedrooms, privateArea, parkingSpaces...). Ver o guia cadastros"
+          }
+        },
+        "additionalProperties": false
+      },
+      "maxItems": 200,
+      "description": "Só empreendimento: lotes de unidades iguais"
+    },
+    "fotos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 40,
+      "description": "Até 20 links HTTPS públicos; a primeira vira a capa"
+    },
+    "chaveDoCadastro": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "description": "Chave devolvida pela validação. Reenvie a mesma em toda nova rodada do mesmo cadastro"
+    },
+    "tokenConfirmacao": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Token devolvido pela validação com pronto: true"
+    }
+  },
+  "required": [
+    "tipo",
+    "chaveDoCadastro",
+    "tokenConfirmacao"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## export_products
+
+Exporta o catálogo de produtos do workspace em CSV (padrão) ou JSON, com as mesmas colunas do arquivo de Produtos &gt; Exportar, inclusive a ficha do imóvel. O conteúdo volta na resposta até 200 KB; acima disso volta só a contagem e a orientação de baixar pela tela, sem cortar o arquivo. Não exporta Excel nem altera produto.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `products.view`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `formato` | Não | csv (padrão) ou json |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "formato": {
+      "type": "string",
+      "enum": [
+        "csv",
+        "json"
+      ],
+      "description": "csv (padrão) ou json"
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>

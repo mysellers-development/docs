@@ -1,0 +1,202 @@
+---
+title: "Pessoas e cargos"
+description: "Ferramentas de pessoas e cargos: finalidade, argumentos e permissões do MCP."
+---
+
+Referência do catálogo de cliente do MCP 0.8.2, conferida em 21/10/2026. A lista efetiva vem de `tools/list` da sua conexão. [Entenda o catálogo](/mcp/ferramentas).
+
+## list_users
+
+Lista as pessoas do workspace, com a situação de cada uma e o cargo
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `page` | Não | Página, começando em 1 (padrão 1) |
+| `limit` | Não | Itens por página (padrão 20, teto 50) |
+| `status` | Não | Filtra por situação: active, inactive ou pending |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Página, começando em 1 (padrão 1)"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50,
+      "description": "Itens por página (padrão 20, teto 50)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "pending"
+      ],
+      "description": "Filtra por situação: active, inactive ou pending"
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## invite_user
+
+Convida uma pessoa por e-mail para o workspace. Antes: pegue `cargoId` em `list_roles`, e sem ele o aceite usa o cargo padrão; confira `list_users`; leia o guia `cadastros` em `get_guide`. Depois: confira `expiraEm`, sete dias a partir de agora, e `remetente`, que aparece quando a chave de API convidou em nome do proprietário. Não faz: convidar quem já é do workspace nem quem já tem convite pendente, que são recusas; trocar o cargo de quem já entrou, que é `set_user_role`; nem reenviar convite.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `users.invite`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `email` | Sim | E-mail de quem será convidado |
+| `cargoId` | Não | Id do cargo que a pessoa assume ao aceitar. Sem ele, o aceite usa o cargo padrão do workspace |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "E-mail de quem será convidado"
+    },
+    "cargoId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do cargo que a pessoa assume ao aceitar. Sem ele, o aceite usa o cargo padrão do workspace"
+    }
+  },
+  "required": [
+    "email"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## set_user_status
+
+Ativa ou desativa uma pessoa do workspace. Desativar também derruba as chaves de acesso dela
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `users.edit`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `usuarioId` | Sim | Id da pessoa |
+| `ativo` | Sim | true ativa a pessoa, false a desativa |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "usuarioId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id da pessoa"
+    },
+    "ativo": {
+      "type": "boolean",
+      "description": "true ativa a pessoa, false a desativa"
+    }
+  },
+  "required": [
+    "usuarioId",
+    "ativo"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## set_user_role
+
+Define o cargo de uma pessoa do workspace, ou a marca como proprietária. Proprietário não tem cargo: ele enxerga tudo
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `users.manage_roles`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `usuarioId` | Sim | Id da pessoa |
+| `cargoId` | Não | Id do cargo, que precisa ser deste workspace. Não vem junto com donoDoWorkspace |
+| `donoDoWorkspace` | Não | Marca a pessoa como proprietária do workspace, o que remove o cargo dela. Não vem junto com cargoId |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "usuarioId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id da pessoa"
+    },
+    "cargoId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do cargo, que precisa ser deste workspace. Não vem junto com donoDoWorkspace"
+    },
+    "donoDoWorkspace": {
+      "type": "boolean",
+      "const": true,
+      "description": "Marca a pessoa como proprietária do workspace, o que remove o cargo dela. Não vem junto com cargoId"
+    }
+  },
+  "required": [
+    "usuarioId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## list_roles
+
+Lista os cargos do workspace. É daqui que sai o cargoId aceito por invite_user e set_user_role
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+Não recebe argumentos no perfil cliente.
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>

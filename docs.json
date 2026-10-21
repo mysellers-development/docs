@@ -265,6 +265,54 @@
             "pages": ["ai/changelog"]
           }
         ]
+      },
+      {
+        "product": "MySellers MCP",
+        "icon": "plug",
+        "tabs": [
+          {
+            "tab": "Documentação",
+            "groups": [
+              {
+                "group": "Comece aqui",
+                "pages": [
+                  "mcp/visao-geral",
+                  "mcp/conectar",
+                  "mcp/autenticacao-e-permissoes"
+                ]
+              },
+              {
+                "group": "Operação",
+                "pages": [
+                  "mcp/operacao-segura",
+                  "mcp/erros-e-limites"
+                ]
+              },
+              {
+                "group": "Ferramentas",
+                "pages": [
+                  "mcp/ferramentas",
+                  "mcp/referencia/conexao",
+                  "mcp/referencia/conhecimento",
+                  "mcp/referencia/configuracao-agentes",
+                  "mcp/referencia/conversas",
+                  "mcp/referencia/segmentacao",
+                  "mcp/referencia/filas",
+                  "mcp/referencia/myflows",
+                  "mcp/referencia/follow-ups",
+                  "mcp/referencia/relatorios",
+                  "mcp/referencia/leads",
+                  "mcp/referencia/oportunidades",
+                  "mcp/referencia/compromissos",
+                  "mcp/referencia/funis",
+                  "mcp/referencia/agentes",
+                  "mcp/referencia/pessoas",
+                  "mcp/referencia/produtos-e-campos"
+                ]
+              }
+            ]
+          }
+        ]
       }
     ],
     "global": {
