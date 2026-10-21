@@ -1,0 +1,83 @@
+---
+title: "Relatórios"
+description: "Ferramentas de relatórios: finalidade, argumentos e permissões do MCP."
+---
+
+Referência do catálogo de cliente do MCP 0.8.2, conferida em 21/10/2026. A lista efetiva vem de `tools/list` da sua conexão. [Entenda o catálogo](/mcp/ferramentas).
+
+## get_workspace_report
+
+Consulta os indicadores do workspace: novos leads, conversão, reuniões, oportunidades ganhas e mensagens enviadas. Compara com o período anterior usando a regra do painel e America/Sao_Paulo.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `reports.view_all`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `periodo` | Não | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "periodo": {
+      "type": "string",
+      "enum": [
+        "today",
+        "yesterday",
+        "this_week",
+        "last_week",
+        "this_month",
+        "last_month",
+        "7d",
+        "30d",
+        "90d",
+        "all"
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## get_chat_analytics
+
+Consulta volume e situação das conversas/mensagens do período. início e fim são ISO 8601 com fuso. Tempo de resposta é o agregado geral do workspace, sem filtro de período, conforme o painel.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `reports.view_all`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `inicio` | Não | string |
+| `fim` | Não | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "inicio": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "fim": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+

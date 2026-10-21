@@ -1,0 +1,514 @@
+---
+title: "Configuração de agentes"
+description: "Ferramentas de configuração de agentes: finalidade, argumentos e permissões do MCP."
+---
+
+Referência do catálogo de cliente do MCP 0.8.2, conferida em 21/10/2026. A lista efetiva vem de `tools/list` da sua conexão. [Entenda o catálogo](/mcp/ferramentas).
+
+## get_agent_settings
+
+Consulta os vínculos de calendário e a configuração de voz do agente do workspace. Não devolve tokens das contas.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `agents.view`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `agenteId` | Sim | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "agenteId": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "agenteId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## list_agent_funnels
+
+Lista os funis associados ao agente do workspace.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `agents.view`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `agenteId` | Sim | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "agenteId": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "agenteId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## set_agent_funnels
+
+Substitui os funis associados ao agente. Leia list_agent_funnels antes e envie todos os ids que devem continuar; lista vazia remove todos os vínculos. Só aceita funis do workspace.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `agents.edit`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `agenteId` | Sim | string |
+| `funilIds` | Sim | array |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "agenteId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "funilIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "maxItems": 100
+    }
+  },
+  "required": [
+    "agenteId",
+    "funilIds"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## list_agent_stage_behaviors
+
+Consulta os comportamentos por etapa do agente do workspace. As instruções de etapa são distintas do prompt global.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `agents.view`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `agenteId` | Sim | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "agenteId": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "agenteId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## set_agent_stage_behavior
+
+Cria ou substitui o comportamento do agente numa etapa do workspace. Leia list_agent_stage_behaviors antes para preservar instruções e ferramentas. ativo=false pausa esse comportamento.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `agents.edit`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `agenteId` | Sim | string |
+| `etapaId` | Sim | string |
+| `papel` | Sim | string |
+| `instrucoes` | Sim | string |
+| `ferramentas` | Não | array |
+| `etapasDeDestino` | Não | array |
+| `ativo` | Não | boolean |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "agenteId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "etapaId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "papel": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "instrucoes": {
+      "type": "string"
+    },
+    "ferramentas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "etapasDeDestino": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      }
+    },
+    "ativo": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "agenteId",
+    "etapaId",
+    "papel",
+    "instrucoes"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## list_calendar_connections
+
+Lista as contas Google já conectadas e visíveis: contas compartilhadas e a própria; gestores de integrações também veem as demais. Chave de API vê somente contas compartilhadas. Não inicia OAuth.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `agents.view`. Também valem as regras de visibilidade da ferramenta.
+
+Não recebe argumentos no perfil cliente.
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## list_connection_calendars
+
+Lista os calendários de uma conta Google já conectada e visível no workspace. Use conexaoId de list_calendar_connections.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `agents.view`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `conexaoId` | Sim | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "conexaoId": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "conexaoId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## set_agent_calendar
+
+Configura uma conta Google já conectada e seu calendário no agente do workspace. A API confere acesso à conta pessoal ou compartilhada. Envie null nos dois campos para remover o vínculo. Não conecta contas novas.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `agents.edit`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `agenteId` | Sim | string |
+| `conexaoId` | Sim | ver alternativas no schema |
+| `calendarioId` | Sim | ver alternativas no schema |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "agenteId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "conexaoId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "calendarioId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "agenteId",
+    "conexaoId",
+    "calendarioId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## list_agent_voices
+
+Consulta o catálogo de vozes já disponível pela integração ElevenLabs do produto. A lista é paginada, não devolve credenciais e não gera áudio.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `agents.view`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `busca` | Não | string |
+| `genero` | Não | string |
+| `pagina` | Não | integer |
+| `limite` | Não | integer |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "busca": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "genero": {
+      "type": "string",
+      "enum": [
+        "female",
+        "male"
+      ]
+    },
+    "pagina": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "limite": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## ensure_agent_voice
+
+Disponibiliza na conta conectada uma voz do catálogo público antes de selecioná-la no agente. Use os identificadores de list_agent_voices. Não gera áudio.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `agents.edit`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `vozId` | Sim | string |
+| `proprietarioPublicoId` | Sim | string |
+| `nome` | Sim | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "vozId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "proprietarioPublicoId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "nome": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    }
+  },
+  "required": [
+    "vozId",
+    "proprietarioPublicoId",
+    "nome"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## set_agent_voice
+
+Configura a voz e seus parâmetros no agente do workspace. Leia get_agent_settings e preserve parâmetros existentes. vozId=null remove a voz. Não gera nem envia áudio.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `agents.edit`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `agenteId` | Sim | string |
+| `vozId` | Sim | ver alternativas no schema |
+| `configuracao` | Não | object |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "agenteId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "vozId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "configuracao": {
+      "type": "object",
+      "properties": {
+        "speed": {
+          "type": "number",
+          "minimum": 0.25,
+          "maximum": 4
+        },
+        "stability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "similarity_boost": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "style": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "use_speaker_boost": {
+          "type": "boolean"
+        },
+        "intonation": {
+          "type": "string",
+          "enum": [
+            "off",
+            "subtle",
+            "expressive"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "agenteId",
+    "vozId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+

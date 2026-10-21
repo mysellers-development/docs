@@ -21,9 +21,9 @@ A API do MySellers suporta dois metodos de autenticacao:
     ```
   </Card>
   <Card title="API Key" icon="lock">
-    Gerada em **Configuracoes > Tokens** no painel do MySellers. Vinculada automaticamente a um workspace — nao precisa enviar `workspaceId` nos requests.
+    Gerada em **Configurações > Integrações > API de Integração** no painel do MySellers. A chave de workspace já identifica a empresa, sem precisar enviar `workspaceId` nos requests.
     ```bash
-    x-api-key: ms_live_abc123...
+    x-api-key: sk_SUA_CHAVE
     ```
   </Card>
 </CardGroup>
@@ -31,6 +31,12 @@ A API do MySellers suporta dois metodos de autenticacao:
 <Tip>
   Recomendamos usar **API Key** para integracoes server-to-server. O `workspaceId` e preenchido automaticamente pelo token, simplificando os requests.
 </Tip>
+
+## Integração com assistentes de IA
+
+O [MCP da MySellers](/mcp/visao-geral) permite conectar um assistente para consultar e operar a plataforma em `https://api.mysellers.com.br/mcp`.
+
+O contrato de autenticação é próprio: o MCP usa OAuth ou `Authorization: Bearer sk_SUA_CHAVE`. O JWT de sessão do painel não autentica no MCP. O cabeçalho `x-api-key` mostrado acima pertence à integração REST. Veja [autenticação e permissões do MCP](/mcp/autenticacao-e-permissoes) e seus [erros e limites](/mcp/erros-e-limites).
 
 ## Rate Limiting
 

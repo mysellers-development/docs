@@ -1,0 +1,334 @@
+---
+title: "Filas de atendimento"
+description: "Ferramentas de filas de atendimento: finalidade, argumentos e permissões do MCP."
+---
+
+Referência do catálogo de cliente do MCP 0.8.2, conferida em 21/10/2026. A lista efetiva vem de `tools/list` da sua conexão. [Entenda o catálogo](/mcp/ferramentas).
+
+## get_handoff_queue
+
+Consulta a fila e a régua efetiva do workspace antes de configurar.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `rotation.view`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `filaId` | Sim | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "filaId": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "filaId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## create_handoff_queue
+
+Cria uma fila de transferência no workspace. Não distribui leads nem envia mensagens. dados segue o contrato de fila do guia de operação.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `rotation.manage`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `dados` | Sim | Campos do contrato de fila: name, mode, code, isActive, assignLeadOwner e régua. Consulte o guia de operação. workspaceId não é aceito. |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "dados": {
+      "type": "object",
+      "additionalProperties": {},
+      "description": "Campos do contrato de fila: name, mode, code, isActive, assignLeadOwner e régua. Consulte o guia de operação. workspaceId não é aceito."
+    }
+  },
+  "required": [
+    "dados"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## update_handoff_queue
+
+Edita a configuração da fila do workspace. Leia get_handoff_queue antes; não inicia uma transferência.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `rotation.manage`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `filaId` | Sim | string |
+| `dados` | Sim | Campos do contrato de fila: name, mode, code, isActive, assignLeadOwner e régua. Consulte o guia de operação. workspaceId não é aceito. |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "filaId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "dados": {
+      "type": "object",
+      "additionalProperties": {},
+      "description": "Campos do contrato de fila: name, mode, code, isActive, assignLeadOwner e régua. Consulte o guia de operação. workspaceId não é aceito."
+    }
+  },
+  "required": [
+    "filaId",
+    "dados"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## list_handoff_queue_members
+
+Lista os integrantes da fila em ordem de distribuição, sem credenciais nem dados de login.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `rotation.view`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `filaId` | Sim | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "filaId": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "filaId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## add_handoff_queue_member
+
+Adiciona à fila um usuário do workspace. Não atribui leads imediatamente.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `rotation.manage`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `filaId` | Sim | string |
+| `usuarioId` | Sim | string |
+| `posicao` | Não | integer |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "filaId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "usuarioId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "posicao": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "required": [
+    "filaId",
+    "usuarioId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## remove_handoff_queue_member
+
+Remove um integrante da fila do workspace. Use o id de list_handoff_queue_members.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `rotation.manage`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `filaId` | Sim | string |
+| `integranteId` | Sim | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "filaId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "integranteId": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "filaId",
+    "integranteId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## reorder_handoff_queue_members
+
+Define a ordem completa dos integrantes da fila. Envie cada id exatamente uma vez na ordem desejada.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `rotation.manage`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `filaId` | Sim | string |
+| `integrantes` | Sim | array |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "filaId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "integrantes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "minItems": 1,
+      "maxItems": 100
+    }
+  },
+  "required": [
+    "filaId",
+    "integrantes"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## list_handoff_queue_assignments
+
+Consulta as distribuições da fila do workspace. Não transfere leads nem confirma atendimento.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `rotation.view`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `filaId` | Sim | string |
+| `situacao` | Não | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "filaId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "situacao": {
+      "type": "string",
+      "maxLength": 40
+    }
+  },
+  "required": [
+    "filaId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## list_handoff_queues
+
+Lista as filas de transferência do workspace com nome, situação e modo. Use o id ao ajustar a fila do agente por update_ai_agent. Não altera a fila nem envia aviso aos operadores.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `rotation.view`. Também valem as regras de visibilidade da ferramenta.
+
+Não recebe argumentos no perfil cliente.
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+

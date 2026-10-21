@@ -1,0 +1,100 @@
+---
+title: "Conexão e validação"
+description: "Ferramentas de conexão e validação: finalidade, argumentos e permissões do MCP."
+---
+
+Referência do catálogo de cliente do MCP 0.8.2, conferida em 21/10/2026. A lista efetiva vem de `tools/list` da sua conexão. [Entenda o catálogo](/mcp/ferramentas).
+
+## ping
+
+Verifica a conexão com o MySellers
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `msg` | Não | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "msg": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## get_guide
+
+Guias de operação deste servidor. Sem topico, devolve o índice com o resumo de cada guia; com topico, devolve o guia inteiro em markdown
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `topico` | Não | Tópico do guia. Sem ele, devolve o índice. Tópicos: visao-geral, agentes-e-prompt, prompt-qualidade, funis, leads-e-oportunidades, atividades-e-agenda, cadastros, operacao-do-workspace, segmentacao, automacoes |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "topico": {
+      "type": "string",
+      "description": "Tópico do guia. Sem ele, devolve o índice. Tópicos: visao-geral, agentes-e-prompt, prompt-qualidade, funis, leads-e-oportunidades, atividades-e-agenda, cadastros, operacao-do-workspace, segmentacao, automacoes"
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## validate_prompt_modules
+
+Confere um objeto de módulos de prompt sem gravar nada. Devolve se ele seria aceito, os erros que o barram, os avisos de qualidade e o tamanho de cada seção
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `promptModules` | Sim | Objeto completo dos módulos do prompt, como em get_ai_agent |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "promptModules": {
+      "type": "object",
+      "additionalProperties": {},
+      "description": "Objeto completo dos módulos do prompt, como em get_ai_agent"
+    }
+  },
+  "required": [
+    "promptModules"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+

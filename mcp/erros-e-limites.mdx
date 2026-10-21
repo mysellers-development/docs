@@ -1,0 +1,57 @@
+---
+title: "Erros e limites"
+description: "Entenda recusas de acesso, paginação, datas e limites de execução do MCP."
+---
+
+## Transporte
+
+O endpoint operacional aceita `POST /mcp` com JSON-RPC e autenticação Bearer. É stateless: não mantém sessão de transporte nem stream persistente. `GET /mcp` e `DELETE /mcp` respondem 405.
+
+Abrir a URL na barra do navegador não testa uma conexão autenticada. Configure um cliente MCP e use `ping` para conferir o acesso.
+
+## Erros HTTP
+
+| Situação | Significado e ação |
+| --- | --- |
+| 401 | Credencial ausente, inválida, expirada ou revogada; também pode ocorrer quando o workspace não está liberado. Refaça o login ou confira a chave |
+| 403 | Uma origem de navegador pode ser recusada; rotas do painel também exigem permissões próprias. Confira a mensagem e a configuração da integração |
+| 405 no endpoint MCP | Use o transporte HTTP por POST, em vez de abrir GET ou tentar encerrar uma sessão inexistente |
+| 429 | Limite de chamadas ou de falhas de autenticação atingido. Respeite `Retry-After` quando presente e reduza a frequência |
+
+O 401 do MCP inclui `WWW-Authenticate` com a URL de metadata do recurso para a descoberta OAuth.
+
+## Recusas de ferramentas
+
+Uma resposta JSON-RPC pode chegar com HTTP 200 e ainda conter `isError: true` no resultado da ferramenta. Leia o conteúdo; HTTP 200 sozinho não comprova a operação.
+
+| Mensagem ou resultado | Como tratar |
+| --- | --- |
+| Argumento não reconhecido | Confira o schema e remova ou corrija o campo. O servidor pode indicar a ferramenta certa |
+| Sem permissão | O cargo não permite a operação. Não tente outros IDs para contornar |
+| Assinatura inativa | A empresa precisa regularizar a assinatura para alterar dados |
+| Registro não encontrado | Pode não existir ou estar fora da visibilidade da credencial |
+| Confirmação inválida ou expirada | Leia o estado atual, solicite outra prévia e confirme o pedido novamente |
+| A operação demorou demais | Confira o estado antes de repetir; algumas operações podem ter gravado antes da resposta |
+
+## Tempo e frequência
+
+O teto de execução no código é de **25 segundos por chamada**. O limite de frequência padrão é de **120 requisições por minuto**, configurável por ambiente. O contador é por pessoa no OAuth e por chave no acesso por API key; conexões da mesma pessoa compartilham o limite.
+
+Há também proteção separada para falhas de autenticação. Não faça tentativas em rajada com credenciais recusadas.
+
+## Paginação
+
+Confira o schema de cada ferramenta. Muitas consultas usam `page` e `limit`, com página inicial 1, padrão de 20 itens e teto de 50. Outras usam `pagina`/`limite`, `inicio`/`limite` ou regras específicas, como página inicial zero no catálogo de vozes.
+
+Se houver `total` maior que a página retornada, continue a consulta. Quando não houver contagem, siga a paginação prevista pela ferramenta. `truncado: true` sinaliza que a resposta não contém tudo.
+
+## Datas
+
+- **Compromissos:** hora local em `America/Sao_Paulo`, `AAAA-MM-DD` ou `AAAA-MM-DDTHH:MM`, sem `Z` nem deslocamento. Reunião exige hora.
+- **Analytics:** ISO 8601 com fuso, conforme o schema.
+
+Não converta um campo para outro formato sem conferir o contrato. As respostas de compromissos incluem o deslocamento e o timezone usados.
+
+## Repetição após falha
+
+Leia o estado atual antes de repetir uma alteração. Para cadastros com `chaveDoCadastro`, preserve a chave do mesmo pedido e confira `repetido`. Para conhecimento em fila, consulte `get_knowledge_job`. Para automações, configuração ativa e execução concluída são estados diferentes.

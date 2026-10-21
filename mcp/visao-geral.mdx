@@ -1,0 +1,59 @@
+---
+title: "MCP da MySellers"
+description: "Conecte um assistente de IA ao CRM e opere com as permissões da sua empresa."
+---
+
+O MCP (Model Context Protocol) conecta seu assistente de IA à MySellers. Você pode pedir que ele consulte a carteira, organize compromissos, mantenha o catálogo ou configure um agente, usando ferramentas da plataforma.
+
+## Endereço para conectar
+
+```text
+https://api.mysellers.com.br/mcp
+```
+
+O servidor usa Streamable HTTP. Cada chamada é autenticada e vinculada a uma empresa, chamada de workspace. Você pode conectar pelo login da MySellers, com consentimento, ou por uma chave de API. Veja [como conectar](/mcp/conectar).
+
+## O que você pode fazer
+
+| Área | Exemplos |
+| --- | --- |
+| CRM | Consultar leads, criar oportunidades, mover etapas e atribuir responsáveis |
+| Compromissos | Criar atividades, marcar reuniões e consultar a agenda |
+| Agentes de IA | Criar e configurar agentes, validar prompts, guardar versões e restaurá-las |
+| Operação | Consultar conversas, pausar a IA, manter filas e consultar relatórios |
+| Segmentação | Manter etiquetas, listas estáticas e segmentos de leads |
+| Automações | Criar e manter MyFlows e regras de follow-up, com confirmação quando necessário |
+| Catálogo | Cadastrar produtos, imóveis e empreendimentos com fotos, exportar produtos e vinculá-los a oportunidades |
+
+O [catálogo de ferramentas](/mcp/ferramentas) descreve cada operação. As ferramentas disponíveis dependem do escopo da conexão; as permissões da pessoa também são verificadas na execução.
+
+## Seu acesso
+
+No login, o assistente age com as permissões e a visibilidade da sua conta. Na chave de API, o acesso segue o workspace e o escopo concedido à chave. Alterações exigem assinatura ativa da empresa. Leia [autenticação e permissões](/mcp/autenticacao-e-permissoes).
+
+O assistente deve ler os registros antes de alterá-los e mostrar as prévias que exigem confirmação. Uma configuração salva não comprova envio de mensagem nem atendimento real. Veja [operação segura](/mcp/operacao-segura).
+
+## MCP da plataforma e MCP da documentação
+
+| Endereço | Para que serve |
+| --- | --- |
+| `https://api.mysellers.com.br/mcp` | Consultar e operar o CRM, com autenticação |
+| `https://mysellers.mintlify.app/mcp` | Pesquisar e recuperar conteúdo desta documentação |
+
+Use o endereço da API para operar sua empresa. O MCP desta documentação ajuda o assistente a entender os contratos publicados.
+
+## Limites de atuação
+
+O MCP não conecta número novo de WhatsApp ou conta Google, não exclui funis, etapas, produtos ou definições de campos e não altera planos ou cobrança. Também não oferece ferramenta de envio direto de mensagem. Ativar automações pode permitir envios automáticos e exige a confirmação prevista pela ferramenta.
+
+Listas segmentadas de empresas não fazem parte das ferramentas de segmentação de leads. As ferramentas de voz configuram vozes, sem gerar ou enviar áudio.
+
+## Guias dentro do servidor
+
+Peça ao assistente para chamar `get_guide` sem argumentos para ver o índice e, depois, com `topico` para ler um guia. Os mesmos textos estão nos resources `mysellers://guias/<topico>`.
+
+Os tópicos de cliente são `visao-geral`, `agentes-e-prompt`, `prompt-qualidade`, `funis`, `leads-e-oportunidades`, `atividades-e-agenda`, `cadastros`, `operacao-do-workspace`, `segmentacao` e `automacoes`.
+
+<Note>
+  Referência conferida em 21/10/2026 no MCP 0.8.2. O catálogo comum possui 135 ferramentas. Uma conexão somente de leitura recebe um subconjunto; use `tools/list` da sua conexão como referência atual.
+</Note>

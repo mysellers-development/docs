@@ -1,0 +1,560 @@
+---
+title: "Atividades e agenda"
+description: "Ferramentas de atividades e agenda: finalidade, argumentos e permissões do MCP."
+---
+
+Referência do catálogo de cliente do MCP 0.8.2, conferida em 21/10/2026. A lista efetiva vem de `tools/list` da sua conexão. [Entenda o catálogo](/mcp/ferramentas).
+
+## list_activities
+
+Lista as atividades do workspace: por situacao, tipo, responsavel, estagio do quadro, prazo, ou as de um lead ou de uma oportunidade
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `status` | Não | Situação: pending, done ou cancelled |
+| `tipo` | Não | call, meeting, email, whatsapp, task ou visit |
+| `responsavelId` | Não | Id do usuário responsável pela atividade |
+| `estagioId` | Não | Estágio do quadro de atividades. Não é etapa de funil |
+| `busca` | Não | Texto no título da atividade |
+| `leadId` | Não | Atividades presas a este lead |
+| `dealId` | Não | Atividades desta oportunidade, e também as do lead dono dela |
+| `prazoDe` | Não | Prazo a partir de, AAAA-MM-DD, no horário local, sem fuso |
+| `prazoAte` | Não | Prazo até, AAAA-MM-DD, no horário local, sem fuso |
+| `page` | Não | Página, começando em 1 (padrão 1) |
+| `limit` | Não | Itens por página (padrão 20, teto 50) |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "done",
+        "cancelled"
+      ],
+      "description": "Situação: pending, done ou cancelled"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "call",
+        "meeting",
+        "email",
+        "whatsapp",
+        "task",
+        "visit"
+      ],
+      "description": "call, meeting, email, whatsapp, task ou visit"
+    },
+    "responsavelId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do usuário responsável pela atividade"
+    },
+    "estagioId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Estágio do quadro de atividades. Não é etapa de funil"
+    },
+    "busca": {
+      "type": "string",
+      "description": "Texto no título da atividade"
+    },
+    "leadId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Atividades presas a este lead"
+    },
+    "dealId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Atividades desta oportunidade, e também as do lead dono dela"
+    },
+    "prazoDe": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}(?::\\d{2})?)?$",
+      "description": "Prazo a partir de, AAAA-MM-DD, no horário local, sem fuso"
+    },
+    "prazoAte": {
+      "$ref": "#/properties/prazoDe",
+      "description": "Prazo até, AAAA-MM-DD, no horário local, sem fuso"
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Página, começando em 1 (padrão 1)"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50,
+      "description": "Itens por página (padrão 20, teto 50)"
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## create_activity
+
+Cria uma tarefa do CRM (ligação, reunião, e-mail, WhatsApp, tarefa ou visita), opcionalmente ligada a um lead ou a uma oportunidade. Antes: `prazo` é hora de parede, `AAAA-MM-DD` ou `AAAA-MM-DDTHH:MM`, sem fuso, e `recorrencia` faz nascer uma SÉRIE; leia o guia `atividades-e-agenda` em `get_guide`. Depois: confira o responsável, que sem `responsavelId` é quem opera, e a chave de API opera como o proprietário. Não faz: marcar reunião com o lead, que é `create_scheduling`, nem editar a regra da série.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `activities.create`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `tipo` | Sim | call, meeting, email, whatsapp, task ou visit |
+| `titulo` | Sim | Título da atividade |
+| `descricao` | Não | Detalhes da atividade |
+| `prazo` | Não | Prazo no horário local da empresa, no formato AAAA-MM-DD ou AAAA-MM-DDTHH:MM. Não use fuso nem Z |
+| `temHora` | Não | true quando o prazo tem hora marcada |
+| `responsavelId` | Não | Responsável pela atividade. Sem ele, fica com quem está operando: o usuário logado, ou o proprietário do workspace quando a credencial é chave de API |
+| `estagioId` | Não | Estágio do quadro de atividades (A fazer, Em andamento). Não é etapa de funil; sem ele a atividade nasce em A fazer |
+| `leadId` | Não | Lead a que a atividade se refere |
+| `dealId` | Não | Oportunidade a que a atividade se refere |
+| `recorrencia` | Não | Repete a atividade. Cria uma SÉRIE: encerrar depois é delete_activity com escopo "serie" |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "call",
+        "meeting",
+        "email",
+        "whatsapp",
+        "task",
+        "visit"
+      ],
+      "description": "call, meeting, email, whatsapp, task ou visit"
+    },
+    "titulo": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "description": "Título da atividade"
+    },
+    "descricao": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Detalhes da atividade"
+    },
+    "prazo": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}(?::\\d{2})?)?$",
+      "description": "Prazo no horário local da empresa, no formato AAAA-MM-DD ou AAAA-MM-DDTHH:MM. Não use fuso nem Z"
+    },
+    "temHora": {
+      "type": "boolean",
+      "description": "true quando o prazo tem hora marcada"
+    },
+    "responsavelId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Responsável pela atividade. Sem ele, fica com quem está operando: o usuário logado, ou o proprietário do workspace quando a credencial é chave de API"
+    },
+    "estagioId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Estágio do quadro de atividades (A fazer, Em andamento). Não é etapa de funil; sem ele a atividade nasce em A fazer"
+    },
+    "leadId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Lead a que a atividade se refere"
+    },
+    "dealId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Oportunidade a que a atividade se refere"
+    },
+    "recorrencia": {
+      "type": "object",
+      "properties": {
+        "frequencia": {
+          "type": "string",
+          "enum": [
+            "daily",
+            "weekly",
+            "monthly"
+          ],
+          "description": "daily, weekly ou monthly"
+        },
+        "intervalo": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "De quantas em quantas unidades: 2 com weekly é quinzenal"
+        },
+        "diasDaSemana": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 6
+          },
+          "description": "Dias da semana, 0 = domingo. Só faz sentido com weekly"
+        },
+        "diaDoMes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 31,
+          "description": "Dia do mês. Só faz sentido com monthly"
+        },
+        "termino": {
+          "type": "string",
+          "enum": [
+            "never",
+            "on_date",
+            "after_count"
+          ],
+          "description": "never (sem fim), on_date (até uma data) ou after_count"
+        },
+        "terminaEm": {
+          "$ref": "#/properties/prazo",
+          "description": "Data final, quando o término é on_date. AAAA-MM-DD, sem fuso"
+        },
+        "maxOcorrencias": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Quantas ocorrências, quando o término é after_count"
+        }
+      },
+      "required": [
+        "frequencia",
+        "intervalo",
+        "termino"
+      ],
+      "additionalProperties": false,
+      "description": "Repete a atividade. Cria uma SÉRIE: encerrar depois é delete_activity com escopo \"serie\""
+    }
+  },
+  "required": [
+    "tipo",
+    "titulo"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## complete_activity
+
+Marca como concluída uma atividade de quem está operando (o usuário logado, ou o proprietário do workspace quando a credencial é chave de API). Ocorrência de série gera a próxima automaticamente
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `activities.edit`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `atividadeId` | Sim | Id da atividade |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "atividadeId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id da atividade"
+    }
+  },
+  "required": [
+    "atividadeId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## reschedule_activity
+
+Adia o prazo de uma atividade pendente de quem está operando (o usuário logado, ou o proprietário do workspace quando a credencial é chave de API). Não muda responsável, vínculo nem a regra de recorrência
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `activities.edit`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `atividadeId` | Sim | Id da atividade |
+| `prazo` | Sim | Novo prazo no horário local da empresa, no formato AAAA-MM-DD ou AAAA-MM-DDTHH:MM. Não use fuso nem Z |
+| `temHora` | Não | true quando o novo prazo tem hora marcada |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "atividadeId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id da atividade"
+    },
+    "prazo": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}(?::\\d{2})?)?$",
+      "description": "Novo prazo no horário local da empresa, no formato AAAA-MM-DD ou AAAA-MM-DDTHH:MM. Não use fuso nem Z"
+    },
+    "temHora": {
+      "type": "boolean",
+      "description": "true quando o novo prazo tem hora marcada"
+    }
+  },
+  "required": [
+    "atividadeId",
+    "prazo"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## delete_activity
+
+Exclui uma atividade, ou encerra a série inteira. Em dois passos: sem token devolve o que será apagado e um token; com o token, apaga
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `activities.delete`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `atividadeId` | Sim | Id da atividade |
+| `escopo` | Não | uma (só esta ocorrência, padrão) ou serie (encerra a recorrência e apaga esta ocorrência) |
+| `token` | Não | Token devolvido na chamada anterior. Sem ele nada é apagado: a resposta traz o impacto e o token |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "atividadeId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id da atividade"
+    },
+    "escopo": {
+      "type": "string",
+      "enum": [
+        "uma",
+        "serie"
+      ],
+      "description": "uma (só esta ocorrência, padrão) ou serie (encerra a recorrência e apaga esta ocorrência)"
+    },
+    "token": {
+      "type": "string",
+      "description": "Token devolvido na chamada anterior. Sem ele nada é apagado: a resposta traz o impacto e o token"
+    }
+  },
+  "required": [
+    "atividadeId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## list_schedulings
+
+Lista as reuniões e visitas agendadas do workspace: do dia, de um responsável, de um lead ou por situação
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `page` | Não | Página, começando em 1 (padrão 1) |
+| `limit` | Não | Itens por página (padrão 20, teto 50) |
+| `dia` | Não | Só os agendamentos deste dia, AAAA-MM-DD, no fuso do workspace |
+| `responsavelId` | Não | Id do usuário responsável pelo agendamento |
+| `status` | Não | Situação: pending, completed, cancelled ou failed |
+| `leadId` | Não | Agendamentos deste lead |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Página, começando em 1 (padrão 1)"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50,
+      "description": "Itens por página (padrão 20, teto 50)"
+    },
+    "dia": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "Só os agendamentos deste dia, AAAA-MM-DD, no fuso do workspace"
+    },
+    "responsavelId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do usuário responsável pelo agendamento"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "completed",
+        "cancelled",
+        "failed"
+      ],
+      "description": "Situação: pending, completed, cancelled ou failed"
+    },
+    "leadId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Agendamentos deste lead"
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## create_scheduling
+
+Marca uma reunião ou visita. `leadId` é OPCIONAL: sem ele é compromisso pessoal, que só ocupa a agenda (sem histórico de lead, sem oportunidade, sem automação). Antes: `inicio` exige HORA (`AAAA-MM-DDTHH:MM`, hora de parede em America/Sao_Paulo, sem fuso); com `leadId`, o lead precisa ter telefone; leia `atividades-e-agenda` em `get_guide`. Depois: confira o horário devolvido e, com lead sem oportunidade aberta, que uma foi criada com o título da reunião (bug do service); veja `list_deals` e avise quem pediu. Não faz: remarcar, que é cancelar e marcar de novo, nem marcar sobre horário ocupado.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `titulo` | Sim | Assunto da reunião |
+| `leadId` | Não | Id do lead que participa. Omita para um compromisso pessoal, sem ninguém do outro lado |
+| `inicio` | Sim | Começo, AAAA-MM-DDTHH:MM: hora de parede em America/Sao_Paulo, o fuso do workspace. Data sem hora não serve |
+| `fim` | Não | Fim, AAAA-MM-DDTHH:MM, hora de parede em America/Sao_Paulo. Sem ele, o service presume uma hora ao conferir conflito |
+| `responsavelId` | Não | Id do usuário que assume a reunião. Padrão: quem está chamando, ou o proprietário do workspace quando a credencial é chave de API |
+| `descricao` | Não | Pauta ou observação interna |
+| `noGoogle` | Não | Cria também o evento na agenda do Google. Exige uma conta conectada no workspace |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "titulo": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Assunto da reunião"
+    },
+    "leadId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do lead que participa. Omita para um compromisso pessoal, sem ninguém do outro lado"
+    },
+    "inicio": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}(?::\\d{2})?)?$",
+      "description": "Começo, AAAA-MM-DDTHH:MM: hora de parede em America/Sao_Paulo, o fuso do workspace. Data sem hora não serve"
+    },
+    "fim": {
+      "$ref": "#/properties/inicio",
+      "description": "Fim, AAAA-MM-DDTHH:MM, hora de parede em America/Sao_Paulo. Sem ele, o service presume uma hora ao conferir conflito"
+    },
+    "responsavelId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do usuário que assume a reunião. Padrão: quem está chamando, ou o proprietário do workspace quando a credencial é chave de API"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Pauta ou observação interna"
+    },
+    "noGoogle": {
+      "type": "boolean",
+      "description": "Cria também o evento na agenda do Google. Exige uma conta conectada no workspace"
+    }
+  },
+  "required": [
+    "titulo",
+    "inicio"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## cancel_scheduling
+
+Cancela uma reunião agendada e, quando ela nasceu no Google, apaga o evento de lá
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `agendamentoId` | Sim | Id do agendamento |
+| `motivo` | Não | Motivo do cancelamento, que fica no histórico do lead |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "agendamentoId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do agendamento"
+    },
+    "motivo": {
+      "type": "string",
+      "description": "Motivo do cancelamento, que fica no histórico do lead"
+    }
+  },
+  "required": [
+    "agendamentoId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+

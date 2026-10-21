@@ -1,0 +1,832 @@
+---
+title: "Oportunidades"
+description: "Ferramentas de oportunidades: finalidade, argumentos e permissões do MCP."
+---
+
+Referência do catálogo de cliente do MCP 0.8.2, conferida em 21/10/2026. A lista efetiva vem de `tools/list` da sua conexão. [Entenda o catálogo](/mcp/ferramentas).
+
+## list_deals
+
+Lista oportunidades do workspace, por funil, por etapa, por responsável ou a carteira visível. Com funilId ou etapaId, aceita os filtros do painel do quadro (produtos, responsáveis, etiquetas, agentes, valor, entrada na etapa, canal e fonte) e cada oportunidade traz a capa de produtos. Em oportunidade de crédito, valor sai nulo para quem não vê comissão
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `funilId` | Não | Id do funil |
+| `etapaId` | Não | Id da etapa do funil |
+| `status` | Não | Situação da oportunidade: aberta, ganha, perdida |
+| `responsavelId` | Não | Id do usuário responsável pela oportunidade |
+| `busca` | Não | Texto no nome da oportunidade, do lead, telefone ou tag. Não pode vir com responsavelId |
+| `produtoIds` | Não | Só oportunidades com ao menos um destes produtos |
+| `responsavelIds` | Não | Só oportunidades destes responsáveis |
+| `semResponsavel` | Não | Inclui as oportunidades sem responsável |
+| `etiquetaIds` | Não | Só oportunidades com ao menos uma destas etiquetas |
+| `agenteIds` | Não | Só oportunidades atendidas por estes agentes de IA |
+| `semAgente` | Não | Inclui as oportunidades sem agente de IA |
+| `valorMinimo` | Não | Valor mínimo, em reais. Em workspace com proposta de crédito, exige a permissão de ver comissões |
+| `valorMaximo` | Não | Valor máximo, em reais. Em workspace com proposta de crédito, exige a permissão de ver comissões |
+| `entrouNaEtapaDe` | Não | Primeiro dia (AAAA-MM-DD, fuso America/Sao_Paulo) da entrada na etapa atual. Vem junto de entrouNaEtapaAte |
+| `entrouNaEtapaAte` | Não | Último dia (inclusive) da entrada na etapa atual. Vem junto de entrouNaEtapaDe |
+| `canais` | Não | Canal de origem do lead (sem_origem para os antigos) |
+| `fontes` | Não | Fonte de origem do lead (sem_origem para os antigos) |
+| `page` | Não | Página, começando em 1 (padrão 1) |
+| `limit` | Não | Itens por página (padrão 20, teto 50) |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "funilId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do funil"
+    },
+    "etapaId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id da etapa do funil"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "won",
+        "lost"
+      ],
+      "description": "Situação da oportunidade: aberta, ganha, perdida"
+    },
+    "responsavelId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do usuário responsável pela oportunidade"
+    },
+    "busca": {
+      "type": "string",
+      "description": "Texto no nome da oportunidade, do lead, telefone ou tag. Não pode vir com responsavelId"
+    },
+    "produtoIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "minItems": 1,
+      "maxItems": 50,
+      "description": "Só oportunidades com ao menos um destes produtos"
+    },
+    "responsavelIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "minItems": 1,
+      "maxItems": 50,
+      "description": "Só oportunidades destes responsáveis"
+    },
+    "semResponsavel": {
+      "type": "boolean",
+      "description": "Inclui as oportunidades sem responsável"
+    },
+    "etiquetaIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "minItems": 1,
+      "maxItems": 50,
+      "description": "Só oportunidades com ao menos uma destas etiquetas"
+    },
+    "agenteIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "minItems": 1,
+      "maxItems": 50,
+      "description": "Só oportunidades atendidas por estes agentes de IA"
+    },
+    "semAgente": {
+      "type": "boolean",
+      "description": "Inclui as oportunidades sem agente de IA"
+    },
+    "valorMinimo": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Valor mínimo, em reais. Em workspace com proposta de crédito, exige a permissão de ver comissões"
+    },
+    "valorMaximo": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Valor máximo, em reais. Em workspace com proposta de crédito, exige a permissão de ver comissões"
+    },
+    "entrouNaEtapaDe": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "Primeiro dia (AAAA-MM-DD, fuso America/Sao_Paulo) da entrada na etapa atual. Vem junto de entrouNaEtapaAte"
+    },
+    "entrouNaEtapaAte": {
+      "$ref": "#/properties/entrouNaEtapaDe",
+      "description": "Último dia (inclusive) da entrada na etapa atual. Vem junto de entrouNaEtapaDe"
+    },
+    "canais": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "whatsapp",
+          "instagram_direct",
+          "instagram_comment",
+          "messenger",
+          "form_meta",
+          "form_google",
+          "site",
+          "telefone",
+          "email",
+          "manual",
+          "importacao",
+          "crm",
+          "campanha_saida",
+          "api",
+          "sem_origem"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 50,
+      "description": "Canal de origem do lead (sem_origem para os antigos)"
+    },
+    "fontes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "paid_meta",
+          "paid_google",
+          "paid_tiktok",
+          "paid_linkedin",
+          "organic_social",
+          "indicacao",
+          "direto",
+          "outbound",
+          "crm",
+          "importacao",
+          "desconhecido",
+          "sem_origem"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 50,
+      "description": "Fonte de origem do lead (sem_origem para os antigos)"
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Página, começando em 1 (padrão 1)"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50,
+      "description": "Itens por página (padrão 20, teto 50)"
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## get_deal
+
+Abre uma oportunidade do workspace pelo id
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `dealId` | Sim | Id da oportunidade |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "dealId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id da oportunidade"
+    }
+  },
+  "required": [
+    "dealId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## get_deal_history
+
+Lista as movimentações de etapa de uma oportunidade, da mais antiga à mais recente
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `dealId` | Sim | Id da oportunidade |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "dealId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id da oportunidade"
+    }
+  },
+  "required": [
+    "dealId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## create_deal
+
+Cria uma oportunidade para um lead, num funil e numa etapa que existem. Antes: pegue `funilId` e `etapaId` em `list_funnels`, e a etapa PRECISA ser do funil informado; ache o lead em `list_leads` ou `find_lead_by_phone`; leia o guia `leads-e-oportunidades` em `get_guide`. Depois: confira a etapa e o responsável devolvido. Não faz: nascer ganha ou perdida, situação que só muda depois em `update_deal_status`, trocar o responsável, que é `assign_deal`, nem cadastrar o lead.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `nome` | Sim | Nome da oportunidade |
+| `funilId` | Sim | Id do funil |
+| `etapaId` | Sim | Id da etapa inicial, que precisa ser do funil informado |
+| `leadId` | Sim | Id do lead dono da oportunidade |
+| `valor` | Não | Valor da oportunidade, em reais |
+| `previsaoDeFechamento` | Não | Data prevista de fechamento, AAAA-MM-DD (ou AAAA-MM-DDTHH:MM), no horário local, sem fuso |
+| `descricao` | Não | Descrição interna da oportunidade |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Nome da oportunidade"
+    },
+    "funilId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do funil"
+    },
+    "etapaId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id da etapa inicial, que precisa ser do funil informado"
+    },
+    "leadId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do lead dono da oportunidade"
+    },
+    "valor": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Valor da oportunidade, em reais"
+    },
+    "previsaoDeFechamento": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}(?::\\d{2})?)?$",
+      "description": "Data prevista de fechamento, AAAA-MM-DD (ou AAAA-MM-DDTHH:MM), no horário local, sem fuso"
+    },
+    "descricao": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Descrição interna da oportunidade"
+    }
+  },
+  "required": [
+    "nome",
+    "funilId",
+    "etapaId",
+    "leadId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## update_deal
+
+Altera os dados de uma oportunidade. Não move de etapa, não fecha e não troca o responsável
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `dealId` | Sim | Id da oportunidade |
+| `nome` | Não | Nome da oportunidade |
+| `valor` | Não | Valor da oportunidade, em reais |
+| `previsaoDeFechamento` | Não | Data prevista de fechamento, AAAA-MM-DD (ou AAAA-MM-DDTHH:MM), no horário local, sem fuso |
+| `descricao` | Não | Descrição interna da oportunidade |
+| `valoresPersonalizados` | Não | Valores dos campos personalizados da oportunidade, indexados pela chave do campo (ver list_custom_fields). Mandar uma chave só funde com o que já existe; null numa chave a apaga; objeto vazio apaga todas |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "dealId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id da oportunidade"
+    },
+    "nome": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Nome da oportunidade"
+    },
+    "valor": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Valor da oportunidade, em reais"
+    },
+    "previsaoDeFechamento": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}(?::\\d{2})?)?$",
+      "description": "Data prevista de fechamento, AAAA-MM-DD (ou AAAA-MM-DDTHH:MM), no horário local, sem fuso"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Descrição interna da oportunidade"
+    },
+    "valoresPersonalizados": {
+      "type": "object",
+      "additionalProperties": {},
+      "description": "Valores dos campos personalizados da oportunidade, indexados pela chave do campo (ver list_custom_fields). Mandar uma chave só funde com o que já existe; null numa chave a apaga; objeto vazio apaga todas"
+    }
+  },
+  "required": [
+    "dealId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## move_deal_to_stage
+
+Move uma oportunidade para outra etapa do funil. Etapa de fechamento também muda a situação
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `dealId` | Sim | Id da oportunidade |
+| `etapaId` | Sim | Id da etapa de destino, que precisa ser do mesmo funil |
+| `notas` | Não | Observação registrada na movimentação |
+| `motivoDaPerda` | Não | Motivo da perda, quando a etapa de destino é de perda |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "dealId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id da oportunidade"
+    },
+    "etapaId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id da etapa de destino, que precisa ser do mesmo funil"
+    },
+    "notas": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Observação registrada na movimentação"
+    },
+    "motivoDaPerda": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "description": "Motivo da perda, quando a etapa de destino é de perda"
+    }
+  },
+  "required": [
+    "dealId",
+    "etapaId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## update_deal_status
+
+Fecha uma oportunidade como ganha ou perdida, ou reabre uma oportunidade fechada
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `dealId` | Sim | Id da oportunidade |
+| `status` | Sim | won (ganha), lost (perdida) ou open (reabrir) |
+| `motivoDaPerda` | Não | Motivo da perda. Obrigatório quando o status é lost |
+| `observacao` | Não | Observação livre sobre o fechamento ou a reabertura. Vale para ganha e perdida; some quando a oportunidade é reaberta |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "dealId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id da oportunidade"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "won",
+        "lost"
+      ],
+      "description": "won (ganha), lost (perdida) ou open (reabrir)"
+    },
+    "motivoDaPerda": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "description": "Motivo da perda. Obrigatório quando o status é lost"
+    },
+    "observacao": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "description": "Observação livre sobre o fechamento ou a reabertura. Vale para ganha e perdida; some quando a oportunidade é reaberta"
+    }
+  },
+  "required": [
+    "dealId",
+    "status"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## assign_deal
+
+Define quem responde por uma oportunidade. O lead dono dela passa para a mesma pessoa
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `deals.assign`, `leads.assign`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `dealId` | Sim | Id da oportunidade |
+| `responsavelId` | Sim | Id do usuário que passa a responder pela oportunidade |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "dealId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id da oportunidade"
+    },
+    "responsavelId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do usuário que passa a responder pela oportunidade"
+    }
+  },
+  "required": [
+    "dealId",
+    "responsavelId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## delete_deal
+
+Exclui uma oportunidade. Em dois passos: sem token devolve o que será apagado e um token; com o token, apaga
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `deals.delete`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `dealId` | Sim | Id da oportunidade |
+| `token` | Não | Token devolvido na chamada anterior. Sem ele nada é apagado: a resposta traz o impacto e o token |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "dealId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id da oportunidade"
+    },
+    "token": {
+      "type": "string",
+      "description": "Token devolvido na chamada anterior. Sem ele nada é apagado: a resposta traz o impacto e o token"
+    }
+  },
+  "required": [
+    "dealId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## list_deal_products
+
+Lista os produtos vinculados a uma oportunidade: nome, código do imóvel, operação, quantidade, preço unitário, desconto, preço líquido e se ainda pode ser oferecido ao lead. Em oportunidade de crédito, os preços saem nulos para quem não vê comissão
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `products.view`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `dealId` | Sim | Id da oportunidade |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "dealId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id da oportunidade"
+    }
+  },
+  "required": [
+    "dealId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## add_deal_product
+
+Vincula um produto do catálogo a uma oportunidade e recalcula o valor dela. Antes: ache o produto em `list_products`; imóvel exige `operacao` e `precoUnitario`; o preço vai em reais; leia o guia `leads-e-oportunidades` em `get_guide`. Depois: confira o item e o preço líquido na resposta. Não faz: cadastrar produto, enviar o produto ao lead nem vincular o mesmo produto duas vezes com a mesma operação, que é `update_deal_product`.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `products.manage`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `dealId` | Sim | Id da oportunidade |
+| `produtoId` | Sim | Id do produto, de list_products |
+| `quantidade` | Não | Quantas unidades. Escolhe a faixa de preço quando houver |
+| `precoUnitario` | Não | Preço negociado por unidade, em reais. Obrigatório para imóvel; zero é preço válido |
+| `descontoPercentual` | Não | Desconto do item, em porcentagem |
+| `operacao` | Não | sale (venda), rent (locação), season (temporada) ou exchange (permuta). Obrigatória para imóvel |
+| `observacoes` | Não | Anotação do item |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "dealId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id da oportunidade"
+    },
+    "produtoId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do produto, de list_products"
+    },
+    "quantidade": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Quantas unidades. Escolhe a faixa de preço quando houver"
+    },
+    "precoUnitario": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Preço negociado por unidade, em reais. Obrigatório para imóvel; zero é preço válido"
+    },
+    "descontoPercentual": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Desconto do item, em porcentagem"
+    },
+    "operacao": {
+      "type": "string",
+      "enum": [
+        "sale",
+        "rent",
+        "season",
+        "exchange"
+      ],
+      "description": "sale (venda), rent (locação), season (temporada) ou exchange (permuta). Obrigatória para imóvel"
+    },
+    "observacoes": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "Anotação do item"
+    }
+  },
+  "required": [
+    "dealId",
+    "produtoId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## update_deal_product
+
+Altera um item de produto da oportunidade (quantidade, preço, desconto, operação ou anotação) e recalcula o valor dela. Mudar a quantidade de produto com tabela de faixas reprecifica o item. Envie só o que muda; o itemId vem de list_deal_products. Não troca o produto do item
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `products.manage`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `dealId` | Sim | Id da oportunidade |
+| `itemId` | Sim | Id do item, de list_deal_products (não é o produtoId) |
+| `quantidade` | Não | Quantas unidades. Escolhe a faixa de preço quando houver |
+| `precoUnitario` | Não | Preço negociado por unidade, em reais. Obrigatório para imóvel; zero é preço válido |
+| `descontoPercentual` | Não | Desconto do item, em porcentagem |
+| `operacao` | Não | sale (venda), rent (locação), season (temporada) ou exchange (permuta). Obrigatória para imóvel |
+| `observacoes` | Não | Anotação do item |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "dealId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id da oportunidade"
+    },
+    "itemId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do item, de list_deal_products (não é o produtoId)"
+    },
+    "quantidade": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Quantas unidades. Escolhe a faixa de preço quando houver"
+    },
+    "precoUnitario": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Preço negociado por unidade, em reais. Obrigatório para imóvel; zero é preço válido"
+    },
+    "descontoPercentual": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Desconto do item, em porcentagem"
+    },
+    "operacao": {
+      "type": "string",
+      "enum": [
+        "sale",
+        "rent",
+        "season",
+        "exchange"
+      ],
+      "description": "sale (venda), rent (locação), season (temporada) ou exchange (permuta). Obrigatória para imóvel"
+    },
+    "observacoes": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "Anotação do item"
+    }
+  },
+  "required": [
+    "dealId",
+    "itemId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## remove_deal_product
+
+Desvincula um item de produto da oportunidade e recalcula o valor dela. O produto continua no catálogo; o itemId vem de list_deal_products. Não exclui o produto nem mexe nos outros itens
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `products.manage`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `dealId` | Sim | Id da oportunidade |
+| `itemId` | Sim | Id do item, de list_deal_products (não é o produtoId) |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "dealId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id da oportunidade"
+    },
+    "itemId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do item, de list_deal_products (não é o produtoId)"
+    }
+  },
+  "required": [
+    "dealId",
+    "itemId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+

@@ -1,0 +1,332 @@
+---
+title: "MyFlows"
+description: "Ferramentas de myflows: finalidade, argumentos e permissões do MCP."
+---
+
+Referência do catálogo de cliente do MCP 0.8.2, conferida em 21/10/2026. A lista efetiva vem de `tools/list` da sua conexão. [Entenda o catálogo](/mcp/ferramentas).
+
+## list_myflows
+
+Lista os MyFlows do workspace, incluindo inativos. Não devolve segredos de webhook nem credenciais.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `flows.view`. Também valem as regras de visibilidade da ferramenta.
+
+Não recebe argumentos no perfil cliente.
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## get_myflow
+
+Lê o grafo, o gatilho e a versão de um MyFlow do workspace. Leia antes de editar; a versão protege alterações concorrentes do painel.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `flows.view`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `fluxoId` | Sim | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "fluxoId": {
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [
+    "fluxoId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## create_myflow
+
+Cria um MyFlow inativo. graph é o grafo completo nodes/edges do contrato MyFlows, sem credenciais literais. Consulte o guia de automações antes. Para ativar, use set_myflow_status.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `flows.manage`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `nome` | Sim | string |
+| `descricao` | Não | string |
+| `graph` | Sim | object |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "descricao": {
+      "type": "string"
+    },
+    "graph": {
+      "type": "object",
+      "additionalProperties": {}
+    }
+  },
+  "required": [
+    "nome",
+    "graph"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## update_myflow
+
+Edita um MyFlow usando a versão de get_myflow. dados: name, description, graph, triggerType ou triggerConfig. Graph substitui o grafo completo. Se estiver ativo, exige prévia e confirmação porque muda a automação em execução.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `flows.manage`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `fluxoId` | Sim | string |
+| `versao` | Sim | integer |
+| `dados` | Sim | object |
+| `tokenConfirmacao` | Não | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "fluxoId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "versao": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "dados": {
+      "type": "object",
+      "additionalProperties": {}
+    },
+    "tokenConfirmacao": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "required": [
+    "fluxoId",
+    "versao",
+    "dados"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## set_myflow_status
+
+Ativa ou pausa um MyFlow do workspace. Ativar exige prévia e confirmação, valida gatilho, grafo e conexões e pode iniciar ações automáticas. Envie a versão de get_myflow.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `flows.manage`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `fluxoId` | Sim | string |
+| `versao` | Sim | integer |
+| `ativo` | Sim | boolean |
+| `tokenConfirmacao` | Não | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "fluxoId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "versao": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "ativo": {
+      "type": "boolean"
+    },
+    "tokenConfirmacao": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "required": [
+    "fluxoId",
+    "versao",
+    "ativo"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## list_myflow_versions
+
+Lista versões arquivadas de um MyFlow do workspace com paginação.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `flows.view`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `fluxoId` | Sim | string |
+| `limite` | Não | integer |
+| `inicio` | Não | integer |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "fluxoId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "limite": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "inicio": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "fluxoId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## get_myflow_version
+
+Consulta o grafo de uma versão arquivada do MyFlow do workspace, sem segredos. Pode usar esse grafo em update_myflow para restaurar, preservando a versão atual.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `flows.view`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `fluxoId` | Sim | string |
+| `versao` | Sim | integer |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "fluxoId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "versao": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "required": [
+    "fluxoId",
+    "versao"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## list_myflow_executions
+
+Lista as execuções do MyFlow do workspace com situação e horários. Não inicia execuções. Conteúdo de mensagens e payloads de conectores não é devolvido.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `flows.view`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `fluxoId` | Sim | string |
+| `limite` | Não | integer |
+| `inicio` | Não | integer |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "fluxoId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "limite": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "inicio": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "fluxoId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+

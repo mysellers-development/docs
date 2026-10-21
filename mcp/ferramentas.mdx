@@ -1,0 +1,42 @@
+---
+title: "Catálogo de ferramentas"
+description: "Consulte as ferramentas por área, os argumentos aceitos e as permissões exigidas."
+---
+
+O catálogo comum do MCP 0.8.2 possui **135 ferramentas**, conferidas em 21/10/2026. Esta referência foi montada a partir dos schemas do código da API, no perfil cliente com escopos de leitura e escrita, sem executar operações de negócio.
+
+A sua conexão pode receber um subconjunto por escopo. Permissões de cargo, visibilidade e assinatura são verificadas na execução. Consulte [autenticação e permissões](/mcp/autenticacao-e-permissoes) e use `tools/list` como referência da conexão atual.
+
+| Área | Ferramentas |
+| --- | --- |
+| [Conexão e validação](/mcp/referencia/conexao) | 3 |
+| [Conhecimento](/mcp/referencia/conhecimento) | 8 |
+| [Configuração de agentes](/mcp/referencia/configuracao-agentes) | 11 |
+| [Conversas](/mcp/referencia/conversas) | 7 |
+| [Etiquetas e listas](/mcp/referencia/segmentacao) | 16 |
+| [Filas de atendimento](/mcp/referencia/filas) | 9 |
+| [MyFlows](/mcp/referencia/myflows) | 8 |
+| [Follow-ups](/mcp/referencia/follow-ups) | 7 |
+| [Relatórios](/mcp/referencia/relatorios) | 2 |
+| [Leads](/mcp/referencia/leads) | 10 |
+| [Oportunidades](/mcp/referencia/oportunidades) | 13 |
+| [Atividades e agenda](/mcp/referencia/compromissos) | 8 |
+| [Funis e etapas](/mcp/referencia/funis) | 7 |
+| [Agentes e prompts](/mcp/referencia/agentes) | 11 |
+| [Pessoas e cargos](/mcp/referencia/pessoas) | 5 |
+| [Produtos e campos](/mcp/referencia/produtos-e-campos) | 10 |
+
+## Como ler a referência
+
+Cada ferramenta informa sua finalidade, escopo, permissões adicionais e argumentos. O schema completo apresenta tipos, enums, limites e campos aninhados. Um campo opcional no schema pode ser exigido pelo contexto de negócio: siga o guia e a devolutiva da operação.
+
+Não envie `workspaceId` no perfil cliente. A empresa vem da credencial e argumentos extras são recusados. A documentação de ferramentas administrativas é destinada à operação interna e não integra este catálogo.
+
+## Exemplos de uso
+
+- “Liste meus compromissos de amanhã.”
+- “Encontre este lead pelo telefone e mostre as oportunidades abertas.”
+- “Valide o cadastro deste imóvel e me mostre o que falta antes de gravar.”
+- “Mostre a prévia antes de ativar esta automação.”
+
+Veja [operação segura](/mcp/operacao-segura) para os roteiros de confirmação, prompt e cadastro.

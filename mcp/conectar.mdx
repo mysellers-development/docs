@@ -1,0 +1,79 @@
+---
+title: "Como conectar"
+description: "Conecte pelo login da MySellers ou por chave de API e saiba como revogar o acesso."
+---
+
+Use o endereço `https://api.mysellers.com.br/mcp`. Pelo login, você autoriza o aplicativo na tela de consentimento da MySellers. Por chave de API, a empresa e o escopo já estão definidos na chave.
+
+## Login e consentimento
+
+No aplicativo que oferece servidores MCP remotos com OAuth, adicione um servidor chamado **MySellers** com o endereço acima. Inicie a autenticação, entre na MySellers, confira o aplicativo e o acesso solicitado e autorize.
+
+Os nomes dos menus variam entre versões dos aplicativos. O tutorial da tela **Configurações > Integrações > Conexões** da MySellers orienta a conexão dos clientes suportados. A disponibilidade de conectores personalizados também depende do aplicativo e da conta usada nele.
+
+### Claude Code
+
+No terminal:
+
+```bash
+claude mcp add --transport http --scope user mysellers https://api.mysellers.com.br/mcp
+```
+
+Dentro do Claude Code, abra `/mcp`, selecione `mysellers` e siga a autenticação no navegador. O escopo `user` torna a configuração disponível nos seus projetos. [Documentação do Claude Code](https://code.claude.com/docs/en/mcp).
+
+### Codex
+
+Adicione o servidor e inicie o login:
+
+```bash
+codex mcp add mysellers --url https://api.mysellers.com.br/mcp
+codex mcp login mysellers
+```
+
+Autorize na MySellers. `codex mcp list` mostra os servidores configurados. Use uma versão com suporte a OAuth por CIMD, o mecanismo anunciado pela MySellers. [Documentação oficial do Codex](https://learn.chatgpt.com/docs/extend/mcp?surface=cli).
+
+### Claude e ChatGPT
+
+Na área de conectores ou aplicativos personalizados do cliente, adicione o endereço do servidor, selecione OAuth quando solicitado e siga o login da MySellers. Consulte o tutorial do painel para os passos do aplicativo. Não substitua esse login pelo JWT de sessão do painel.
+
+## Chave de API
+
+Quem gerencia as integrações pode criar uma chave em **Configurações > Integrações > API de Integração**. Escolha o escopo necessário, guarde o valor apresentado na criação e configure o cliente para enviar:
+
+```http
+Authorization: Bearer sk_SUA_CHAVE
+```
+
+Esse é o cabeçalho do MCP. Na API REST, o cabeçalho da chave é `x-api-key`.
+
+### Cursor por chave
+
+No arquivo `~/.cursor/mcp.json` ou `.cursor/mcp.json` do projeto, acrescente o servidor preservando as outras configurações:
+
+```json
+{
+  "mcpServers": {
+    "mysellers": {
+      "url": "https://api.mysellers.com.br/mcp",
+      "headers": {
+        "Authorization": "Bearer ${env:MYSELLERS_API_KEY}"
+      }
+    }
+  }
+}
+```
+
+Defina `MYSELLERS_API_KEY` no ambiente em que o Cursor é iniciado e reinicie o aplicativo para carregar o valor. A chave fica fora do arquivo compartilhado. Este é o caminho por chave documentado para a MySellers; não requer login OAuth no Cursor. [Configuração MCP do Cursor](https://cursor.com/docs/mcp).
+
+Uma chave de workspace não tem cargo de pessoa: seu acesso é limitado pelo workspace e pelo escopo, sem o recorte de carteira de um usuário. Leia [permissões](/mcp/autenticacao-e-permissoes) antes de escolher esse caminho.
+
+## Conferir a conexão
+
+Peça ao assistente para verificar a conexão com `ping` e consultar `get_guide`. Isso valida o acesso ao servidor, sem criar registros nem enviar mensagens. Depois, ele deve usar o guia da tarefa antes de operar.
+
+## Revogar
+
+- **Login OAuth:** revogue a conexão em **Configurações > Integrações > Conexões**. A possibilidade de ver e revogar conexões de colegas depende da permissão de gerenciar integrações.
+- **Chave de API:** revogue a própria chave em **API de Integração**. A lista de conexões OAuth não revoga chaves.
+
+Remover a configuração do aplicativo não substitui a revogação do acesso na MySellers.

@@ -1,0 +1,560 @@
+---
+title: "Leads"
+description: "Ferramentas de leads: finalidade, argumentos e permissões do MCP."
+---
+
+Referência do catálogo de cliente do MCP 0.8.2, conferida em 21/10/2026. A lista efetiva vem de `tools/list` da sua conexão. [Entenda o catálogo](/mcp/ferramentas).
+
+## list_leads
+
+Lista leads do workspace com filtros de texto, etiquetas, etapa do funil, responsável e campo personalizado
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `busca` | Não | Texto procurado no nome do lead |
+| `tags` | Não | Nomes de etiquetas; o lead entra se tiver qualquer uma |
+| `etapa` | Não | Nome da etapa do funil em que o lead tem oportunidade |
+| `responsavelId` | Não | Id do usuário responsável pelo lead |
+| `campoPersonalizado` | Não | Filtro por um campo personalizado do lead |
+| `page` | Não | Página, começando em 1 (padrão 1) |
+| `limit` | Não | Itens por página (padrão 20, teto 50) |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "busca": {
+      "type": "string",
+      "description": "Texto procurado no nome do lead"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Nomes de etiquetas; o lead entra se tiver qualquer uma"
+    },
+    "etapa": {
+      "type": "string",
+      "description": "Nome da etapa do funil em que o lead tem oportunidade"
+    },
+    "responsavelId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do usuário responsável pelo lead"
+    },
+    "campoPersonalizado": {
+      "type": "object",
+      "properties": {
+        "chave": {
+          "type": "string",
+          "pattern": "^[a-z_][a-z0-9_]*$",
+          "description": "Nome do campo personalizado, em minúsculas"
+        },
+        "valor": {
+          "type": "string",
+          "description": "Valor exato procurado"
+        }
+      },
+      "required": [
+        "chave",
+        "valor"
+      ],
+      "additionalProperties": false,
+      "description": "Filtro por um campo personalizado do lead"
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Página, começando em 1 (padrão 1)"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50,
+      "description": "Itens por página (padrão 20, teto 50)"
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## get_lead
+
+Abre um lead do workspace pelo id, com os valores dos campos personalizados
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `leadId` | Sim | Id do lead |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "leadId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do lead"
+    }
+  },
+  "required": [
+    "leadId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## find_lead_by_phone
+
+Procura leads do workspace por número de telefone, em qualquer formato
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `telefone` | Sim | Telefone com ou sem código do país e nono dígito |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "telefone": {
+      "type": "string",
+      "description": "Telefone com ou sem código do país e nono dígito"
+    }
+  },
+  "required": [
+    "telefone"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## get_lead_timeline
+
+Lista a linha do tempo de um lead: interações, mudanças e eventos registrados
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `leadId` | Sim | Id do lead |
+| `page` | Não | Página, começando em 1 (padrão 1) |
+| `limit` | Não | Itens por página (padrão 20, teto 50) |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "leadId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do lead"
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Página, começando em 1 (padrão 1)"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50,
+      "description": "Itens por página (padrão 20, teto 50)"
+    }
+  },
+  "required": [
+    "leadId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## create_lead
+
+Cadastra um lead no workspace. Antes: procure antes com `find_lead_by_phone` ou `list_leads`; o telefone vai com DDD, com ou sem 55; leia o guia `leads-e-oportunidades` em `get_guide`. Depois: confira `criado`, porque telefone já cadastrado devolve `false` e o lead que já existia, sem alterar nada nele. Não faz: criar oportunidade, que é `create_deal`, nem cadastrar quando o telefone é de lead de outra carteira, caso em que a recusa vem sem dado nenhum.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `leads.create`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `nome` | Sim | Nome completo do lead |
+| `origem` | Sim | De onde veio o lead: whatsapp, indicacao, site, anuncio |
+| `telefone` | Não | Telefone com DDD, com ou sem código do país |
+| `email` | Não | E-mail do lead |
+| `cpf` | Não | CPF, só dígitos ou formatado |
+| `cnpj` | Não | CNPJ, só dígitos ou formatado |
+| `tipo` | Não | Pessoa (individual) ou empresa (enterprise) |
+| `status` | Não | Situação inicial do lead no funil |
+| `anotacoes` | Não | Observação interna do lead |
+| `responsavelId` | Não | Id do usuário que fica responsável pelo lead |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "minLength": 2,
+      "description": "Nome completo do lead"
+    },
+    "origem": {
+      "type": "string",
+      "minLength": 1,
+      "description": "De onde veio o lead: whatsapp, indicacao, site, anuncio"
+    },
+    "telefone": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Telefone com DDD, com ou sem código do país"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "E-mail do lead"
+    },
+    "cpf": {
+      "type": "string",
+      "minLength": 1,
+      "description": "CPF, só dígitos ou formatado"
+    },
+    "cnpj": {
+      "type": "string",
+      "minLength": 1,
+      "description": "CNPJ, só dígitos ou formatado"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "individual",
+        "enterprise"
+      ],
+      "description": "Pessoa (individual) ou empresa (enterprise)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "contacted",
+        "engaged",
+        "customer",
+        "lost"
+      ],
+      "description": "Situação inicial do lead no funil"
+    },
+    "anotacoes": {
+      "type": "string",
+      "description": "Observação interna do lead"
+    },
+    "responsavelId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do usuário que fica responsável pelo lead"
+    }
+  },
+  "required": [
+    "nome",
+    "origem"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## update_lead
+
+Altera os dados cadastrais de um lead. Não troca o responsável nem a situação no funil
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `leads.edit`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `leadId` | Sim | Id do lead |
+| `nome` | Não | Nome completo do lead |
+| `email` | Não | E-mail do lead |
+| `telefone` | Não | Telefone com DDD |
+| `cpf` | Não | CPF, só dígitos ou formatado |
+| `cnpj` | Não | CNPJ, só dígitos ou formatado |
+| `tipo` | Não | Pessoa (individual) ou empresa (enterprise) |
+| `anotacoes` | Não | Observação interna do lead |
+| `valoresPersonalizados` | Não | Valores dos campos personalizados do lead, indexados pela chave do campo (ver list_custom_fields). Mandar uma chave só funde com o que já existe; null numa chave a apaga; objeto vazio apaga todas |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "leadId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do lead"
+    },
+    "nome": {
+      "type": "string",
+      "minLength": 2,
+      "description": "Nome completo do lead"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "E-mail do lead"
+    },
+    "telefone": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Telefone com DDD"
+    },
+    "cpf": {
+      "type": "string",
+      "minLength": 1,
+      "description": "CPF, só dígitos ou formatado"
+    },
+    "cnpj": {
+      "type": "string",
+      "minLength": 1,
+      "description": "CNPJ, só dígitos ou formatado"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "individual",
+        "enterprise"
+      ],
+      "description": "Pessoa (individual) ou empresa (enterprise)"
+    },
+    "anotacoes": {
+      "type": "string",
+      "description": "Observação interna do lead"
+    },
+    "valoresPersonalizados": {
+      "type": "object",
+      "additionalProperties": {},
+      "description": "Valores dos campos personalizados do lead, indexados pela chave do campo (ver list_custom_fields). Mandar uma chave só funde com o que já existe; null numa chave a apaga; objeto vazio apaga todas"
+    }
+  },
+  "required": [
+    "leadId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## change_lead_status
+
+Muda a situação de um lead no funil: novo, contatado, engajado, cliente ou perdido
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `leads.edit`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `leadId` | Sim | Id do lead |
+| `status` | Sim | new (novo), contacted (contatado), engaged (engajado), customer (cliente) ou lost (perdido) |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "leadId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do lead"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "contacted",
+        "engaged",
+        "customer",
+        "lost"
+      ],
+      "description": "new (novo), contacted (contatado), engaged (engajado), customer (cliente) ou lost (perdido)"
+    }
+  },
+  "required": [
+    "leadId",
+    "status"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## assign_lead
+
+Define o vendedor responsável por um lead. Responsável nulo tira o lead da carteira de todo mundo
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `leads.assign`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `leadId` | Sim | Id do lead |
+| `responsavelId` | Sim | Id do usuário que assume o lead, ou null para desatribuir |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "leadId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do lead"
+    },
+    "responsavelId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Id do usuário que assume o lead, ou null para desatribuir"
+    }
+  },
+  "required": [
+    "leadId",
+    "responsavelId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## add_lead_note
+
+Registra uma anotação na linha do tempo de um lead
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `leads.edit`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `leadId` | Sim | Id do lead |
+| `texto` | Sim | Texto da anotação |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "leadId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do lead"
+    },
+    "texto": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Texto da anotação"
+    }
+  },
+  "required": [
+    "leadId",
+    "texto"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## delete_lead
+
+Exclui um lead, com as oportunidades e as conversas dele. Em dois passos: sem token devolve o que será apagado e um token; com o token, apaga
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `leads.delete`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `leadId` | Sim | Id do lead |
+| `token` | Não | Token devolvido na chamada anterior. Sem ele nada é apagado: a resposta traz o impacto e o token |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "leadId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do lead"
+    },
+    "token": {
+      "type": "string",
+      "description": "Token devolvido na chamada anterior. Sem ele nada é apagado: a resposta traz o impacto e o token"
+    }
+  },
+  "required": [
+    "leadId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+

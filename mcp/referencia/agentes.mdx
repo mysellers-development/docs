@@ -1,0 +1,584 @@
+---
+title: "Agentes e prompts"
+description: "Ferramentas de agentes e prompts: finalidade, argumentos e permissões do MCP."
+---
+
+Referência do catálogo de cliente do MCP 0.8.2, conferida em 21/10/2026. A lista efetiva vem de `tools/list` da sua conexão. [Entenda o catálogo](/mcp/ferramentas).
+
+## list_ai_agents
+
+Lista os agentes de IA do workspace com a conexão de cada um. Não devolve os módulos do prompt: para isso, get_ai_agent
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+Também valem as regras de visibilidade da ferramenta e o escopo da conexão.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `page` | Não | Página, começando em 1 (padrão 1) |
+| `limit` | Não | Itens por página (padrão 20, teto 50) |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Página, começando em 1 (padrão 1)"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50,
+      "description": "Itens por página (padrão 20, teto 50)"
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## get_ai_agent
+
+Um agente de IA do workspace com os módulos do prompt, o que o bot carrega de ferramenta e o telefone de transferência
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `agents.view`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `agenteId` | Sim | Id do agente, de list_ai_agents |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "agenteId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do agente, de list_ai_agents"
+    }
+  },
+  "required": [
+    "agenteId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## update_prompt_modules
+
+Substitui o objeto INTEIRO dos módulos do prompt de um agente do workspace. Antes: leia o atual com `get_ai_agent` e mande completo, porque não há mesclagem e campo desconhecido recusa tudo, e nunca remova chave que veio de lá; confira com `validate_prompt_modules`; leia o guia `prompt-qualidade` em `get_guide`. Depois: confira `versaoGuardada`, a versão anterior que `rollback_prompt_version` traz de volta, os `avisos` e o `autor`, que aparece quando a chave de API gravou em nome do proprietário. Não faz: comportamento por etapa, ferramentas do agente nem canal.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `agents.edit`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `agenteId` | Sim | Id do agente, de list_ai_agents |
+| `hashEsperado` | Não | hashDoPrompt da leitura. Obrigatório para gravar; se mudou, leia novamente |
+| `tokenConfirmacao` | Não | Token da prévia de remoções ou mudança de nome, após confirmação da pessoa |
+| `promptModules` | Sim | Objeto completo dos módulos do prompt. Substitui o que existe, não faz mesclagem |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "agenteId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do agente, de list_ai_agents"
+    },
+    "hashEsperado": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "hashDoPrompt da leitura. Obrigatório para gravar; se mudou, leia novamente"
+    },
+    "tokenConfirmacao": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Token da prévia de remoções ou mudança de nome, após confirmação da pessoa"
+    },
+    "promptModules": {
+      "type": "object",
+      "additionalProperties": {},
+      "description": "Objeto completo dos módulos do prompt. Substitui o que existe, não faz mesclagem"
+    }
+  },
+  "required": [
+    "agenteId",
+    "promptModules"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## list_prompt_versions
+
+Histórico de versões do prompt de um agente: número, origem, autor, data e tamanho. Não devolve o conteúdo das versões
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `agents.view`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `agenteId` | Sim | Id do agente, de list_ai_agents |
+| `page` | Não | Página, começando em 1 (padrão 1) |
+| `limit` | Não | Itens por página (padrão 20, teto 50) |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "agenteId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do agente, de list_ai_agents"
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Página, começando em 1 (padrão 1)"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50,
+      "description": "Itens por página (padrão 20, teto 50)"
+    }
+  },
+  "required": [
+    "agenteId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## rollback_prompt_version
+
+Restaura uma versão anterior do prompt de um agente. O prompt atual vira uma versão nova antes da restauração. Chave de API restaura em nome do proprietário do workspace, e a resposta diz isso em `autor`
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `agents.edit`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `agenteId` | Sim | Id do agente, de list_ai_agents |
+| `versaoId` | Sim | Id da versão, de list_prompt_versions |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "agenteId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do agente, de list_ai_agents"
+    },
+    "versaoId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id da versão, de list_prompt_versions"
+    }
+  },
+  "required": [
+    "agenteId",
+    "versaoId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## create_ai_agent
+
+Cria um agente no workspace; pedido igual em dez minutos reutiliza o cadastro. Antes: `nome` é slug; `modelo` omitido herda o do agente ativo; `promptModules` passa pelo contrato inteiro, então confira com `validate_prompt_modules`; leia o guia `agentes-e-prompt` em `get_guide`. Depois: confira `jaExistia`, `modeloHerdadoDe` e `avisos`; nasce sem canal. Não faz: conectar número novo nem configurar outras tools. Canal existente usa activate_agent_channel; configuração usa o guia operacao-do-workspace; o plano limita agentes.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `agents.create`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `nome` | Sim | Nome do agente no formato slug |
+| `modelo` | Não | Modelo de linguagem do agente. Sem ele, o agente herda o modelo do agente ativo mais recente do workspace |
+| `descricao` | Não | string |
+| `proposito` | Não | support, sales ou personal |
+| `estiloDeComunicacao` | Não | formal, normal ou casual |
+| `promptModules` | Não | Objeto completo dos módulos do prompt |
+| `telefoneHandoff` | Não | string |
+| `filaHandoffId` | Não | Fila de handoff do MESMO workspace |
+| `statusInicial` | Não | Padrão: inactive |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "pattern": "^[a-zA-ZÀ-ÿ0-9]+(-[a-zA-ZÀ-ÿ0-9]+)*$",
+      "description": "Nome do agente no formato slug"
+    },
+    "modelo": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Modelo de linguagem do agente. Sem ele, o agente herda o modelo do agente ativo mais recente do workspace"
+    },
+    "descricao": {
+      "type": "string"
+    },
+    "proposito": {
+      "type": "string",
+      "enum": [
+        "support",
+        "sales",
+        "personal"
+      ],
+      "description": "support, sales ou personal"
+    },
+    "estiloDeComunicacao": {
+      "type": "string",
+      "enum": [
+        "formal",
+        "normal",
+        "casual"
+      ],
+      "description": "formal, normal ou casual"
+    },
+    "promptModules": {
+      "type": "object",
+      "additionalProperties": {},
+      "description": "Objeto completo dos módulos do prompt"
+    },
+    "telefoneHandoff": {
+      "type": "string",
+      "pattern": "^55\\d{10,11}$"
+    },
+    "filaHandoffId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Fila de handoff do MESMO workspace"
+    },
+    "statusInicial": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "description": "Padrão: inactive"
+    }
+  },
+  "required": [
+    "nome"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## clone_ai_agent
+
+Duplica um agente do workspace. A cópia nasce inativa, sem canal conectado e sem o vínculo de calendário do original
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `agents.duplicate`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `agenteId` | Sim | Id do agente, de list_ai_agents |
+| `novoNome` | Não | Padrão: o nome do original com o sufixo -Copia |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "agenteId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do agente, de list_ai_agents"
+    },
+    "novoNome": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "pattern": "^[a-zA-ZÀ-ÿ0-9]+(-[a-zA-ZÀ-ÿ0-9]+)*$",
+      "description": "Padrão: o nome do original com o sufixo -Copia"
+    }
+  },
+  "required": [
+    "agenteId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## set_ai_agent_status
+
+Muda a situação de um agente de IA do workspace (o mesmo que ativar ou desativar no painel). O campo `ativo` da resposta é OUTRA coisa: é o interruptor de pausa da IA (/pausar e /ligar) e não é alterado aqui
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `agents.edit`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `agenteId` | Sim | Id do agente, de list_ai_agents |
+| `situacao` | Sim | active ativa o agente, inactive o desativa |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "agenteId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id do agente, de list_ai_agents"
+    },
+    "situacao": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "description": "active ativa o agente, inactive o desativa"
+    }
+  },
+  "required": [
+    "agenteId",
+    "situacao"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## list_agent_channels
+
+Lista os canais de WhatsApp do workspace com número, status, agente vinculado e atendimento automático. Antes de colocar um agente no ar, escolha um canal conectado desta lista. Não conecta número novo, não gera QR code e não envia mensagem.
+
+**Escopo:** `mysellers:read`. **Operação:** consulta ou validação sem gravação de dados de negócio.
+
+**Permissões adicionais no OAuth:** `agents.view`, `settings.manage_integrations`. Também valem as regras de visibilidade da ferramenta.
+
+Não recebe argumentos no perfil cliente.
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## update_ai_agent
+
+Edita os dados do agente sem substituir o prompt: nome, modelo, estilo, telefone e fila de transferência, transferência qualificada, tempos de resposta e a chave consultaDeProdutos, que guarda antes a versão anterior do prompt. Antes leia get_ai_agent e list_handoff_queues. Envie só os campos que deseja mudar; null limpa telefone, fila ou critério. Para prompt use update_prompt_modules; para canal use activate_agent_channel com confirmação.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `agents.edit`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `agenteId` | Sim | string |
+| `nome` | Não | string |
+| `modelo` | Não | string |
+| `estilo` | Não | string |
+| `telefoneDeHandoff` | Não | ver alternativas no schema |
+| `filaDeHandoffId` | Não | ver alternativas no schema |
+| `transferenciaQualificada` | Não | boolean |
+| `criterioDeTransferencia` | Não | ver alternativas no schema |
+| `atrasoEntreBaloesMs` | Não | integer |
+| `janelaDeBufferSegundos` | Não | integer |
+| `consultaDeProdutos` | Não | Chave "Consultar produtos do catálogo": liga ou desliga a busca de produtos pelo bot. Grava só promptModules.products.enabled |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "agenteId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "nome": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "pattern": "^[a-zA-ZÀ-ÿ0-9]+(-[a-zA-ZÀ-ÿ0-9]+)*$"
+    },
+    "modelo": {
+      "type": "string",
+      "minLength": 1
+    },
+    "estilo": {
+      "type": "string",
+      "enum": [
+        "formal",
+        "normal",
+        "casual"
+      ]
+    },
+    "telefoneDeHandoff": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^55\\d{10,11}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "filaDeHandoffId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "transferenciaQualificada": {
+      "type": "boolean"
+    },
+    "criterioDeTransferencia": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 500
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "atrasoEntreBaloesMs": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "janelaDeBufferSegundos": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "consultaDeProdutos": {
+      "type": "boolean",
+      "description": "Chave \"Consultar produtos do catálogo\": liga ou desliga a busca de produtos pelo bot. Grava só promptModules.products.enabled"
+    }
+  },
+  "required": [
+    "agenteId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
+## activate_agent_channel
+
+Coloca o agente no ar em um canal de WhatsApp já conectado. Primeiro chame sem tokenConfirmacao: recebe a prévia com o agente atual, o novo e o aviso de troca. Mostre a prévia e peça confirmação à pessoa; só depois repita os mesmos ids com o token. Liga o atendimento automático e ativa o agente. Não conecta número novo, não gera QR code e não envia mensagem. Se a configuração mudar, peça outra prévia.
+
+**Escopo:** `mysellers:write`. **Operação:** altera dados; exige assinatura ativa do cliente.
+
+**Permissões adicionais no OAuth:** `agents.edit`, `settings.manage_integrations`. Também valem as regras de visibilidade da ferramenta.
+
+| Argumento | Obrigatório no schema | Descrição |
+| --- | --- | --- |
+| `canalId` | Sim | string |
+| `tipo` | Sim | string |
+| `agenteId` | Sim | string |
+| `tokenConfirmacao` | Não | string |
+
+<Accordion title="Schema completo dos argumentos">
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "canalId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "uazapi",
+        "cloud_api"
+      ]
+    },
+    "agenteId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "tokenConfirmacao": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "required": [
+    "canalId",
+    "tipo",
+    "agenteId"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
+```
+
+</Accordion>
+
