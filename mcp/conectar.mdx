@@ -9,7 +9,7 @@ Use o endereço `https://api.mysellers.com.br/mcp`. Pelo login, você autoriza o
 
 No aplicativo que oferece servidores MCP remotos com OAuth, adicione um servidor chamado **MySellers** com o endereço acima. Inicie a autenticação, entre na MySellers, confira o aplicativo e o acesso solicitado e autorize.
 
-Os nomes dos menus variam entre versões dos aplicativos. O tutorial da tela **Configurações > Integrações > Conexões** da MySellers orienta a conexão dos clientes suportados. A disponibilidade de conectores personalizados também depende do aplicativo e da conta usada nele.
+Os nomes dos menus variam entre versões dos aplicativos. O tutorial da tela **Configurações > Integrações > Conexões** da MySellers orienta a conexão dos clientes suportados. Essa tela exige a permissão de gerenciar integrações. A disponibilidade de conectores personalizados também depende do aplicativo e da conta usada nele.
 
 ### Claude Code
 
@@ -73,7 +73,7 @@ Peça ao assistente para verificar a conexão com `ping` e consultar `get_guide`
 
 ## Revogar
 
-- **Login OAuth:** revogue a conexão em **Configurações > Integrações > Conexões**. A possibilidade de ver e revogar conexões de colegas depende da permissão de gerenciar integrações.
+- **Login OAuth:** a tela **Configurações > Integrações > Conexões** exige a permissão de gerenciar integrações e permite revogar as conexões do workspace. Se você não tem essa permissão, solicite a revogação à pessoa responsável pelas integrações da sua empresa.
 - **Chave de API:** revogue a própria chave em **API de Integração**. A lista de conexões OAuth não revoga chaves.
 
 Remover a configuração do aplicativo não substitui a revogação do acesso na MySellers.
